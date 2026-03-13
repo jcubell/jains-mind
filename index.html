@@ -12,22 +12,22 @@
   *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
   :root {
-    --bg: #ffffff;
-    --bg-alt: #fafafa;
-    --border: #e0e0e0;
-    --border-light: #eeeeee;
-    --text: #1a1a1a;
-    --text-2: #444444;
-    --text-3: #777777;
-    --text-muted: #aaaaaa;
+    --bg: #0a0a0a;
+    --bg-alt: #111111;
+    --border: #1e1e1e;
+    --border-light: #161616;
+    --text: #d4d4d4;
+    --text-2: #999999;
+    --text-3: #666666;
+    --text-muted: #444444;
     --accent: #00b8d4;
-    --accent-soft: rgba(0, 184, 212, 0.07);
-    --green: #2e7d32;
-    --green-soft: rgba(46, 125, 50, 0.06);
-    --amber: #ef6c00;
-    --amber-soft: rgba(239, 108, 0, 0.06);
-    --red: #c62828;
-    --red-soft: rgba(198, 40, 40, 0.06);
+    --accent-soft: rgba(0, 184, 212, 0.08);
+    --green: #4caf50;
+    --green-soft: rgba(76, 175, 80, 0.08);
+    --amber: #ff9800;
+    --amber-soft: rgba(255, 152, 0, 0.08);
+    --red: #ef5350;
+    --red-soft: rgba(239, 83, 80, 0.08);
     --neon: #00b8d4;
     --font: 'Satoshi', -apple-system, BlinkMacSystemFont, sans-serif;
     --mono: 'JetBrains Mono', 'SF Mono', monospace;
@@ -134,7 +134,7 @@
   }
   .panel-body::-webkit-scrollbar { width: 2px; }
   .panel-body::-webkit-scrollbar-track { background: transparent; }
-  .panel-body::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+  .panel-body::-webkit-scrollbar-thumb { background: #2a2a2a; border-radius: 2px; }
 
   /* ===== OBJECTIVE ===== */
   .objective-section {
@@ -295,9 +295,9 @@
   .feed-item:last-of-type { border-bottom: none; }
 
   .feed-item.signal-fire {
-    color: var(--text);
+    color: #e0e0e0;
     padding: 8px 0 8px 14px;
-    border-left: 2px solid var(--text);
+    border-left: 2px solid #e0e0e0;
     border-bottom: none;
     margin-bottom: 4px;
     border-radius: 0;
@@ -318,19 +318,19 @@
     margin-bottom: 2px;
     opacity: 0.7;
   }
-  .feed-item.signal-noise:hover { opacity: 1; color: var(--text-3); }
+  .feed-item.signal-noise:hover { opacity: 1; color: #888888; }
 
   .signal-tag {
     font-size: 9px; font-weight: 600;
     letter-spacing: 0.12em; text-transform: uppercase;
     margin-right: 6px;
   }
-  .signal-tag.fire { color: var(--text); }
+  .signal-tag.fire { color: #e0e0e0; }
   .signal-tag.watch { color: var(--text-3); }
   .signal-tag.noise { color: var(--text-muted); }
 
-  .feed-item .ticker-ref { color: var(--text); font-weight: 600; }
-  .feed-item .entity-ref { color: var(--text-2); font-weight: 600; }
+  .feed-item .ticker-ref { color: var(--accent); font-weight: 600; }
+  .feed-item .entity-ref { color: #b0b0b0; font-weight: 600; }
 
   .my-take {
     margin: 8px 0 4px;
@@ -374,8 +374,8 @@
     position: fixed; inset: 0; z-index: 99998;
     pointer-events: none; opacity: 0;
     transition: opacity 0.15s ease;
-    border: 1px solid rgba(0,184,212,0.2);
-    background: radial-gradient(ellipse at center, rgba(0,184,212,0.04) 0%, transparent 70%);
+    border: 1px solid rgba(0,184,212,0.15);
+    background: radial-gradient(ellipse at center, rgba(0,184,212,0.03) 0%, transparent 70%);
   }
   .refresh-toast {
     position: fixed; top: 52px; left: 50%;
