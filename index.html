@@ -502,8 +502,8 @@
     if (e.key === 'ArrowRight') arrowKeys.right = true;
     if (arrowKeys.left && arrowKeys.right && !refreshing) {
       refreshing = true; arrowKeys.left = false; arrowKeys.right = false;
-      pollState(); showRefreshIndicator();
-      setTimeout(function() { refreshing = false; }, 1000);
+      showRefreshIndicator();
+      setTimeout(function() { location.reload(); }, 400);
     }
   });
   document.addEventListener('keyup', function(e) {
