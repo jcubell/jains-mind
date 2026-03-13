@@ -4,7 +4,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>J.AI.N'S Mind — Command Center</title>
-<meta http-equiv="refresh" content="10">
 <style>
   /* ===== RESET & BASE ===== */
   *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
@@ -23,6 +22,7 @@
     --border: rgba(0, 102, 255, 0.25);
     --glow-blue: 0 0 12px rgba(0, 102, 255, 0.35), 0 0 30px rgba(0, 102, 255, 0.15), inset 0 0 30px rgba(0, 102, 255, 0.03);
     --glow-neon: 0 0 12px rgba(0, 255, 136, 0.35), 0 0 30px rgba(0, 255, 136, 0.15), inset 0 0 30px rgba(0, 255, 136, 0.03);
+    --glow-neon-active: 0 0 18px rgba(0, 255, 136, 0.55), 0 0 40px rgba(0, 255, 136, 0.25), 0 0 60px rgba(0, 255, 136, 0.1), inset 0 0 40px rgba(0, 255, 136, 0.05);
     --font: 'Courier New', 'Consolas', 'SF Mono', 'Fira Code', monospace;
   }
 
@@ -109,6 +109,7 @@
     width: 100%; height: 100vh;
     position: relative;
     z-index: 1;
+    padding-top: 56px;
   }
 
   /* ===== PANEL STYLING ===== */
@@ -120,6 +121,7 @@
     display: flex;
     flex-direction: column;
     position: relative;
+    transition: box-shadow 1.2s ease;
   }
   .panel::before {
     content: '';
@@ -202,24 +204,37 @@
     align-items: center;
     gap: 8px;
     font-size: 11px;
-    color: var(--neon);
     letter-spacing: 1px;
     text-transform: uppercase;
+    transition: color 0.8s ease;
   }
   .status-dot {
     width: 8px; height: 8px;
     border-radius: 50%;
+    transition: background 0.8s ease, box-shadow 0.8s ease;
+  }
+  /* Idle state */
+  .status-idle .status-dot {
+    background: var(--blue-bright);
+    box-shadow: 0 0 6px var(--blue-bright), 0 0 12px var(--blue-bright);
+    animation: pulse-idle 3s ease-in-out infinite;
+  }
+  .status-idle { color: var(--blue-bright); }
+  /* Thinking state */
+  .status-thinking .status-dot {
     background: var(--neon);
     box-shadow: 0 0 8px var(--neon), 0 0 16px var(--neon);
-    animation: pulse-dot 2s ease-in-out infinite;
+    animation: pulse-thinking 1.2s ease-in-out infinite;
   }
-  @keyframes pulse-dot {
-    0%, 100% { opacity: 1; box-shadow: 0 0 8px var(--neon), 0 0 16px var(--neon); }
-    50% { opacity: 0.5; box-shadow: 0 0 4px var(--neon), 0 0 8px var(--neon); }
-  }
+  .status-thinking { color: var(--neon); }
 
-  .dashboard {
-    padding-top: 56px;
+  @keyframes pulse-idle {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+  @keyframes pulse-thinking {
+    0%, 100% { opacity: 1; box-shadow: 0 0 8px var(--neon), 0 0 16px var(--neon); }
+    50% { opacity: 0.7; box-shadow: 0 0 12px var(--neon), 0 0 24px var(--neon), 0 0 36px rgba(0, 255, 136, 0.15); }
   }
 
   /* ===== TOP-LEFT: J.AI.N'S MIND ===== */
@@ -241,20 +256,40 @@
   .objective-dot {
     width: 7px; height: 7px;
     border-radius: 50%;
-    background: var(--cyan);
-    box-shadow: 0 0 8px var(--cyan);
-    animation: pulse-cyan 2.5s ease-in-out infinite;
+    transition: background 0.8s ease, box-shadow 0.8s ease, transform 0.8s ease;
   }
-  @keyframes pulse-cyan {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.4; }
+  .objective-dot.idle {
+    background: var(--cyan);
+    box-shadow: 0 0 6px var(--cyan);
+    animation: pulse-idle 3s ease-in-out infinite;
+  }
+  .objective-dot.thinking {
+    background: var(--neon);
+    box-shadow: 0 0 10px var(--neon), 0 0 20px var(--neon);
+    animation: pulse-thinking 1.2s ease-in-out infinite;
+    transform: scale(1.15);
   }
   .objective-text {
     font-size: 14px;
-    color: var(--neon);
     font-weight: 700;
     letter-spacing: 0.5px;
-    text-shadow: 0 0 15px rgba(0, 255, 136, 0.25);
+    transition: color 0.8s ease, text-shadow 0.8s ease;
+  }
+  .objective-text.idle {
+    color: var(--neon-dim);
+    text-shadow: 0 0 8px rgba(0, 255, 136, 0.15);
+  }
+  .objective-text.thinking {
+    color: var(--neon);
+    text-shadow: 0 0 15px rgba(0, 255, 136, 0.35), 0 0 30px rgba(0, 255, 136, 0.12);
+  }
+
+  .steps-label {
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--blue-bright);
+    margin-bottom: 10px;
   }
 
   /* Log entries */
@@ -264,17 +299,26 @@
     margin-bottom: 8px;
     font-size: 12px;
     color: var(--white-dim);
-    transition: all 0.3s;
     background: transparent;
     border-radius: 0 4px 4px 0;
+    transition: opacity 0.6s ease, transform 0.6s ease, border-left-color 0.6s ease, background 0.6s ease, color 0.6s ease;
   }
-  .log-entry:first-child {
+  .log-entry.newest {
     border-left-color: var(--neon);
     border-left-width: 3px;
     color: var(--white);
     background: rgba(0, 255, 136, 0.05);
     box-shadow: inset 0 0 20px rgba(0, 255, 136, 0.04), 0 0 10px rgba(0, 255, 136, 0.05);
   }
+  /* Entry appearing for the first time */
+  .log-entry.new-entry {
+    animation: entry-appear 0.6s ease-out forwards;
+  }
+  @keyframes entry-appear {
+    0% { opacity: 0; transform: translateY(-6px); }
+    100% { opacity: 1; transform: translateY(0); }
+  }
+
   .log-timestamp {
     color: var(--blue-bright);
     font-weight: 600;
@@ -289,86 +333,21 @@
     margin-left: 12px;
     color: var(--neon);
     font-size: 14px;
-    animation: blink 1s step-end infinite;
+    transition: opacity 0.5s ease;
   }
-  @keyframes blink {
+  .blink-cursor.idle {
+    animation: blink-slow 2s step-end infinite;
+  }
+  .blink-cursor.thinking {
+    animation: blink-fast 0.5s step-end infinite;
+  }
+  @keyframes blink-slow {
     0%, 50% { opacity: 1; }
     51%, 100% { opacity: 0; }
   }
-
-  /* ===== ACTIVATION / "COMES ALIVE" EFFECTS ===== */
-  @keyframes panel-flare {
-    0% { box-shadow: 0 0 12px rgba(0, 255, 136, 0.35), 0 0 30px rgba(0, 255, 136, 0.15), inset 0 0 30px rgba(0, 255, 136, 0.03); }
-    15% { box-shadow: 0 0 30px rgba(0, 255, 136, 0.7), 0 0 60px rgba(0, 255, 136, 0.4), 0 0 100px rgba(0, 255, 136, 0.2), inset 0 0 50px rgba(0, 255, 136, 0.08); }
-    40% { box-shadow: 0 0 20px rgba(0, 255, 136, 0.5), 0 0 45px rgba(0, 255, 136, 0.25), 0 0 70px rgba(0, 255, 136, 0.1), inset 0 0 40px rgba(0, 255, 136, 0.05); }
-    100% { box-shadow: 0 0 12px rgba(0, 255, 136, 0.35), 0 0 30px rgba(0, 255, 136, 0.15), inset 0 0 30px rgba(0, 255, 136, 0.03); }
-  }
-  @keyframes objective-ignite {
-    0% { text-shadow: 0 0 15px rgba(0, 255, 136, 0.25); color: var(--neon); }
-    10% { text-shadow: 0 0 30px rgba(0, 255, 136, 0.8), 0 0 60px rgba(0, 255, 136, 0.4), 0 0 90px rgba(0, 255, 136, 0.2); color: #ffffff; }
-    30% { text-shadow: 0 0 25px rgba(0, 255, 136, 0.6), 0 0 50px rgba(0, 255, 136, 0.3); color: #ccffee; }
-    100% { text-shadow: 0 0 15px rgba(0, 255, 136, 0.25); color: var(--neon); }
-  }
-  @keyframes dot-burst {
-    0% { transform: scale(1); box-shadow: 0 0 8px var(--cyan); }
-    15% { transform: scale(2.2); box-shadow: 0 0 20px var(--neon), 0 0 40px var(--neon), 0 0 60px var(--cyan); }
-    40% { transform: scale(1.4); box-shadow: 0 0 14px var(--neon), 0 0 28px var(--cyan); }
-    100% { transform: scale(1); box-shadow: 0 0 8px var(--cyan); }
-  }
-  @keyframes scan-sweep {
-    0% { background-position: 0% 0%; }
-    100% { background-position: 0% 100%; }
-  }
-  @keyframes log-cascade {
-    0% { opacity: 0; transform: translateX(-8px); filter: brightness(2.5); }
-    20% { opacity: 1; transform: translateX(0); filter: brightness(2); }
-    50% { filter: brightness(1.3); }
-    100% { opacity: 1; transform: translateX(0); filter: brightness(1); }
-  }
-  @keyframes label-glow {
-    0% { color: var(--blue-bright); text-shadow: none; }
-    15% { color: var(--neon); text-shadow: 0 0 12px rgba(0, 255, 136, 0.6); }
-    100% { color: var(--blue-bright); text-shadow: none; }
-  }
-  @keyframes cursor-burst {
-    0% { color: var(--neon); text-shadow: none; }
-    10% { color: #ffffff; text-shadow: 0 0 15px var(--neon), 0 0 30px var(--neon); font-size: 18px; }
-    40% { color: #ccffee; text-shadow: 0 0 10px var(--neon); font-size: 16px; }
-    100% { color: var(--neon); text-shadow: none; font-size: 14px; }
-  }
-
-  /* Applied on load */
-  .panel-activate {
-    animation: panel-flare 2.5s ease-out forwards;
-  }
-  .objective-activate {
-    animation: objective-ignite 2.5s ease-out forwards;
-  }
-  .dot-activate {
-    animation: dot-burst 2s ease-out forwards;
-  }
-  .log-activate {
-    animation: log-cascade 0.6s ease-out forwards;
-    opacity: 0;
-  }
-  .label-activate {
-    animation: label-glow 2.5s ease-out forwards;
-  }
-  .cursor-activate {
-    animation: cursor-burst 2s ease-out forwards;
-  }
-  .scan-overlay {
-    position: absolute;
-    top: 0; left: 0; right: 0; bottom: 0;
-    pointer-events: none;
-    z-index: 5;
-    background: linear-gradient(180deg, rgba(0, 255, 136, 0.06) 0%, transparent 4%, transparent 100%);
-    background-size: 100% 300%;
-    animation: scan-sweep 1.5s linear forwards;
-    opacity: 0;
-  }
-  .scan-active {
-    opacity: 1;
+  @keyframes blink-fast {
+    0%, 50% { opacity: 1; }
+    51%, 100% { opacity: 0; }
   }
 
   /* ===== BOTTOM-LEFT: TODAY'S JOBS ===== */
@@ -569,9 +548,9 @@
 <div class="top-bar">
   <div class="top-bar-title">J.AI.N'S Mind -- Command Center</div>
   <div class="top-bar-right">
-    <div class="status-indicator">
+    <div class="status-indicator status-idle" id="statusIndicator">
       <div class="status-dot"></div>
-      <span>Systems Online</span>
+      <span id="statusText">Systems Online</span>
     </div>
     <div class="live-clock" id="liveClock">--:--:-- ET</div>
   </div>
@@ -582,47 +561,21 @@
 
   <!-- TOP-LEFT: J.AI.N'S MIND -->
   <div class="panel panel-glow-neon" id="mindPanel">
-    <div class="scan-overlay" id="scanOverlay"></div>
     <div class="panel-header">
       <h2>J.AI.N'S Mind</h2>
       <span style="font-size: 10px; color: var(--blue-bright); letter-spacing: 1px;">COGNITIVE ENGINE v2.6</span>
     </div>
     <div class="objective-section">
       <div class="objective-label">
-        <div class="objective-dot" id="objDot"></div>
+        <div class="objective-dot idle" id="objDot"></div>
         Current Objective
       </div>
-      <div class="objective-text" id="objText">Monitoring AI Value Chain &amp; Sorare Automation</div>
+      <div class="objective-text idle" id="objText">Loading...</div>
     </div>
-    <div class="panel-body">
-      <div id="stepsLabel" style="font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--blue-bright); margin-bottom: 10px;">Steps &amp; Decisions</div>
-
-      <div class="log-entry">
-        <span class="log-timestamp">03/13 11:00 AM</span>
-        <span class="log-text">-- Configured daily brief schedule (7 AM / 1 PM / 8 PM ET)</span>
-      </div>
-      <div class="log-entry">
-        <span class="log-timestamp">03/13 10:45 AM</span>
-        <span class="log-text">-- Sorare NBA lineups optimized for GW Mar 13-16</span>
-      </div>
-      <div class="log-entry">
-        <span class="log-timestamp">03/13 10:30 AM</span>
-        <span class="log-text">-- Scrapped 28 duplicate common cards -> 328 Common Essence</span>
-      </div>
-      <div class="log-entry">
-        <span class="log-timestamp">03/13 10:15 AM</span>
-        <span class="log-text">-- Market intelligence scan completed</span>
-      </div>
-      <div class="log-entry">
-        <span class="log-timestamp">03/13 10:00 AM</span>
-        <span class="log-text">-- X API integration configured</span>
-      </div>
-      <div class="log-entry">
-        <span class="log-timestamp">03/13 09:45 AM</span>
-        <span class="log-text">-- Dashboard deployed to GitHub Pages</span>
-      </div>
-
-      <div class="blink-cursor" id="blinkCursor">_</div>
+    <div class="panel-body" id="stepsContainer">
+      <div class="steps-label">Steps &amp; Decisions</div>
+      <div id="logEntries"></div>
+      <div class="blink-cursor idle" id="blinkCursor">_</div>
     </div>
   </div>
 
@@ -632,9 +585,7 @@
       <h2>Today's Jobs</h2>
       <span style="font-size: 10px; color: var(--neon); letter-spacing: 1px;" id="jobCount">6 JOBS</span>
     </div>
-    <div class="panel-body" id="jobsContainer">
-      <!-- Jobs populated by JS -->
-    </div>
+    <div class="panel-body" id="jobsContainer"></div>
   </div>
 
   <!-- RIGHT HALF: LIVE INTELLIGENCE FEED -->
@@ -651,7 +602,6 @@
           <div class="section-icon"></div>
           AI Value Chain Updates
         </div>
-
         <div class="intel-item">
           <a href="https://www.nvidia.com/gtc/" target="_blank" rel="noopener noreferrer">NVIDIA GTC 2026: Jensen Huang Keynote Set for Monday Mar 16</a>
           <div class="intel-source">nvidia.com</div>
@@ -694,7 +644,6 @@
           <div class="section-icon"></div>
           AI Impact on Enterprise SaaS
         </div>
-
         <div class="intel-item">
           <a href="https://www.bloomberg.com" target="_blank" rel="noopener noreferrer">SaaS Sector Down 21% YTD -- $1T+ Market Cap Wiped</a>
           <div class="intel-source">bloomberg.com</div>
@@ -737,57 +686,11 @@
 
 <script>
 (function() {
-  // ===== ACTIVATION SEQUENCE =====
-  function runActivation() {
-    // Panel flare
-    var panel = document.getElementById('mindPanel');
-    panel.classList.add('panel-activate');
-
-    // Scan sweep
-    var scan = document.getElementById('scanOverlay');
-    scan.classList.add('scan-active');
-
-    // Objective dot burst
-    var dot = document.getElementById('objDot');
-    dot.classList.add('dot-activate');
-
-    // Objective text ignite
-    var objText = document.getElementById('objText');
-    objText.classList.add('objective-activate');
-
-    // Steps label glow
-    var label = document.getElementById('stepsLabel');
-    label.classList.add('label-activate');
-
-    // Cursor burst
-    var cursor = document.getElementById('blinkCursor');
-    cursor.classList.add('cursor-activate');
-
-    // Log entries cascade with stagger
-    var entries = document.querySelectorAll('.log-entry');
-    for (var i = 0; i < entries.length; i++) {
-      entries[i].style.animationDelay = (i * 0.12) + 's';
-      entries[i].classList.add('log-activate');
-    }
-
-    // Clean up classes after animations complete so pulse-dot/blink resume normally
-    setTimeout(function() {
-      panel.classList.remove('panel-activate');
-      scan.classList.remove('scan-active');
-      dot.classList.remove('dot-activate');
-      objText.classList.remove('objective-activate');
-      label.classList.remove('label-activate');
-      cursor.classList.remove('cursor-activate');
-      for (var j = 0; j < entries.length; j++) {
-        entries[j].classList.remove('log-activate');
-        entries[j].style.animationDelay = '';
-        entries[j].style.opacity = '1';
-      }
-    }, 3000);
-  }
-
-  // Run activation on page load (triggers every 10s refresh)
-  runActivation();
+  // ===== STATE MANAGEMENT =====
+  var STATE_URL = 'https://raw.githubusercontent.com/jcubell/jains-mind/master/state.json';
+  var POLL_INTERVAL = 10000; // 10 seconds
+  var lastKnownState = null;
+  var knownStepCount = 0;
 
   // ===== LIVE CLOCK =====
   function updateClock() {
@@ -804,6 +707,97 @@
   }
   updateClock();
   setInterval(updateClock, 1000);
+
+  // ===== SET MODE (idle vs thinking) =====
+  function setMode(mode) {
+    var panel = document.getElementById('mindPanel');
+    var dot = document.getElementById('objDot');
+    var objText = document.getElementById('objText');
+    var cursor = document.getElementById('blinkCursor');
+    var indicator = document.getElementById('statusIndicator');
+    var statusText = document.getElementById('statusText');
+
+    dot.className = 'objective-dot ' + mode;
+    objText.className = 'objective-text ' + mode;
+    cursor.className = 'blink-cursor ' + mode;
+
+    if (mode === 'thinking') {
+      panel.style.boxShadow = 'var(--glow-neon-active)';
+      indicator.className = 'status-indicator status-thinking';
+      statusText.textContent = 'Processing';
+    } else {
+      panel.style.boxShadow = '';
+      indicator.className = 'status-indicator status-idle';
+      statusText.textContent = 'Systems Online';
+    }
+  }
+
+  // ===== RENDER STEPS =====
+  function renderSteps(steps, isNewData) {
+    var container = document.getElementById('logEntries');
+    var html = '';
+
+    for (var i = 0; i < steps.length; i++) {
+      var step = steps[i];
+      var classes = 'log-entry';
+      if (i === 0) classes += ' newest';
+      // Animate new entries that weren't there before
+      if (isNewData && i < steps.length - knownStepCount) {
+        classes += ' new-entry';
+      }
+      html += '<div class="' + classes + '">';
+      html += '<span class="log-timestamp">' + escapeHtml(step.time) + '</span>';
+      html += '<span class="log-text"> -- ' + escapeHtml(step.text) + '</span>';
+      html += '</div>';
+    }
+
+    container.innerHTML = html;
+    knownStepCount = steps.length;
+
+    // Auto-scroll to top to show newest entry
+    var body = document.getElementById('stepsContainer');
+    body.scrollTop = 0;
+  }
+
+  function escapeHtml(str) {
+    var div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+  }
+
+  // ===== POLL STATE =====
+  function pollState() {
+    // Cache-bust the raw GitHub URL
+    var url = STATE_URL + '?t=' + Date.now();
+
+    fetch(url)
+      .then(function(res) { return res.json(); })
+      .then(function(data) {
+        var isNew = !lastKnownState || data.updated_at !== lastKnownState.updated_at;
+
+        // Update objective
+        document.getElementById('objText').textContent = data.objective || 'Awaiting directive...';
+
+        // Set mode based on status
+        var mode = data.status === 'thinking' ? 'thinking' : 'idle';
+        setMode(mode);
+
+        // Render steps
+        if (data.steps && data.steps.length > 0) {
+          renderSteps(data.steps, isNew);
+        }
+
+        lastKnownState = data;
+      })
+      .catch(function(err) {
+        // Silently fail — keep showing last known state
+        console.log('State poll failed:', err);
+      });
+  }
+
+  // Initial load + start polling
+  pollState();
+  setInterval(pollState, POLL_INTERVAL);
 
   // ===== JOBS DATA & PROGRESS =====
   var jobs = [
@@ -872,7 +866,6 @@
     var currentMinutes = now.getHours() * 60 + now.getMinutes();
 
     if (job.recurring) {
-      // Every 4 hours: show progress within current 4-hour block
       var blockMinutes = 240;
       var minutesIntoBlock = currentMinutes % blockMinutes;
       return Math.min(100, Math.round((minutesIntoBlock / blockMinutes) * 100));
@@ -901,7 +894,6 @@
 
     if (job.recurring) return job.status;
     if (currentMinutes >= targetMinutes) return 'completed';
-    // Check if within 30 min of scheduled time
     if (targetMinutes - currentMinutes <= 30 && targetMinutes - currentMinutes > 0) return 'active';
     return job.status;
   }
@@ -933,7 +925,6 @@
   }
 
   renderJobs();
-  // Update jobs every 30 seconds
   setInterval(renderJobs, 30000);
 
   // ===== FEED TIMESTAMP =====
