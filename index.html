@@ -883,6 +883,22 @@
   var lastKnownState = null;
   var knownStepCount = 0;
 
+  // ===== LEFT+RIGHT ARROW FORCE REFRESH =====
+  var arrowKeys = { left: false, right: false };
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'ArrowLeft') arrowKeys.left = true;
+    if (e.key === 'ArrowRight') arrowKeys.right = true;
+    if (arrowKeys.left && arrowKeys.right) {
+      arrowKeys.left = false;
+      arrowKeys.right = false;
+      location.reload();
+    }
+  });
+  document.addEventListener('keyup', function(e) {
+    if (e.key === 'ArrowLeft') arrowKeys.left = false;
+    if (e.key === 'ArrowRight') arrowKeys.right = false;
+  });
+
   // ===== LIVE CLOCK =====
   function updateClock() {
     var now = new Date();
