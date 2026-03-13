@@ -296,6 +296,81 @@
     51%, 100% { opacity: 0; }
   }
 
+  /* ===== ACTIVATION / "COMES ALIVE" EFFECTS ===== */
+  @keyframes panel-flare {
+    0% { box-shadow: 0 0 12px rgba(0, 255, 136, 0.35), 0 0 30px rgba(0, 255, 136, 0.15), inset 0 0 30px rgba(0, 255, 136, 0.03); }
+    15% { box-shadow: 0 0 30px rgba(0, 255, 136, 0.7), 0 0 60px rgba(0, 255, 136, 0.4), 0 0 100px rgba(0, 255, 136, 0.2), inset 0 0 50px rgba(0, 255, 136, 0.08); }
+    40% { box-shadow: 0 0 20px rgba(0, 255, 136, 0.5), 0 0 45px rgba(0, 255, 136, 0.25), 0 0 70px rgba(0, 255, 136, 0.1), inset 0 0 40px rgba(0, 255, 136, 0.05); }
+    100% { box-shadow: 0 0 12px rgba(0, 255, 136, 0.35), 0 0 30px rgba(0, 255, 136, 0.15), inset 0 0 30px rgba(0, 255, 136, 0.03); }
+  }
+  @keyframes objective-ignite {
+    0% { text-shadow: 0 0 15px rgba(0, 255, 136, 0.25); color: var(--neon); }
+    10% { text-shadow: 0 0 30px rgba(0, 255, 136, 0.8), 0 0 60px rgba(0, 255, 136, 0.4), 0 0 90px rgba(0, 255, 136, 0.2); color: #ffffff; }
+    30% { text-shadow: 0 0 25px rgba(0, 255, 136, 0.6), 0 0 50px rgba(0, 255, 136, 0.3); color: #ccffee; }
+    100% { text-shadow: 0 0 15px rgba(0, 255, 136, 0.25); color: var(--neon); }
+  }
+  @keyframes dot-burst {
+    0% { transform: scale(1); box-shadow: 0 0 8px var(--cyan); }
+    15% { transform: scale(2.2); box-shadow: 0 0 20px var(--neon), 0 0 40px var(--neon), 0 0 60px var(--cyan); }
+    40% { transform: scale(1.4); box-shadow: 0 0 14px var(--neon), 0 0 28px var(--cyan); }
+    100% { transform: scale(1); box-shadow: 0 0 8px var(--cyan); }
+  }
+  @keyframes scan-sweep {
+    0% { background-position: 0% 0%; }
+    100% { background-position: 0% 100%; }
+  }
+  @keyframes log-cascade {
+    0% { opacity: 0; transform: translateX(-8px); filter: brightness(2.5); }
+    20% { opacity: 1; transform: translateX(0); filter: brightness(2); }
+    50% { filter: brightness(1.3); }
+    100% { opacity: 1; transform: translateX(0); filter: brightness(1); }
+  }
+  @keyframes label-glow {
+    0% { color: var(--blue-bright); text-shadow: none; }
+    15% { color: var(--neon); text-shadow: 0 0 12px rgba(0, 255, 136, 0.6); }
+    100% { color: var(--blue-bright); text-shadow: none; }
+  }
+  @keyframes cursor-burst {
+    0% { color: var(--neon); text-shadow: none; }
+    10% { color: #ffffff; text-shadow: 0 0 15px var(--neon), 0 0 30px var(--neon); font-size: 18px; }
+    40% { color: #ccffee; text-shadow: 0 0 10px var(--neon); font-size: 16px; }
+    100% { color: var(--neon); text-shadow: none; font-size: 14px; }
+  }
+
+  /* Applied on load */
+  .panel-activate {
+    animation: panel-flare 2.5s ease-out forwards;
+  }
+  .objective-activate {
+    animation: objective-ignite 2.5s ease-out forwards;
+  }
+  .dot-activate {
+    animation: dot-burst 2s ease-out forwards;
+  }
+  .log-activate {
+    animation: log-cascade 0.6s ease-out forwards;
+    opacity: 0;
+  }
+  .label-activate {
+    animation: label-glow 2.5s ease-out forwards;
+  }
+  .cursor-activate {
+    animation: cursor-burst 2s ease-out forwards;
+  }
+  .scan-overlay {
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    pointer-events: none;
+    z-index: 5;
+    background: linear-gradient(180deg, rgba(0, 255, 136, 0.06) 0%, transparent 4%, transparent 100%);
+    background-size: 100% 300%;
+    animation: scan-sweep 1.5s linear forwards;
+    opacity: 0;
+  }
+  .scan-active {
+    opacity: 1;
+  }
+
   /* ===== BOTTOM-LEFT: TODAY'S JOBS ===== */
   .job-card {
     background: rgba(0, 102, 255, 0.04);
@@ -506,20 +581,21 @@
 <div class="dashboard">
 
   <!-- TOP-LEFT: J.AI.N'S MIND -->
-  <div class="panel panel-glow-neon">
+  <div class="panel panel-glow-neon" id="mindPanel">
+    <div class="scan-overlay" id="scanOverlay"></div>
     <div class="panel-header">
       <h2>J.AI.N'S Mind</h2>
       <span style="font-size: 10px; color: var(--blue-bright); letter-spacing: 1px;">COGNITIVE ENGINE v2.6</span>
     </div>
     <div class="objective-section">
       <div class="objective-label">
-        <div class="objective-dot"></div>
+        <div class="objective-dot" id="objDot"></div>
         Current Objective
       </div>
-      <div class="objective-text">Monitoring AI Value Chain &amp; Sorare Automation</div>
+      <div class="objective-text" id="objText">Monitoring AI Value Chain &amp; Sorare Automation</div>
     </div>
     <div class="panel-body">
-      <div style="font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--blue-bright); margin-bottom: 10px;">Steps &amp; Decisions</div>
+      <div id="stepsLabel" style="font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--blue-bright); margin-bottom: 10px;">Steps &amp; Decisions</div>
 
       <div class="log-entry">
         <span class="log-timestamp">03/13 11:00 AM</span>
@@ -546,7 +622,7 @@
         <span class="log-text">-- Dashboard deployed to GitHub Pages</span>
       </div>
 
-      <div class="blink-cursor">_</div>
+      <div class="blink-cursor" id="blinkCursor">_</div>
     </div>
   </div>
 
@@ -661,6 +737,58 @@
 
 <script>
 (function() {
+  // ===== ACTIVATION SEQUENCE =====
+  function runActivation() {
+    // Panel flare
+    var panel = document.getElementById('mindPanel');
+    panel.classList.add('panel-activate');
+
+    // Scan sweep
+    var scan = document.getElementById('scanOverlay');
+    scan.classList.add('scan-active');
+
+    // Objective dot burst
+    var dot = document.getElementById('objDot');
+    dot.classList.add('dot-activate');
+
+    // Objective text ignite
+    var objText = document.getElementById('objText');
+    objText.classList.add('objective-activate');
+
+    // Steps label glow
+    var label = document.getElementById('stepsLabel');
+    label.classList.add('label-activate');
+
+    // Cursor burst
+    var cursor = document.getElementById('blinkCursor');
+    cursor.classList.add('cursor-activate');
+
+    // Log entries cascade with stagger
+    var entries = document.querySelectorAll('.log-entry');
+    for (var i = 0; i < entries.length; i++) {
+      entries[i].style.animationDelay = (i * 0.12) + 's';
+      entries[i].classList.add('log-activate');
+    }
+
+    // Clean up classes after animations complete so pulse-dot/blink resume normally
+    setTimeout(function() {
+      panel.classList.remove('panel-activate');
+      scan.classList.remove('scan-active');
+      dot.classList.remove('dot-activate');
+      objText.classList.remove('objective-activate');
+      label.classList.remove('label-activate');
+      cursor.classList.remove('cursor-activate');
+      for (var j = 0; j < entries.length; j++) {
+        entries[j].classList.remove('log-activate');
+        entries[j].style.animationDelay = '';
+        entries[j].style.opacity = '1';
+      }
+    }, 3000);
+  }
+
+  // Run activation on page load (triggers every 10s refresh)
+  runActivation();
+
   // ===== LIVE CLOCK =====
   function updateClock() {
     var now = new Date();
