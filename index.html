@@ -4,486 +4,602 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>J.AI.N'S Mind — Command Center</title>
+<link href="https://api.fontshare.com/v2/css?f[]=satoshi@300,400,500,700&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
   *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
   :root {
-    --bg: #0a0a0f;
-    --bg-panel: #0d0d18;
-    --blue: #0066ff;
-    --blue-bright: #3388ff;
-    --blue-dim: #003399;
-    --neon: #00ff88;
-    --neon-dim: #00cc6a;
-    --cyan: #00e5ff;
-    --white: #f0f0f5;
-    --white-dim: #c8c8d8;
-    --muted: #6a6a80;
-    --orange: #ff9500;
-    --red: #ff3b3b;
-    --border: rgba(0, 102, 255, 0.25);
-    --border-subtle: rgba(0, 102, 255, 0.1);
-    --glow-blue: 0 0 12px rgba(0, 102, 255, 0.35), 0 0 30px rgba(0, 102, 255, 0.15), inset 0 0 30px rgba(0, 102, 255, 0.03);
-    --glow-neon: 0 0 12px rgba(0, 255, 136, 0.35), 0 0 30px rgba(0, 255, 136, 0.15), inset 0 0 30px rgba(0, 255, 136, 0.03);
-    --glow-neon-active: 0 0 18px rgba(0, 255, 136, 0.55), 0 0 40px rgba(0, 255, 136, 0.25), 0 0 60px rgba(0, 255, 136, 0.1), inset 0 0 40px rgba(0, 255, 136, 0.05);
-    --font: 'Courier New', 'Consolas', 'SF Mono', 'Fira Code', monospace;
+    --bg: #ffffff;
+    --bg-alt: #fafafa;
+    --border: #e0e0e0;
+    --border-light: #eeeeee;
+    --text: #1a1a1a;
+    --text-2: #444444;
+    --text-3: #777777;
+    --text-muted: #aaaaaa;
+    --accent: #00b8d4;
+    --accent-soft: rgba(0, 184, 212, 0.07);
+    --green: #2e7d32;
+    --green-soft: rgba(46, 125, 50, 0.06);
+    --amber: #ef6c00;
+    --amber-soft: rgba(239, 108, 0, 0.06);
+    --red: #c62828;
+    --red-soft: rgba(198, 40, 40, 0.06);
+    --neon: #00b8d4;
+    --font: 'Satoshi', -apple-system, BlinkMacSystemFont, sans-serif;
+    --mono: 'JetBrains Mono', 'SF Mono', monospace;
   }
 
   html, body {
     width: 100%; height: 100%;
     overflow: hidden;
     background: var(--bg);
-    color: var(--white);
+    color: var(--text);
     font-family: var(--font);
     font-size: 13px;
     line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
   }
-
-  /* Scanline */
-  body::before {
-    content: '';
-    position: fixed; inset: 0;
-    background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,102,255,0.015) 2px, rgba(0,102,255,0.015) 4px);
-    pointer-events: none;
-    z-index: 9999;
-  }
-
-  /* Orbs */
-  .orb { position: fixed; border-radius: 50%; filter: blur(80px); opacity: 0.12; pointer-events: none; z-index: 0; }
-  .orb-1 { width: 400px; height: 400px; background: var(--blue); top: -100px; left: -100px; animation: od1 20s ease-in-out infinite; }
-  .orb-2 { width: 350px; height: 350px; background: var(--neon); bottom: -80px; right: -80px; animation: od2 25s ease-in-out infinite; }
-  .orb-3 { width: 300px; height: 300px; background: var(--cyan); top: 50%; left: 50%; transform: translate(-50%,-50%); animation: od3 30s ease-in-out infinite; }
-  @keyframes od1 { 0%,100%{transform:translate(0,0)} 25%{transform:translate(80px,60px)} 50%{transform:translate(40px,120px)} 75%{transform:translate(100px,40px)} }
-  @keyframes od2 { 0%,100%{transform:translate(0,0)} 25%{transform:translate(-60px,-80px)} 50%{transform:translate(-100px,-40px)} 75%{transform:translate(-40px,-100px)} }
-  @keyframes od3 { 0%,100%{transform:translate(-50%,-50%) scale(1)} 33%{transform:translate(-40%,-60%) scale(1.15)} 66%{transform:translate(-60%,-40%) scale(0.9)} }
 
   /* Layout */
+  .shell {
+    display: flex;
+    flex-direction: column;
+    width: 100%; height: 100vh;
+  }
+
+  .top-bar {
+    height: 44px;
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 24px;
+    flex-shrink: 0;
+    background: var(--bg);
+  }
+  .top-bar-title {
+    font-family: var(--font);
+    font-size: 12px; font-weight: 700;
+    letter-spacing: 0.2em; text-transform: uppercase;
+    color: var(--text-muted);
+  }
+  .top-bar-title .ai { color: var(--accent); }
+  .top-bar-right { display: flex; align-items: center; gap: 20px; }
+  .live-clock {
+    font-family: var(--mono);
+    font-size: 11px; font-weight: 400;
+    color: var(--text-muted); letter-spacing: 0.02em;
+  }
+  .status-indicator {
+    display: flex; align-items: center; gap: 7px;
+    font-family: var(--mono);
+    font-size: 10px; letter-spacing: 0.06em; text-transform: uppercase;
+    color: var(--text-muted);
+    transition: color 0.6s ease;
+  }
+  .status-dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--green);
+    transition: background 0.6s ease;
+  }
+  .status-thinking .status-dot { background: var(--accent); animation: pulse-think 1.2s ease-in-out infinite; }
+  .status-thinking { color: var(--accent); }
+  @keyframes pulse-think { 0%,100%{opacity:1} 50%{opacity:0.4} }
+  @keyframes pulse-idle { 0%,100%{opacity:1} 50%{opacity:0.4} }
+
   .dashboard {
+    flex: 1;
     display: grid;
     grid-template-columns: 1fr 1fr;
     grid-template-rows: 1fr 1fr;
-    gap: 12px;
-    padding: 12px;
-    width: 100%; height: 100vh;
-    position: relative; z-index: 1;
-    padding-top: 56px;
+    min-height: 0;
+    overflow: hidden;
   }
 
   /* Panels */
   .panel {
-    background: var(--bg-panel);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    overflow: hidden;
     display: flex; flex-direction: column;
-    position: relative;
-    transition: box-shadow 1.2s ease;
+    overflow: hidden;
+    border-right: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    background: var(--bg);
   }
-  .panel::before {
-    content: ''; position: absolute; inset: -1px; border-radius: 8px; padding: 1px;
-    background: linear-gradient(135deg, rgba(0,102,255,0.3), rgba(0,255,136,0.15), rgba(0,102,255,0.1));
-    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-    -webkit-mask-composite: xor; mask-composite: exclude; pointer-events: none;
-  }
-  .panel-glow-blue { box-shadow: var(--glow-blue); }
-  .panel-glow-neon { box-shadow: var(--glow-neon); }
-  .panel-glow-mixed { box-shadow: 0 0 12px rgba(0,102,255,0.25), 0 0 12px rgba(0,255,136,0.2), 0 0 40px rgba(0,102,255,0.08), inset 0 0 30px rgba(0,102,255,0.02); }
+  .panel:nth-child(2) { border-right: none; }
+  .panel:nth-child(3) { border-bottom: none; }
+  .panel:nth-child(4) { border-right: none; border-bottom: none; }
+
+  .right-panel { grid-column: 2; grid-row: 1 / 3; border-bottom: none; border-right: none; }
 
   .panel-header {
-    padding: 14px 18px 10px;
-    border-bottom: 1px solid var(--border);
+    padding: 16px 24px 12px;
+    border-bottom: 1px solid var(--border-light);
     display: flex; align-items: center; justify-content: space-between;
     flex-shrink: 0;
-    background: linear-gradient(180deg, rgba(0,102,255,0.06) 0%, transparent 100%);
   }
-  .panel-header h2 { font-size: 13px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--blue-bright); }
-  .panel-body { flex: 1; overflow-y: auto; padding: 14px 18px; }
-  .panel-body::-webkit-scrollbar { width: 4px; }
+  .panel-header h2 {
+    font-family: var(--font);
+    font-size: 10px; font-weight: 700;
+    letter-spacing: 0.18em; text-transform: uppercase;
+    color: var(--text-muted);
+  }
+  .panel-meta {
+    font-family: var(--mono);
+    font-size: 10px; color: var(--text-muted);
+    letter-spacing: 0.04em;
+  }
+  .panel-body {
+    flex: 1; overflow-y: auto; padding: 16px 24px;
+  }
+  .panel-body::-webkit-scrollbar { width: 2px; }
   .panel-body::-webkit-scrollbar-track { background: transparent; }
-  .panel-body::-webkit-scrollbar-thumb { background: var(--blue-dim); border-radius: 4px; }
+  .panel-body::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
 
-  /* Top bar */
-  .top-bar {
-    position: fixed; top: 0; left: 0; right: 0; height: 44px;
-    background: linear-gradient(180deg, rgba(10,10,15,0.98), rgba(10,10,15,0.9));
-    border-bottom: 1px solid var(--border);
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 0 20px; z-index: 100; backdrop-filter: blur(10px);
-  }
-  .top-bar-title { font-size: 15px; font-weight: 700; letter-spacing: 3px; text-transform: uppercase; color: var(--neon); text-shadow: 0 0 20px rgba(0,255,136,0.5), 0 0 40px rgba(0,255,136,0.2); }
-  .top-bar-right { display: flex; align-items: center; gap: 20px; }
-  .live-clock { font-size: 14px; font-weight: 600; color: var(--cyan); letter-spacing: 1px; }
-  .status-indicator { display: flex; align-items: center; gap: 8px; font-size: 11px; letter-spacing: 1px; text-transform: uppercase; transition: color 0.8s ease; }
-  .status-dot { width: 8px; height: 8px; border-radius: 50%; transition: background 0.8s ease, box-shadow 0.8s ease; }
-  .status-idle .status-dot { background: var(--blue-bright); box-shadow: 0 0 6px var(--blue-bright), 0 0 12px var(--blue-bright); animation: pulse-idle 3s ease-in-out infinite; }
-  .status-idle { color: var(--blue-bright); }
-  .status-thinking .status-dot { background: var(--neon); box-shadow: 0 0 8px var(--neon), 0 0 16px var(--neon); animation: pulse-think 1.2s ease-in-out infinite; }
-  .status-thinking { color: var(--neon); }
-  @keyframes pulse-idle { 0%,100%{opacity:1} 50%{opacity:0.4} }
-  @keyframes pulse-think { 0%,100%{opacity:1;box-shadow:0 0 8px var(--neon),0 0 16px var(--neon)} 50%{opacity:0.7;box-shadow:0 0 12px var(--neon),0 0 24px var(--neon),0 0 36px rgba(0,255,136,0.15)} }
-
-  /* ===== J.AI.N'S MIND -- HERO OBJECTIVE ===== */
+  /* ===== OBJECTIVE ===== */
   .objective-section {
     padding: 24px 24px 20px;
-    border-bottom: 1px solid var(--border);
+    border-bottom: 1px solid var(--border-light);
     flex-shrink: 0;
-    background: linear-gradient(180deg, rgba(0,255,136,0.02) 0%, transparent 100%);
   }
   .objective-label {
-    font-size: 10px; letter-spacing: 2px; text-transform: uppercase;
-    color: var(--blue-bright); margin-bottom: 10px;
+    font-family: var(--font);
+    font-size: 10px; font-weight: 700;
+    letter-spacing: 0.18em; text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 12px;
     display: flex; align-items: center; gap: 8px;
   }
-  .objective-dot { width: 9px; height: 9px; border-radius: 50%; transition: all 0.8s ease; }
-  .objective-dot.idle { background: var(--cyan); box-shadow: 0 0 6px var(--cyan); animation: pulse-idle 3s ease-in-out infinite; }
-  .objective-dot.thinking { background: var(--neon); box-shadow: 0 0 12px var(--neon), 0 0 24px var(--neon); animation: pulse-think 1.2s ease-in-out infinite; transform: scale(1.2); }
-  .objective-text {
-    font-size: 20px;
-    font-weight: 700;
-    letter-spacing: 0.3px;
-    line-height: 1.35;
-    transition: color 0.8s ease, text-shadow 0.8s ease;
-  }
-  .objective-text.idle { color: var(--neon-dim); text-shadow: 0 0 10px rgba(0,255,136,0.12); }
-  .objective-text.thinking { color: var(--neon); text-shadow: 0 0 20px rgba(0,255,136,0.35), 0 0 40px rgba(0,255,136,0.12); }
-
-  .steps-label { font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--blue-bright); margin-bottom: 10px; }
-  .log-entry {
-    padding: 8px 12px; border-left: 2px solid var(--blue-dim); margin-bottom: 6px;
-    font-size: 12px; color: var(--white-dim); border-radius: 0 4px 4px 0;
+  .objective-dot {
+    width: 5px; height: 5px; border-radius: 50%;
     transition: all 0.6s ease;
   }
-  .log-entry.newest { border-left-color: var(--neon); border-left-width: 3px; color: var(--white); background: rgba(0,255,136,0.05); }
-  .log-entry.new-entry { animation: entry-appear 0.6s ease-out forwards; }
-  @keyframes entry-appear { 0%{opacity:0;transform:translateY(-6px)} 100%{opacity:1;transform:translateY(0)} }
-  .log-timestamp { color: var(--blue-bright); font-weight: 600; margin-right: 4px; }
-  .blink-cursor { display: inline-block; margin-top: 10px; margin-left: 12px; color: var(--neon); font-size: 14px; }
+  .objective-dot.idle { background: var(--accent); animation: pulse-idle 2.5s ease-in-out infinite; }
+  .objective-dot.thinking { background: var(--accent); animation: pulse-think 1s ease-in-out infinite; }
+  .objective-text {
+    font-family: var(--font);
+    font-size: 18px; font-weight: 600;
+    line-height: 1.45;
+    transition: color 0.6s ease;
+  }
+  .objective-text.idle { color: var(--text); }
+  .objective-text.thinking { color: var(--text); }
+
+  /* Steps */
+  .steps-label {
+    font-family: var(--font);
+    font-size: 10px; font-weight: 700;
+    letter-spacing: 0.18em; text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 12px;
+  }
+  .log-entry {
+    display: flex; align-items: flex-start; gap: 12px;
+    padding: 8px 0;
+    font-family: var(--mono);
+    font-size: 12px; color: var(--text-3);
+    border-bottom: 1px solid var(--border-light);
+    transition: all 0.4s ease;
+  }
+  .log-entry:last-child { border-bottom: none; }
+  .log-entry.newest { color: var(--text); }
+  .log-entry.new-entry { animation: entry-appear 0.4s ease-out forwards; }
+  @keyframes entry-appear { 0%{opacity:0;transform:translateY(-4px)} 100%{opacity:1;transform:translateY(0)} }
+  .log-timestamp { color: var(--text-muted); font-weight: 400; white-space: nowrap; min-width: 90px; flex-shrink: 0; }
+  .log-dot {
+    width: 4px; height: 4px; border-radius: 50%;
+    background: var(--border);
+    margin-top: 6px; flex-shrink: 0;
+  }
+  .log-entry.newest .log-dot { background: var(--accent); }
+  .blink-cursor {
+    display: inline-block; margin-top: 8px;
+    font-family: var(--mono);
+    color: var(--accent); font-size: 13px;
+    opacity: 0.4;
+  }
   .blink-cursor.idle { animation: blink-s 2s step-end infinite; }
-  .blink-cursor.thinking { animation: blink-f 0.5s step-end infinite; }
-  @keyframes blink-s { 0%,50%{opacity:1} 51%,100%{opacity:0} }
-  @keyframes blink-f { 0%,50%{opacity:1} 51%,100%{opacity:0} }
+  .blink-cursor.thinking { animation: blink-f 0.5s step-end infinite; opacity: 0.8; }
+  @keyframes blink-s { 0%,50%{opacity:0.4} 51%,100%{opacity:0} }
+  @keyframes blink-f { 0%,50%{opacity:0.8} 51%,100%{opacity:0} }
 
-  /* Today's Jobs */
-  .job-card { background: rgba(0,102,255,0.04); border: 1px solid rgba(0,102,255,0.15); border-radius: 6px; padding: 12px 14px; margin-bottom: 10px; }
-  .job-card:hover { border-color: rgba(0,102,255,0.35); background: rgba(0,102,255,0.07); }
-  .job-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; }
-  .job-name { font-size: 13px; font-weight: 700; color: var(--white); letter-spacing: 0.5px; }
-  .job-time { font-size: 11px; color: var(--blue-bright); letter-spacing: 0.5px; }
-  .badge { display: inline-block; padding: 2px 8px; border-radius: 3px; font-size: 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; }
-  .badge-scheduled { background: rgba(0,102,255,0.15); color: var(--blue-bright); border: 1px solid rgba(0,102,255,0.3); }
-  .badge-active { background: rgba(0,255,136,0.12); color: var(--neon); border: 1px solid rgba(0,255,136,0.3); animation: badge-glow 2s ease-in-out infinite; }
-  .badge-completed { background: rgba(0,229,255,0.1); color: var(--cyan); border: 1px solid rgba(0,229,255,0.3); }
-  @keyframes badge-glow { 0%,100%{box-shadow:none} 50%{box-shadow:0 0 8px rgba(0,255,136,0.2)} }
-  .progress-track { width: 100%; height: 4px; background: rgba(0,102,255,0.1); border-radius: 2px; margin: 8px 0 6px; overflow: hidden; }
-  .progress-fill { height: 100%; border-radius: 2px; background: linear-gradient(90deg, var(--blue), var(--neon)); transition: width 0.5s ease; }
-  .progress-fill-active { background: linear-gradient(90deg, var(--neon-dim), var(--neon)); }
-  .job-desc { font-size: 11px; color: var(--blue-bright); letter-spacing: 0.3px; line-height: 1.4; }
+  /* Nth-child fade */
+  .log-entry:nth-child(n+5) { color: var(--text-muted); }
 
-  /* ===== RIGHT: LIVE INTELLIGENCE FEED (MINIMAL) ===== */
-  .right-panel { grid-column: 2; grid-row: 1 / 3; display: flex; flex-direction: column; }
+  /* ===== JOBS ===== */
+  .job-card {
+    padding: 14px 0;
+    border-bottom: 1px solid var(--border-light);
+  }
+  .job-card:last-child { border-bottom: none; }
+  .job-header {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 6px;
+  }
+  .job-name {
+    font-family: var(--font);
+    font-size: 13px; font-weight: 600; color: var(--text);
+  }
+  .job-time {
+    font-family: var(--mono);
+    font-size: 10px; color: var(--text-muted);
+    margin-left: 8px;
+  }
+  .badge {
+    display: inline-block;
+    font-family: var(--mono);
+    padding: 2px 8px; border-radius: 3px;
+    font-size: 9px; font-weight: 500;
+    letter-spacing: 0.06em; text-transform: uppercase;
+  }
+  .badge-scheduled { background: var(--bg-alt); color: var(--text-muted); }
+  .badge-active { background: var(--accent-soft); color: var(--accent); }
+  .badge-completed { background: var(--green-soft); color: var(--green); }
 
-  /* Ticker */
+  .progress-track {
+    width: 100%; height: 2px;
+    background: var(--border-light);
+    border-radius: 1px; margin: 8px 0 6px; overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%; border-radius: 1px;
+    background: var(--border);
+    transition: width 0.5s ease;
+  }
+  .progress-fill-active { background: var(--accent); }
+  .progress-fill-done { background: var(--green); }
+  .job-desc {
+    font-family: var(--mono);
+    font-size: 11px; color: var(--text-muted);
+    line-height: 1.5;
+  }
+
+  /* ===== FEED ===== */
   .ticker-bar {
-    padding: 8px 18px; border-bottom: 1px solid var(--border);
-    display: flex; align-items: center; gap: 16px; flex-shrink: 0;
-    overflow-x: auto; background: rgba(0,102,255,0.03);
-    font-size: 11px; letter-spacing: 0.3px; white-space: nowrap;
+    padding: 8px 24px;
+    border-bottom: 1px solid var(--border-light);
+    display: flex; align-items: center; gap: 14px;
+    flex-shrink: 0; overflow-x: auto;
+    font-family: var(--mono);
+    font-size: 11px; white-space: nowrap;
+    background: var(--bg);
   }
   .ticker-bar::-webkit-scrollbar { height: 0; }
-  .ticker-item { display: inline-flex; align-items: center; gap: 5px; }
-  .ticker-symbol { color: var(--cyan); font-weight: 700; }
-  .ticker-price { color: var(--white-dim); }
-  .ticker-change { font-weight: 700; }
-  .ticker-up { color: var(--neon); }
+  .ticker-item { display: inline-flex; align-items: center; gap: 4px; }
+  .ticker-symbol { color: var(--text-2); font-weight: 600; }
+  .ticker-price { color: var(--text-3); }
+  .ticker-change { font-weight: 500; }
+  .ticker-up { color: var(--green); }
   .ticker-down { color: var(--red); }
-  .ticker-sep { color: rgba(0,102,255,0.3); font-size: 8px; }
+  .ticker-sep { color: var(--border); font-size: 8px; }
 
-  /* Feed -- minimal section headers */
-  .feed-section { margin-bottom: 20px; }
+  .feed-section { margin-bottom: 24px; }
   .feed-section:last-child { margin-bottom: 0; }
   .feed-section-header {
-    font-size: 10px; font-weight: 700; letter-spacing: 2.5px; text-transform: uppercase;
-    color: var(--muted); margin-bottom: 12px; padding-bottom: 0;
+    font-family: var(--font);
+    font-size: 10px; font-weight: 700;
+    letter-spacing: 0.18em; text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--border-light);
   }
 
-  /* Feed items -- clean, flat hierarchy */
   .feed-item {
-    padding: 8px 0;
-    font-size: 12px; line-height: 1.6;
-    border-bottom: 1px solid rgba(255,255,255,0.03);
+    padding: 6px 0;
+    font-family: var(--mono);
+    font-size: 12px; line-height: 1.65;
+    color: var(--text-3);
+    border-bottom: 1px solid var(--border-light);
   }
   .feed-item:last-of-type { border-bottom: none; }
 
-  /* MUST READ = high signal, full opacity, neon accent */
   .feed-item.signal-fire {
-    color: var(--white);
-    padding-left: 12px;
-    border-left: 2px solid var(--neon);
-    background: rgba(0,255,136,0.02);
-    border-radius: 0 3px 3px 0;
-    margin-bottom: 4px;
+    color: var(--text);
+    padding: 8px 0 8px 14px;
+    border-left: 2px solid var(--text);
     border-bottom: none;
+    margin-bottom: 4px;
+    border-radius: 0;
   }
-  /* WATCH = medium signal */
   .feed-item.signal-watch {
-    color: var(--white-dim);
-    padding-left: 12px;
-    border-left: 2px solid rgba(0,102,255,0.25);
-    border-radius: 0 3px 3px 0;
+    color: var(--text-2);
+    padding: 6px 0 6px 14px;
+    border-left: 2px solid var(--border);
+    border-bottom: none;
     margin-bottom: 4px;
-    border-bottom: none;
   }
-  /* NOISE = low signal, dimmed, smaller */
   .feed-item.signal-noise {
-    color: var(--muted);
+    color: var(--text-muted);
     font-size: 11px;
-    padding-left: 12px;
-    border-left: 2px solid rgba(255,255,255,0.04);
-    border-radius: 0 3px 3px 0;
-    margin-bottom: 2px;
+    padding: 4px 0 4px 14px;
+    border-left: 2px solid var(--border-light);
     border-bottom: none;
+    margin-bottom: 2px;
     opacity: 0.7;
   }
-  .feed-item.signal-noise:hover { opacity: 1; color: var(--white-dim); }
+  .feed-item.signal-noise:hover { opacity: 1; color: var(--text-3); }
 
-  /* Signal labels -- inline, subtle */
-  .signal-tag { font-size: 9px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; margin-right: 8px; }
-  .signal-tag.fire { color: var(--neon); }
-  .signal-tag.watch { color: var(--blue-bright); }
-  .signal-tag.noise { color: var(--muted); }
+  .signal-tag {
+    font-size: 9px; font-weight: 600;
+    letter-spacing: 0.12em; text-transform: uppercase;
+    margin-right: 6px;
+  }
+  .signal-tag.fire { color: var(--text); }
+  .signal-tag.watch { color: var(--text-3); }
+  .signal-tag.noise { color: var(--text-muted); }
 
-  .feed-item .ticker-ref { color: var(--cyan); font-weight: 600; }
-  .feed-item .entity-ref { color: var(--neon); font-weight: 600; }
+  .feed-item .ticker-ref { color: var(--text); font-weight: 600; }
+  .feed-item .entity-ref { color: var(--text-2); font-weight: 600; }
 
-  /* Insight callout -- the "My Take" is the payoff */
   .my-take {
-    margin: 10px 0 4px;
+    margin: 8px 0 4px;
     padding: 10px 14px;
-    background: rgba(0,255,136,0.03);
+    background: var(--bg-alt);
     border-radius: 4px;
-    font-size: 12px; line-height: 1.6;
-    color: var(--neon-dim);
-    letter-spacing: 0.2px;
+    font-family: var(--mono);
+    font-size: 12px; line-height: 1.65;
+    color: var(--text-2);
   }
   .my-take-label {
-    font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase;
+    font-family: var(--font);
+    font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase;
     font-size: 9px; display: block; margin-bottom: 4px;
-    color: var(--neon); opacity: 0.6;
+    color: var(--accent); opacity: 0.7;
   }
 
-  /* Fear & Greed */
   .fear-greed {
-    display: inline-flex; align-items: center; gap: 6px;
-    padding: 3px 10px; border-radius: 3px;
-    font-size: 11px; font-weight: 700; letter-spacing: 0.5px;
-    background: rgba(255,59,59,0.1); border: 1px solid rgba(255,59,59,0.25); color: var(--red);
+    display: inline-flex; align-items: center; gap: 5px;
+    font-family: var(--mono);
+    padding: 2px 8px; border-radius: 3px;
+    font-size: 10px; font-weight: 600; letter-spacing: 0.03em;
+    background: var(--red-soft); color: var(--red);
   }
-  .fear-greed .fg-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--red); animation: pulse-idle 2s ease-in-out infinite; }
+  .fear-greed .fg-dot {
+    width: 5px; height: 5px; border-radius: 50%;
+    background: var(--red); animation: pulse-idle 2s ease-in-out infinite;
+  }
+
+  .feed-date {
+    font-family: var(--mono);
+    font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 16px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--border-light);
+  }
+
+  /* Refresh flash — subtle */
+  .refresh-flash {
+    position: fixed; inset: 0; z-index: 99998;
+    pointer-events: none; opacity: 0;
+    transition: opacity 0.15s ease;
+    border: 1px solid rgba(0,184,212,0.2);
+    background: radial-gradient(ellipse at center, rgba(0,184,212,0.04) 0%, transparent 70%);
+  }
+  .refresh-toast {
+    position: fixed; top: 52px; left: 50%;
+    transform: translateX(-50%) translateY(-8px);
+    z-index: 99998; pointer-events: none; opacity: 0;
+    font-family: var(--mono);
+    font-size: 10px; font-weight: 500;
+    letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--accent);
+    background: var(--accent-soft);
+    padding: 4px 14px; border-radius: 3px;
+    transition: opacity 0.2s ease, transform 0.2s ease;
+  }
 
   /* Footer */
-  .footer-attr { position: fixed; bottom: 6px; left: 50%; transform: translateX(-50%); z-index: 100; font-size: 10px; letter-spacing: 0.5px; }
-  .footer-attr a { color: var(--blue-dim); text-decoration: none; }
-  .footer-attr a:hover { color: var(--blue-bright); }
+  .footer-attr {
+    position: fixed; bottom: 8px; left: 50%;
+    transform: translateX(-50%); z-index: 100;
+    font-size: 10px;
+  }
+  .footer-attr a {
+    font-family: var(--font);
+    color: var(--text-muted);
+    text-decoration: none;
+    transition: color 0.2s ease;
+  }
+  .footer-attr a:hover { color: var(--text-3); }
 
   @media (max-width: 1024px) {
     .dashboard { grid-template-columns: 1fr; grid-template-rows: auto; overflow-y: auto; height: auto; }
     .right-panel { grid-column: 1; grid-row: auto; }
+    .panel { border-right: none; }
   }
 </style>
 </head>
 <body>
 
-<div class="orb orb-1"></div>
-<div class="orb orb-2"></div>
-<div class="orb orb-3"></div>
-
-<div class="top-bar">
-  <div class="top-bar-title">J.AI.N'S Mind -- Command Center</div>
-  <div class="top-bar-right">
-    <div class="status-indicator status-idle" id="statusIndicator">
-      <div class="status-dot"></div>
-      <span id="statusText">Systems Online</span>
+<div class="shell">
+  <div class="top-bar">
+    <div class="top-bar-title">J<span>.</span><span class="ai">AI</span><span>.</span>N'S&nbsp;&nbsp;Mind</div>
+    <div class="top-bar-right">
+      <div class="status-indicator" id="statusIndicator">
+        <div class="status-dot"></div>
+        <span id="statusText">Online</span>
+      </div>
+      <div class="live-clock" id="liveClock">--:--:-- ET</div>
     </div>
-    <div class="live-clock" id="liveClock">--:--:-- ET</div>
+  </div>
+
+  <div class="dashboard">
+
+    <!-- TOP-LEFT: MIND -->
+    <div class="panel" id="mindPanel">
+      <div class="objective-section">
+        <div class="objective-label">
+          <div class="objective-dot idle" id="objDot"></div>
+          Current Objective
+        </div>
+        <div class="objective-text idle" id="objText">Loading...</div>
+      </div>
+      <div class="panel-body" id="stepsContainer">
+        <div class="steps-label">Steps &amp; Decisions</div>
+        <div id="logEntries"></div>
+        <div class="blink-cursor idle" id="blinkCursor">_</div>
+      </div>
+    </div>
+
+    <!-- RIGHT: FEED -->
+    <div class="panel right-panel">
+      <div class="panel-header">
+        <h2>Live Intelligence Feed</h2>
+        <div style="display: flex; align-items: center; gap: 12px;">
+          <div class="fear-greed"><div class="fg-dot"></div>Fear &amp; Greed: 13</div>
+          <span class="panel-meta" id="feedTimestamp">LIVE</span>
+        </div>
+      </div>
+
+      <div class="ticker-bar" id="tickerBar">
+        <div class="ticker-item"><span class="ticker-symbol">$SPY</span><span class="ticker-price">6,696</span><span class="ticker-change ticker-up">+0.34%</span></div>
+        <span class="ticker-sep">·</span>
+        <div class="ticker-item"><span class="ticker-symbol">NASDAQ</span><span class="ticker-price">22,395</span><span class="ticker-change ticker-up">+0.34%</span></div>
+        <span class="ticker-sep">·</span>
+        <div class="ticker-item"><span class="ticker-symbol">DOW</span><span class="ticker-price">46,931</span><span class="ticker-change ticker-up">+0.36%</span></div>
+        <span class="ticker-sep">·</span>
+        <div class="ticker-item"><span class="ticker-symbol">$NVDA</span><span class="ticker-price">--</span><span class="ticker-change">GTC MON</span></div>
+        <span class="ticker-sep">·</span>
+        <div class="ticker-item"><span class="ticker-symbol">BRENT</span><span class="ticker-price">$101</span><span class="ticker-change ticker-down">Hormuz</span></div>
+        <span class="ticker-sep">·</span>
+        <div class="ticker-item"><span class="ticker-symbol">BTC</span><span class="ticker-price">$72,633</span><span class="ticker-change ticker-up">+3.0%</span></div>
+        <span class="ticker-sep">·</span>
+        <div class="ticker-item"><span class="ticker-symbol">ETH</span><span class="ticker-price">$2,074</span><span class="ticker-change ticker-up">+0.6%</span></div>
+        <span class="ticker-sep">·</span>
+        <div class="ticker-item"><span class="ticker-symbol">GOLD</span><span class="ticker-price">$5,120</span><span class="ticker-change ticker-up">+0.05%</span></div>
+      </div>
+
+      <div class="panel-body">
+
+        <div class="feed-date" id="feedDate">FRIDAY, MARCH 13, 2026</div>
+
+        <!-- 1. AI PROVIDERS -->
+        <div class="feed-section">
+          <div class="feed-section-header">AI Providers</div>
+          <div class="feed-item signal-fire">
+            <span class="signal-tag fire">Signal</span>
+            <span class="entity-ref">Anthropic</span> vs Pentagon escalates — DOD labeled Anthropic a "supply-chain risk" after it refused mass surveillance and autonomous weapons terms. 30+ <span class="entity-ref">OpenAI</span> and <span class="entity-ref">Google DeepMind</span> employees filed amicus brief in Anthropic's defense.
+          </div>
+          <div class="feed-item signal-fire">
+            <span class="signal-tag fire">Signal</span>
+            <span class="entity-ref">DeepSeek</span> V4 release imminent — 1T parameter multimodal model, trained on <span class="entity-ref">Huawei</span>/Cambricon chips. Apache 2.0 license. V4 Lite already spotted on their site.
+          </div>
+          <div class="feed-item signal-watch">
+            <span class="signal-tag watch">Watch</span>
+            <span class="entity-ref">NVIDIA</span> GTC 2026 kicks off Monday. Jensen Huang keynote. Expected: NemoClaw open-source agent platform, physical AI, inference stack updates.
+          </div>
+          <div class="feed-item signal-watch">
+            <span class="signal-tag watch">Watch</span>
+            <span class="entity-ref">Google</span> shipped major Gemini upgrades to Workspace — cross-app document generation from emails, files, and web. Drive becomes active knowledge base.
+          </div>
+          <div class="feed-item signal-noise">
+            <span class="signal-tag noise">Noise</span>
+            Canal+ multi-year deals with Google Cloud &amp; OpenAI for AI video production. OpenAI Caitlin Kalinowski resigned over Pentagon deal.
+          </div>
+          <div class="my-take">
+            <span class="my-take-label">Insight</span>
+            The Anthropic-Pentagon standoff is defining the power dynamics of AI governance in 2026. If the DOD precedent holds, every AI lab's red lines are meaningless. Meanwhile DeepSeek V4 on non-NVIDIA hardware is the decoupling the market hasn't priced in.
+          </div>
+        </div>
+
+        <!-- 2. ENTERPRISE AI -->
+        <div class="feed-section">
+          <div class="feed-section-header">Enterprise AI</div>
+          <div class="feed-item signal-fire">
+            <span class="signal-tag fire">Signal</span>
+            <span class="ticker-ref">$ADBE</span> CEO Shantanu Narayen stepping down after 18 years amid AI disruption fears. Stock down 8% pre-market. Revenue from AI-first products tripled, but shares are -23% YTD, -60% from 2021 peak.
+          </div>
+          <div class="feed-item signal-fire">
+            <span class="signal-tag fire">Signal</span>
+            <span class="entity-ref">Atlassian</span> (<span class="ticker-ref">$TEAM</span>) cutting 1,600 jobs (10% of workforce) to fund AI pivot. CTO also departing. Market cap down 50%+ since Jan 2026.
+          </div>
+          <div class="feed-item signal-watch">
+            <span class="signal-tag watch">Watch</span>
+            <span class="entity-ref">Anthropic</span> expanded Claude enterprise — shared context across Excel and PowerPoint, automating cross-app workflows in single sessions.
+          </div>
+          <div class="feed-item signal-noise">
+            <span class="signal-tag noise">Noise</span>
+            US State Dept, Treasury, HHS all phasing out Anthropic tools per White House directive. StateChat switching to OpenAI GPT-4.1.
+          </div>
+          <div class="my-take">
+            <span class="my-take-label">Insight</span>
+            Adobe and Atlassian are the canaries. Legacy software incumbents are being forced into existential AI pivots while their stock craters. The "AI is adding zero to GDP" narrative is colliding with the reality that it's destroying incumbents faster than it's building new ones.
+          </div>
+        </div>
+
+        <!-- 3. VC/PE M&A -->
+        <div class="feed-section">
+          <div class="feed-section-header">VC/PE M&amp;A</div>
+          <div class="feed-item signal-fire">
+            <span class="signal-tag fire">Signal</span>
+            February 2026 set all-time VC record: $189B in one month. OpenAI $110B, Anthropic $30B, Waymo $16B accounted for 83% of total. AI startups took 90% of all global venture dollars.
+          </div>
+          <div class="feed-item signal-watch">
+            <span class="signal-tag watch">Watch</span>
+            This week: Nexthop AI $500M Series B (AI networking), Genspark $385M Series B extension ($1.6B valuation), Eridu $200M Series A (AI networking).
+          </div>
+          <div class="feed-item signal-watch">
+            <span class="signal-tag watch">Watch</span>
+            IPO window still frozen — Clear Street and Liftoff both withdrew listings. Public market volatility stalling new offerings despite strong private demand.
+          </div>
+          <div class="feed-item signal-noise">
+            <span class="signal-tag noise">Noise</span>
+            BackOps.ai $26M Series A. Rebar $14M Series A. Juicebox $80M Series B. Standard Kernel $20M seed for GPU optimization.
+          </div>
+          <div class="my-take">
+            <span class="my-take-label">Insight</span>
+            $189B in one month with 90% going to AI — this is the most concentrated capital deployment in venture history. But the IPO market is frozen and public AI stocks are getting hammered. The private-public valuation gap is becoming a systemic risk.
+          </div>
+        </div>
+
+        <!-- 4. GEOPOLITICS & MACRO -->
+        <div class="feed-section">
+          <div class="feed-section-header">Geopolitics &amp; Macro</div>
+          <div class="feed-item signal-fire">
+            <span class="signal-tag fire">Signal</span>
+            Strait of Hormuz effectively closed — daily transits collapsed from 138 to under 5 ships. Brent crude above $101, peaked at $126. Iran's new Supreme Leader vows to maintain blockade. 16 commercial vessels targeted since Feb 28.
+          </div>
+          <div class="feed-item signal-fire">
+            <span class="signal-tag fire">Signal</span>
+            S&amp;P 500 and Dow at 2026 lows after Thursday's selloff. Indexes attempting relief bounce today (+0.34%) but heading for 3rd straight losing week. PCE inflation data due today.
+          </div>
+          <div class="feed-item signal-watch">
+            <span class="signal-tag watch">Watch</span>
+            US temporarily lifted Russian oil sanctions on in-transit cargoes to ease supply pressure. IEA releasing 400M barrels from emergency reserves. Navy escorts for Strait "by end of month" per Energy Sec.
+          </div>
+          <div class="feed-item signal-watch">
+            <span class="signal-tag watch">Watch</span>
+            Crypto Fear &amp; Greed at 13 (Extreme Fear). BTC recovering to $72.6K from $60K bottom. Oil spike complicating Fed rate cut expectations — Apollo's Slok warns inflation already too high.
+          </div>
+          <div class="feed-item signal-noise">
+            <span class="signal-tag noise">Noise</span>
+            Jefferies upgraded Nutrien (NTR) on fertilizer supply disruption. Federal judge blocked DOJ subpoenas to Fed — win for Powell.
+          </div>
+          <div class="my-take">
+            <span class="my-take-label">Insight</span>
+            The Hormuz blockade is the largest energy supply disruption since the 1970s oil crisis. Markets are trying to bounce but the structural problem hasn't changed — 20% of global oil supply is offline with no clear resolution timeline. The Fed is trapped between oil-driven inflation and a slowing economy.
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- BOTTOM-LEFT: JOBS -->
+    <div class="panel">
+      <div class="panel-header">
+        <h2>Today's Jobs</h2>
+        <span class="panel-meta" id="jobCount">6 Jobs</span>
+      </div>
+      <div class="panel-body" id="jobsContainer"></div>
+    </div>
+
   </div>
 </div>
 
-<div class="dashboard">
-
-  <!-- TOP-LEFT: J.AI.N'S MIND -->
-  <div class="panel panel-glow-neon" id="mindPanel">
-    <div class="panel-header">
-      <h2>J.AI.N'S Mind</h2>
-      <span style="font-size: 10px; color: var(--blue-bright); letter-spacing: 1px;">COGNITIVE ENGINE v2.6</span>
-    </div>
-    <div class="objective-section">
-      <div class="objective-label">
-        <div class="objective-dot idle" id="objDot"></div>
-        Current Objective
-      </div>
-      <div class="objective-text idle" id="objText">Loading...</div>
-    </div>
-    <div class="panel-body" id="stepsContainer">
-      <div class="steps-label">Steps &amp; Decisions</div>
-      <div id="logEntries"></div>
-      <div class="blink-cursor idle" id="blinkCursor">_</div>
-    </div>
-  </div>
-
-  <!-- BOTTOM-LEFT: TODAY'S JOBS -->
-  <div class="panel panel-glow-blue">
-    <div class="panel-header">
-      <h2>Today's Jobs</h2>
-      <span style="font-size: 10px; color: var(--neon); letter-spacing: 1px;" id="jobCount">6 JOBS</span>
-    </div>
-    <div class="panel-body" id="jobsContainer"></div>
-  </div>
-
-  <!-- RIGHT: LIVE INTELLIGENCE FEED -->
-  <div class="panel panel-glow-mixed right-panel">
-    <div class="panel-header">
-      <h2>Live Intelligence Feed</h2>
-      <div style="display: flex; align-items: center; gap: 12px;">
-        <div class="fear-greed"><div class="fg-dot"></div>Fear &amp; Greed: 13</div>
-        <span style="font-size: 10px; color: var(--neon); letter-spacing: 1px;" id="feedTimestamp">LIVE</span>
-      </div>
-    </div>
-
-    <div class="ticker-bar" id="tickerBar">
-      <div class="ticker-item"><span class="ticker-symbol">$SPY</span><span class="ticker-price">6,696</span><span class="ticker-change ticker-up">+0.34%</span></div>
-      <span class="ticker-sep">|</span>
-      <div class="ticker-item"><span class="ticker-symbol">NASDAQ</span><span class="ticker-price">22,395</span><span class="ticker-change ticker-up">+0.34%</span></div>
-      <span class="ticker-sep">|</span>
-      <div class="ticker-item"><span class="ticker-symbol">DOW</span><span class="ticker-price">46,931</span><span class="ticker-change ticker-up">+0.36%</span></div>
-      <span class="ticker-sep">|</span>
-      <div class="ticker-item"><span class="ticker-symbol">$NVDA</span><span class="ticker-price">--</span><span class="ticker-change">GTC MON</span></div>
-      <span class="ticker-sep">|</span>
-      <div class="ticker-item"><span class="ticker-symbol">BRENT</span><span class="ticker-price">$101</span><span class="ticker-change ticker-down">Hormuz</span></div>
-      <span class="ticker-sep">|</span>
-      <div class="ticker-item"><span class="ticker-symbol">BTC</span><span class="ticker-price">$72,633</span><span class="ticker-change ticker-up">+3.0%</span></div>
-      <span class="ticker-sep">|</span>
-      <div class="ticker-item"><span class="ticker-symbol">ETH</span><span class="ticker-price">$2,074</span><span class="ticker-change ticker-up">+0.6%</span></div>
-      <span class="ticker-sep">|</span>
-      <div class="ticker-item"><span class="ticker-symbol">GOLD</span><span class="ticker-price">$5,120</span><span class="ticker-change ticker-up">+0.05%</span></div>
-    </div>
-
-    <div class="panel-body">
-
-      <!-- DATE ANCHOR -->
-      <div style="font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--cyan); margin-bottom: 16px; padding-bottom: 8px; border-bottom: 1px solid var(--border-subtle);" id="feedDate">FRIDAY, MARCH 13, 2026</div>
-
-      <!-- 1. AI PROVIDERS -->
-      <div class="feed-section">
-        <div class="feed-section-header">AI Providers</div>
-        <div class="feed-item signal-fire">
-          <span class="signal-tag fire">SIGNAL</span>
-          <span class="entity-ref">Anthropic</span> vs Pentagon escalates -- DOD labeled Anthropic a "supply-chain risk" after it refused mass surveillance and autonomous weapons terms. 30+ <span class="entity-ref">OpenAI</span> and <span class="entity-ref">Google DeepMind</span> employees (incl. Jeff Dean) filed amicus brief in Anthropic's defense.
-        </div>
-        <div class="feed-item signal-fire">
-          <span class="signal-tag fire">SIGNAL</span>
-          <span class="entity-ref">DeepSeek</span> V4 release imminent -- 1T parameter multimodal model, trained on <span class="entity-ref">Huawei</span>/Cambricon chips (not NVIDIA). Apache 2.0 license. V4 Lite already spotted on their site.
-        </div>
-        <div class="feed-item signal-watch">
-          <span class="signal-tag watch">WATCH</span>
-          <span class="entity-ref">NVIDIA</span> GTC 2026 kicks off Monday in San Jose. Jensen Huang keynote. Expected: NemoClaw open-source agent platform, physical AI, inference stack updates.
-        </div>
-        <div class="feed-item signal-watch">
-          <span class="signal-tag watch">WATCH</span>
-          <span class="entity-ref">Google</span> shipped major Gemini upgrades to Workspace -- cross-app document generation from emails, files, and web. Drive becomes active knowledge base.
-        </div>
-        <div class="feed-item signal-noise">
-          <span class="signal-tag noise">NOISE</span>
-          Canal+ multi-year deals with Google Cloud &amp; OpenAI for AI video production. OpenAI Caitlin Kalinowski resigned over Pentagon deal.
-        </div>
-        <div class="my-take">
-          <span class="my-take-label">Insight</span>
-          The Anthropic-Pentagon standoff is defining the power dynamics of AI governance in 2026. If the DOD precedent holds, every AI lab's red lines are meaningless. Meanwhile DeepSeek V4 on non-NVIDIA hardware is the decoupling the market hasn't priced in.
-        </div>
-      </div>
-
-      <!-- 2. ENTERPRISE AI -->
-      <div class="feed-section">
-        <div class="feed-section-header">Enterprise AI</div>
-        <div class="feed-item signal-fire">
-          <span class="signal-tag fire">SIGNAL</span>
-          <span class="ticker-ref">$ADBE</span> CEO Shantanu Narayen stepping down after 18 years amid AI disruption fears. Stock down 8% pre-market. Revenue from AI-first products tripled, but shares are -23% YTD, -60% from 2021 peak.
-        </div>
-        <div class="feed-item signal-fire">
-          <span class="signal-tag fire">SIGNAL</span>
-          <span class="entity-ref">Atlassian</span> (<span class="ticker-ref">$TEAM</span>) cutting 1,600 jobs (10% of workforce) to fund AI pivot. CTO also departing. Market cap down 50%+ since Jan 2026.
-        </div>
-        <div class="feed-item signal-watch">
-          <span class="signal-tag watch">WATCH</span>
-          <span class="entity-ref">Anthropic</span> expanded Claude enterprise -- shared context across Excel and PowerPoint, automating cross-app workflows in single sessions.
-        </div>
-        <div class="feed-item signal-noise">
-          <span class="signal-tag noise">NOISE</span>
-          US State Dept, Treasury, HHS all phasing out Anthropic tools per White House directive. StateChat switching to OpenAI GPT-4.1.
-        </div>
-        <div class="my-take">
-          <span class="my-take-label">Insight</span>
-          Adobe and Atlassian are the canaries. Legacy software incumbents are being forced into existential AI pivots while their stock craters. The "AI is adding zero to GDP" narrative is colliding with the reality that it's destroying incumbents faster than it's building new ones.
-        </div>
-      </div>
-
-      <!-- 3. VC/PE M&A -->
-      <div class="feed-section">
-        <div class="feed-section-header">VC/PE M&amp;A</div>
-        <div class="feed-item signal-fire">
-          <span class="signal-tag fire">SIGNAL</span>
-          February 2026 set all-time VC record: $189B in one month. OpenAI $110B, Anthropic $30B, Waymo $16B accounted for 83% of total. AI startups took 90% of all global venture dollars.
-        </div>
-        <div class="feed-item signal-watch">
-          <span class="signal-tag watch">WATCH</span>
-          This week: Nexthop AI $500M Series B (AI networking), Genspark $385M Series B extension ($1.6B valuation), Eridu $200M Series A (AI networking).
-        </div>
-        <div class="feed-item signal-watch">
-          <span class="signal-tag watch">WATCH</span>
-          IPO window still frozen -- Clear Street and Liftoff both withdrew listings. Public market volatility stalling new offerings despite strong private demand.
-        </div>
-        <div class="feed-item signal-noise">
-          <span class="signal-tag noise">NOISE</span>
-          BackOps.ai $26M Series A. Rebar $14M Series A. Juicebox $80M Series B. Standard Kernel $20M seed for GPU optimization.
-        </div>
-        <div class="my-take">
-          <span class="my-take-label">Insight</span>
-          $189B in one month with 90% going to AI -- this is the most concentrated capital deployment in venture history. But the IPO market is frozen and public AI stocks are getting hammered. The private-public valuation gap is becoming a systemic risk.
-        </div>
-      </div>
-
-      <!-- 4. GEOPOLITICS & MACRO -->
-      <div class="feed-section">
-        <div class="feed-section-header">Geopolitics &amp; Macro</div>
-        <div class="feed-item signal-fire">
-          <span class="signal-tag fire">SIGNAL</span>
-          Strait of Hormuz effectively closed -- daily transits collapsed from 138 to under 5 ships. Brent crude above $101, peaked at $126. Iran's new Supreme Leader vows to maintain blockade. 16 commercial vessels targeted since Feb 28.
-        </div>
-        <div class="feed-item signal-fire">
-          <span class="signal-tag fire">SIGNAL</span>
-          S&amp;P 500 and Dow at 2026 lows after Thursday's selloff. Indexes attempting relief bounce today (+0.34%) but heading for 3rd straight losing week. PCE inflation data due today.
-        </div>
-        <div class="feed-item signal-watch">
-          <span class="signal-tag watch">WATCH</span>
-          US temporarily lifted Russian oil sanctions on in-transit cargoes to ease supply pressure. IEA releasing 400M barrels from emergency reserves. Navy escorts for Strait "by end of month" per Energy Sec.
-        </div>
-        <div class="feed-item signal-watch">
-          <span class="signal-tag watch">WATCH</span>
-          Crypto Fear &amp; Greed at 13 (Extreme Fear). BTC recovering to $72.6K from $60K bottom. Oil spike complicating Fed rate cut expectations -- Apollo's Slok warns inflation already too high.
-        </div>
-        <div class="feed-item signal-noise">
-          <span class="signal-tag noise">NOISE</span>
-          Jefferies upgraded Nutrien (NTR) on fertilizer supply disruption. Federal judge blocked DOJ subpoenas to Fed -- win for Powell.
-        </div>
-        <div class="my-take">
-          <span class="my-take-label">Insight</span>
-          The Hormuz blockade is the largest energy supply disruption since the 1970s oil crisis. Markets are trying to bounce but the structural problem hasn't changed -- 20% of global oil supply is offline with no clear resolution timeline. The Fed is trapped between oil-driven inflation and a slowing economy.
-        </div>
-      </div>
-
-    </div>
-  </div>
-
-</div>
+<div class="refresh-flash" id="refreshFlash"></div>
+<div class="refresh-toast" id="refreshToast">Synced</div>
 
 <div class="footer-attr">
   <a href="https://www.perplexity.ai/computer" target="_blank" rel="noopener noreferrer">Created with Perplexity Computer</a>
@@ -499,21 +615,16 @@
   // Left+Right arrow force refresh
   var arrowKeys = { left: false, right: false };
   var refreshing = false;
-  var flashEl = document.createElement('div');
-  flashEl.style.cssText = 'position:fixed;inset:0;z-index:99998;pointer-events:none;opacity:0;transition:opacity 0.15s ease;background:radial-gradient(ellipse at center,rgba(0,255,136,0.12) 0%,transparent 70%);border:1px solid rgba(0,255,136,0.25);';
-  document.body.appendChild(flashEl);
-  var toastEl = document.createElement('div');
-  toastEl.textContent = 'SYNCED';
-  toastEl.style.cssText = 'position:fixed;top:52px;left:50%;transform:translateX(-50%) translateY(-8px);z-index:99998;pointer-events:none;opacity:0;font-family:var(--font);font-size:11px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:#00ff88;background:rgba(0,255,136,0.08);border:1px solid rgba(0,255,136,0.3);padding:5px 18px;border-radius:4px;text-shadow:0 0 10px rgba(0,255,136,0.5);box-shadow:0 0 15px rgba(0,255,136,0.15);transition:opacity 0.2s ease,transform 0.2s ease;';
-  document.body.appendChild(toastEl);
   function showRefreshIndicator() {
-    flashEl.style.opacity = '1';
-    toastEl.style.opacity = '1';
-    toastEl.style.transform = 'translateX(-50%) translateY(0)';
+    var flash = document.getElementById('refreshFlash');
+    var toast = document.getElementById('refreshToast');
+    flash.style.opacity = '1';
+    toast.style.opacity = '1';
+    toast.style.transform = 'translateX(-50%) translateY(0)';
     setTimeout(function() {
-      flashEl.style.opacity = '0';
-      toastEl.style.opacity = '0';
-      toastEl.style.transform = 'translateX(-50%) translateY(-8px)';
+      flash.style.opacity = '0';
+      toast.style.opacity = '0';
+      toast.style.transform = 'translateX(-50%) translateY(-8px)';
     }, 800);
   }
   document.addEventListener('keydown', function(e) {
@@ -540,7 +651,6 @@
 
   // Mode
   function setMode(mode) {
-    var panel = document.getElementById('mindPanel');
     var dot = document.getElementById('objDot');
     var objText = document.getElementById('objText');
     var cursor = document.getElementById('blinkCursor');
@@ -550,13 +660,11 @@
     objText.className = 'objective-text ' + mode;
     cursor.className = 'blink-cursor ' + mode;
     if (mode === 'thinking') {
-      panel.style.boxShadow = 'var(--glow-neon-active)';
       indicator.className = 'status-indicator status-thinking';
       statusText.textContent = 'Processing';
     } else {
-      panel.style.boxShadow = '';
-      indicator.className = 'status-indicator status-idle';
-      statusText.textContent = 'Systems Online';
+      indicator.className = 'status-indicator';
+      statusText.textContent = 'Online';
     }
   }
 
@@ -569,7 +677,7 @@
       var classes = 'log-entry';
       if (i === 0) classes += ' newest';
       if (isNewData && i < steps.length - knownStepCount) classes += ' new-entry';
-      html += '<div class="' + classes + '"><span class="log-timestamp">' + escapeHtml(step.time) + '</span><span class="log-text"> -- ' + escapeHtml(step.text) + '</span></div>';
+      html += '<div class="' + classes + '"><span class="log-timestamp">' + escapeHtml(step.time) + '</span><span class="log-dot"></span><span class="log-text">' + escapeHtml(step.text) + '</span></div>';
     }
     container.innerHTML = html;
     knownStepCount = steps.length;
@@ -622,7 +730,10 @@
     var c = document.getElementById('jobsContainer'), h = '';
     for (var i=0;i<jobs.length;i++) {
       var j=jobs[i], p=calcProgress(j), s=getStatusForJob(j);
-      h += '<div class="job-card"><div class="job-header"><div><span class="job-name">'+j.name+'</span> <span class="job-time">'+j.time+'</span></div><span class="badge badge-'+s+'">'+s.charAt(0).toUpperCase()+s.slice(1)+'</span></div><div class="progress-track"><div class="'+(s==='active'?'progress-fill progress-fill-active':'progress-fill')+'" style="width:'+p+'%"></div></div><div class="job-desc">'+j.desc+'</div></div>';
+      var fillClass = 'progress-fill';
+      if (s === 'active') fillClass += ' progress-fill-active';
+      else if (s === 'completed') fillClass += ' progress-fill-done';
+      h += '<div class="job-card"><div class="job-header"><div><span class="job-name">'+j.name+'</span><span class="job-time">'+j.time+'</span></div><span class="badge badge-'+s+'">'+s.charAt(0).toUpperCase()+s.slice(1)+'</span></div><div class="progress-track"><div class="'+fillClass+'" style="width:'+p+'%"></div></div><div class="job-desc">'+j.desc+'</div></div>';
     }
     c.innerHTML = h;
   }
@@ -631,9 +742,9 @@
   function updateFeedTime() {
     var n=getETNow(), h=n.getHours(), m=n.getMinutes(), a=h>=12?'PM':'AM';
     h=h%12||12; m=m<10?'0'+m:m;
-    document.getElementById('feedTimestamp').textContent = 'UPDATED '+h+':'+m+' '+a+' ET';
-    var days=['SUNDAY','MONDAY','TUESDAY','WEDNESDAY','THURSDAY','FRIDAY','SATURDAY'];
-    var months=['JANUARY','FEBRUARY','MARCH','APRIL','MAY','JUNE','JULY','AUGUST','SEPTEMBER','OCTOBER','NOVEMBER','DECEMBER'];
+    document.getElementById('feedTimestamp').textContent = 'Updated '+h+':'+m+' '+a+' ET';
+    var days=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+    var months=['January','February','March','April','May','June','July','August','September','October','November','December'];
     var dateEl=document.getElementById('feedDate');
     if(dateEl){dateEl.textContent=days[n.getDay()]+', '+months[n.getMonth()]+' '+n.getDate()+', '+n.getFullYear();}
   }
