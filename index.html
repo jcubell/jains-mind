@@ -687,7 +687,8 @@
 <script>
 (function() {
   // ===== STATE MANAGEMENT =====
-  var STATE_URL = 'https://raw.githubusercontent.com/jcubell/jains-mind/master/state.json';
+  // Use GitHub API (no CDN cache) for faster updates
+  var STATE_URL = 'https://api.github.com/repos/jcubell/jains-mind/contents/state.json';
   var POLL_INTERVAL = 10000; // 10 seconds
   var lastKnownState = null;
   var knownStepCount = 0;
@@ -767,12 +768,19 @@
 
   // ===== POLL STATE =====
   function pollState() {
-    // Cache-bust the raw GitHub URL
+    // Cache-bust the GitHub API URL
     var url = STATE_URL + '?t=' + Date.now();
 
-    fetch(url)
+    fetch(url, { headers: { 'Accept': 'application/vnd.github.v3+json' } })
       .then(function(res) { return res.json(); })
-      .then(function(data) {
+      .then(function(apiResp) {
+        // GitHub API returns base64-encoded content
+        var data;
+        if (apiResp.content) {
+          data = JSON.parse(atob(apiResp.content.replace(/\n/g, '')));
+        } else {
+          data = apiResp; // fallback if served directly
+        }
         var isNew = !lastKnownState || data.updated_at !== lastKnownState.updated_at;
 
         // Update objective
