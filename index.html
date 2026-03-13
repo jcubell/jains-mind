@@ -5,7 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>J.AI.N'S Mind — Command Center</title>
 <style>
-  /* ===== RESET & BASE ===== */
   *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
   :root {
@@ -19,9 +18,11 @@
     --cyan: #00e5ff;
     --white: #f0f0f5;
     --white-dim: #c8c8d8;
+    --muted: #6a6a80;
     --orange: #ff9500;
     --red: #ff3b3b;
     --border: rgba(0, 102, 255, 0.25);
+    --border-subtle: rgba(0, 102, 255, 0.1);
     --glow-blue: 0 0 12px rgba(0, 102, 255, 0.35), 0 0 30px rgba(0, 102, 255, 0.15), inset 0 0 30px rgba(0, 102, 255, 0.03);
     --glow-neon: 0 0 12px rgba(0, 255, 136, 0.35), 0 0 30px rgba(0, 255, 136, 0.15), inset 0 0 30px rgba(0, 255, 136, 0.03);
     --glow-neon-active: 0 0 18px rgba(0, 255, 136, 0.55), 0 0 40px rgba(0, 255, 136, 0.25), 0 0 60px rgba(0, 255, 136, 0.1), inset 0 0 40px rgba(0, 255, 136, 0.05);
@@ -38,70 +39,25 @@
     line-height: 1.5;
   }
 
-  /* ===== SCANLINE OVERLAY ===== */
+  /* Scanline */
   body::before {
     content: '';
-    position: fixed;
-    top: 0; left: 0; right: 0; bottom: 0;
-    background: repeating-linear-gradient(
-      0deg,
-      transparent,
-      transparent 2px,
-      rgba(0, 102, 255, 0.015) 2px,
-      rgba(0, 102, 255, 0.015) 4px
-    );
+    position: fixed; inset: 0;
+    background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,102,255,0.015) 2px, rgba(0,102,255,0.015) 4px);
     pointer-events: none;
     z-index: 9999;
   }
 
-  /* ===== AMBIENT GLOW ORBS ===== */
-  .orb {
-    position: fixed;
-    border-radius: 50%;
-    filter: blur(80px);
-    opacity: 0.12;
-    pointer-events: none;
-    z-index: 0;
-  }
-  .orb-1 {
-    width: 400px; height: 400px;
-    background: var(--blue);
-    top: -100px; left: -100px;
-    animation: orb-drift-1 20s ease-in-out infinite;
-  }
-  .orb-2 {
-    width: 350px; height: 350px;
-    background: var(--neon);
-    bottom: -80px; right: -80px;
-    animation: orb-drift-2 25s ease-in-out infinite;
-  }
-  .orb-3 {
-    width: 300px; height: 300px;
-    background: var(--cyan);
-    top: 50%; left: 50%;
-    transform: translate(-50%, -50%);
-    animation: orb-drift-3 30s ease-in-out infinite;
-  }
+  /* Orbs */
+  .orb { position: fixed; border-radius: 50%; filter: blur(80px); opacity: 0.12; pointer-events: none; z-index: 0; }
+  .orb-1 { width: 400px; height: 400px; background: var(--blue); top: -100px; left: -100px; animation: od1 20s ease-in-out infinite; }
+  .orb-2 { width: 350px; height: 350px; background: var(--neon); bottom: -80px; right: -80px; animation: od2 25s ease-in-out infinite; }
+  .orb-3 { width: 300px; height: 300px; background: var(--cyan); top: 50%; left: 50%; transform: translate(-50%,-50%); animation: od3 30s ease-in-out infinite; }
+  @keyframes od1 { 0%,100%{transform:translate(0,0)} 25%{transform:translate(80px,60px)} 50%{transform:translate(40px,120px)} 75%{transform:translate(100px,40px)} }
+  @keyframes od2 { 0%,100%{transform:translate(0,0)} 25%{transform:translate(-60px,-80px)} 50%{transform:translate(-100px,-40px)} 75%{transform:translate(-40px,-100px)} }
+  @keyframes od3 { 0%,100%{transform:translate(-50%,-50%) scale(1)} 33%{transform:translate(-40%,-60%) scale(1.15)} 66%{transform:translate(-60%,-40%) scale(0.9)} }
 
-  @keyframes orb-drift-1 {
-    0%, 100% { transform: translate(0, 0); }
-    25% { transform: translate(80px, 60px); }
-    50% { transform: translate(40px, 120px); }
-    75% { transform: translate(100px, 40px); }
-  }
-  @keyframes orb-drift-2 {
-    0%, 100% { transform: translate(0, 0); }
-    25% { transform: translate(-60px, -80px); }
-    50% { transform: translate(-100px, -40px); }
-    75% { transform: translate(-40px, -100px); }
-  }
-  @keyframes orb-drift-3 {
-    0%, 100% { transform: translate(-50%, -50%) scale(1); }
-    33% { transform: translate(-40%, -60%) scale(1.15); }
-    66% { transform: translate(-60%, -40%) scale(0.9); }
-  }
-
-  /* ===== MAIN LAYOUT ===== */
+  /* Layout */
   .dashboard {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -109,549 +65,238 @@
     gap: 12px;
     padding: 12px;
     width: 100%; height: 100vh;
-    position: relative;
-    z-index: 1;
+    position: relative; z-index: 1;
     padding-top: 56px;
   }
 
-  /* ===== PANEL STYLING ===== */
+  /* Panels */
   .panel {
     background: var(--bg-panel);
     border: 1px solid var(--border);
     border-radius: 8px;
     overflow: hidden;
-    display: flex;
-    flex-direction: column;
+    display: flex; flex-direction: column;
     position: relative;
     transition: box-shadow 1.2s ease;
   }
   .panel::before {
-    content: '';
-    position: absolute;
-    inset: -1px;
-    border-radius: 8px;
-    padding: 1px;
-    background: linear-gradient(135deg, rgba(0, 102, 255, 0.3), rgba(0, 255, 136, 0.15), rgba(0, 102, 255, 0.1));
+    content: ''; position: absolute; inset: -1px; border-radius: 8px; padding: 1px;
+    background: linear-gradient(135deg, rgba(0,102,255,0.3), rgba(0,255,136,0.15), rgba(0,102,255,0.1));
     -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-    -webkit-mask-composite: xor;
-    mask-composite: exclude;
-    pointer-events: none;
+    -webkit-mask-composite: xor; mask-composite: exclude; pointer-events: none;
   }
   .panel-glow-blue { box-shadow: var(--glow-blue); }
   .panel-glow-neon { box-shadow: var(--glow-neon); }
-  .panel-glow-mixed { box-shadow: 0 0 12px rgba(0, 102, 255, 0.25), 0 0 12px rgba(0, 255, 136, 0.2), 0 0 40px rgba(0, 102, 255, 0.08), inset 0 0 30px rgba(0, 102, 255, 0.02); }
+  .panel-glow-mixed { box-shadow: 0 0 12px rgba(0,102,255,0.25), 0 0 12px rgba(0,255,136,0.2), 0 0 40px rgba(0,102,255,0.08), inset 0 0 30px rgba(0,102,255,0.02); }
 
   .panel-header {
     padding: 14px 18px 10px;
     border-bottom: 1px solid var(--border);
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
+    display: flex; align-items: center; justify-content: space-between;
     flex-shrink: 0;
-    background: linear-gradient(180deg, rgba(0, 102, 255, 0.06) 0%, transparent 100%);
+    background: linear-gradient(180deg, rgba(0,102,255,0.06) 0%, transparent 100%);
   }
-  .panel-header h2 {
-    font-size: 13px;
-    font-weight: 700;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    color: var(--blue-bright);
-  }
-  .panel-body {
-    flex: 1;
-    overflow-y: auto;
-    padding: 14px 18px;
-  }
-
-  /* Scrollbar */
+  .panel-header h2 { font-size: 13px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--blue-bright); }
+  .panel-body { flex: 1; overflow-y: auto; padding: 14px 18px; }
   .panel-body::-webkit-scrollbar { width: 4px; }
   .panel-body::-webkit-scrollbar-track { background: transparent; }
   .panel-body::-webkit-scrollbar-thumb { background: var(--blue-dim); border-radius: 4px; }
 
-  /* ===== TOP HEADER BAR ===== */
+  /* Top bar */
   .top-bar {
-    position: fixed;
-    top: 0; left: 0; right: 0;
-    height: 44px;
-    background: linear-gradient(180deg, rgba(10, 10, 15, 0.98) 0%, rgba(10, 10, 15, 0.9) 100%);
+    position: fixed; top: 0; left: 0; right: 0; height: 44px;
+    background: linear-gradient(180deg, rgba(10,10,15,0.98), rgba(10,10,15,0.9));
     border-bottom: 1px solid var(--border);
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0 20px;
-    z-index: 100;
-    backdrop-filter: blur(10px);
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 20px; z-index: 100; backdrop-filter: blur(10px);
   }
-  .top-bar-title {
-    font-size: 15px;
-    font-weight: 700;
-    letter-spacing: 3px;
-    text-transform: uppercase;
-    color: var(--neon);
-    text-shadow: 0 0 20px rgba(0, 255, 136, 0.5), 0 0 40px rgba(0, 255, 136, 0.2);
-  }
-  .top-bar-right {
-    display: flex;
-    align-items: center;
-    gap: 20px;
-  }
-  .live-clock {
-    font-size: 14px;
-    font-weight: 600;
-    color: var(--cyan);
-    letter-spacing: 1px;
-  }
-  .status-indicator {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 11px;
-    letter-spacing: 1px;
-    text-transform: uppercase;
-    transition: color 0.8s ease;
-  }
-  .status-dot {
-    width: 8px; height: 8px;
-    border-radius: 50%;
-    transition: background 0.8s ease, box-shadow 0.8s ease;
-  }
-  /* Idle state */
-  .status-idle .status-dot {
-    background: var(--blue-bright);
-    box-shadow: 0 0 6px var(--blue-bright), 0 0 12px var(--blue-bright);
-    animation: pulse-idle 3s ease-in-out infinite;
-  }
+  .top-bar-title { font-size: 15px; font-weight: 700; letter-spacing: 3px; text-transform: uppercase; color: var(--neon); text-shadow: 0 0 20px rgba(0,255,136,0.5), 0 0 40px rgba(0,255,136,0.2); }
+  .top-bar-right { display: flex; align-items: center; gap: 20px; }
+  .live-clock { font-size: 14px; font-weight: 600; color: var(--cyan); letter-spacing: 1px; }
+  .status-indicator { display: flex; align-items: center; gap: 8px; font-size: 11px; letter-spacing: 1px; text-transform: uppercase; transition: color 0.8s ease; }
+  .status-dot { width: 8px; height: 8px; border-radius: 50%; transition: background 0.8s ease, box-shadow 0.8s ease; }
+  .status-idle .status-dot { background: var(--blue-bright); box-shadow: 0 0 6px var(--blue-bright), 0 0 12px var(--blue-bright); animation: pulse-idle 3s ease-in-out infinite; }
   .status-idle { color: var(--blue-bright); }
-  /* Thinking state */
-  .status-thinking .status-dot {
-    background: var(--neon);
-    box-shadow: 0 0 8px var(--neon), 0 0 16px var(--neon);
-    animation: pulse-thinking 1.2s ease-in-out infinite;
-  }
+  .status-thinking .status-dot { background: var(--neon); box-shadow: 0 0 8px var(--neon), 0 0 16px var(--neon); animation: pulse-think 1.2s ease-in-out infinite; }
   .status-thinking { color: var(--neon); }
+  @keyframes pulse-idle { 0%,100%{opacity:1} 50%{opacity:0.4} }
+  @keyframes pulse-think { 0%,100%{opacity:1;box-shadow:0 0 8px var(--neon),0 0 16px var(--neon)} 50%{opacity:0.7;box-shadow:0 0 12px var(--neon),0 0 24px var(--neon),0 0 36px rgba(0,255,136,0.15)} }
 
-  @keyframes pulse-idle {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.4; }
-  }
-  @keyframes pulse-thinking {
-    0%, 100% { opacity: 1; box-shadow: 0 0 8px var(--neon), 0 0 16px var(--neon); }
-    50% { opacity: 0.7; box-shadow: 0 0 12px var(--neon), 0 0 24px var(--neon), 0 0 36px rgba(0, 255, 136, 0.15); }
-  }
-
-  /* ===== TOP-LEFT: J.AI.N'S MIND ===== */
+  /* ===== J.AI.N'S MIND -- HERO OBJECTIVE ===== */
   .objective-section {
-    padding: 12px 18px;
+    padding: 24px 24px 20px;
     border-bottom: 1px solid var(--border);
     flex-shrink: 0;
+    background: linear-gradient(180deg, rgba(0,255,136,0.02) 0%, transparent 100%);
   }
   .objective-label {
-    font-size: 10px;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    color: var(--blue-bright);
-    margin-bottom: 6px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
+    font-size: 10px; letter-spacing: 2px; text-transform: uppercase;
+    color: var(--blue-bright); margin-bottom: 10px;
+    display: flex; align-items: center; gap: 8px;
   }
-  .objective-dot {
-    width: 7px; height: 7px;
-    border-radius: 50%;
-    transition: background 0.8s ease, box-shadow 0.8s ease, transform 0.8s ease;
-  }
-  .objective-dot.idle {
-    background: var(--cyan);
-    box-shadow: 0 0 6px var(--cyan);
-    animation: pulse-idle 3s ease-in-out infinite;
-  }
-  .objective-dot.thinking {
-    background: var(--neon);
-    box-shadow: 0 0 10px var(--neon), 0 0 20px var(--neon);
-    animation: pulse-thinking 1.2s ease-in-out infinite;
-    transform: scale(1.15);
-  }
+  .objective-dot { width: 9px; height: 9px; border-radius: 50%; transition: all 0.8s ease; }
+  .objective-dot.idle { background: var(--cyan); box-shadow: 0 0 6px var(--cyan); animation: pulse-idle 3s ease-in-out infinite; }
+  .objective-dot.thinking { background: var(--neon); box-shadow: 0 0 12px var(--neon), 0 0 24px var(--neon); animation: pulse-think 1.2s ease-in-out infinite; transform: scale(1.2); }
   .objective-text {
-    font-size: 14px;
+    font-size: 20px;
     font-weight: 700;
-    letter-spacing: 0.5px;
+    letter-spacing: 0.3px;
+    line-height: 1.35;
     transition: color 0.8s ease, text-shadow 0.8s ease;
   }
-  .objective-text.idle {
-    color: var(--neon-dim);
-    text-shadow: 0 0 8px rgba(0, 255, 136, 0.15);
-  }
-  .objective-text.thinking {
-    color: var(--neon);
-    text-shadow: 0 0 15px rgba(0, 255, 136, 0.35), 0 0 30px rgba(0, 255, 136, 0.12);
-  }
+  .objective-text.idle { color: var(--neon-dim); text-shadow: 0 0 10px rgba(0,255,136,0.12); }
+  .objective-text.thinking { color: var(--neon); text-shadow: 0 0 20px rgba(0,255,136,0.35), 0 0 40px rgba(0,255,136,0.12); }
 
-  .steps-label {
-    font-size: 10px;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    color: var(--blue-bright);
-    margin-bottom: 10px;
-  }
-
-  /* Log entries */
+  .steps-label { font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--blue-bright); margin-bottom: 10px; }
   .log-entry {
-    padding: 10px 12px;
-    border-left: 2px solid var(--blue-dim);
-    margin-bottom: 8px;
-    font-size: 12px;
-    color: var(--white-dim);
-    background: transparent;
-    border-radius: 0 4px 4px 0;
-    transition: opacity 0.6s ease, transform 0.6s ease, border-left-color 0.6s ease, background 0.6s ease, color 0.6s ease;
+    padding: 8px 12px; border-left: 2px solid var(--blue-dim); margin-bottom: 6px;
+    font-size: 12px; color: var(--white-dim); border-radius: 0 4px 4px 0;
+    transition: all 0.6s ease;
   }
-  .log-entry.newest {
-    border-left-color: var(--neon);
-    border-left-width: 3px;
-    color: var(--white);
-    background: rgba(0, 255, 136, 0.05);
-    box-shadow: inset 0 0 20px rgba(0, 255, 136, 0.04), 0 0 10px rgba(0, 255, 136, 0.05);
-  }
-  .log-entry.new-entry {
-    animation: entry-appear 0.6s ease-out forwards;
-  }
-  @keyframes entry-appear {
-    0% { opacity: 0; transform: translateY(-6px); }
-    100% { opacity: 1; transform: translateY(0); }
-  }
+  .log-entry.newest { border-left-color: var(--neon); border-left-width: 3px; color: var(--white); background: rgba(0,255,136,0.05); }
+  .log-entry.new-entry { animation: entry-appear 0.6s ease-out forwards; }
+  @keyframes entry-appear { 0%{opacity:0;transform:translateY(-6px)} 100%{opacity:1;transform:translateY(0)} }
+  .log-timestamp { color: var(--blue-bright); font-weight: 600; margin-right: 4px; }
+  .blink-cursor { display: inline-block; margin-top: 10px; margin-left: 12px; color: var(--neon); font-size: 14px; }
+  .blink-cursor.idle { animation: blink-s 2s step-end infinite; }
+  .blink-cursor.thinking { animation: blink-f 0.5s step-end infinite; }
+  @keyframes blink-s { 0%,50%{opacity:1} 51%,100%{opacity:0} }
+  @keyframes blink-f { 0%,50%{opacity:1} 51%,100%{opacity:0} }
 
-  .log-timestamp {
-    color: var(--blue-bright);
-    font-weight: 600;
-    margin-right: 4px;
-  }
-  .log-text {
-    color: inherit;
-  }
-  .blink-cursor {
-    display: inline-block;
-    margin-top: 12px;
-    margin-left: 12px;
-    color: var(--neon);
-    font-size: 14px;
-    transition: opacity 0.5s ease;
-  }
-  .blink-cursor.idle {
-    animation: blink-slow 2s step-end infinite;
-  }
-  .blink-cursor.thinking {
-    animation: blink-fast 0.5s step-end infinite;
-  }
-  @keyframes blink-slow {
-    0%, 50% { opacity: 1; }
-    51%, 100% { opacity: 0; }
-  }
-  @keyframes blink-fast {
-    0%, 50% { opacity: 1; }
-    51%, 100% { opacity: 0; }
-  }
+  /* Today's Jobs */
+  .job-card { background: rgba(0,102,255,0.04); border: 1px solid rgba(0,102,255,0.15); border-radius: 6px; padding: 12px 14px; margin-bottom: 10px; }
+  .job-card:hover { border-color: rgba(0,102,255,0.35); background: rgba(0,102,255,0.07); }
+  .job-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; }
+  .job-name { font-size: 13px; font-weight: 700; color: var(--white); letter-spacing: 0.5px; }
+  .job-time { font-size: 11px; color: var(--blue-bright); letter-spacing: 0.5px; }
+  .badge { display: inline-block; padding: 2px 8px; border-radius: 3px; font-size: 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; }
+  .badge-scheduled { background: rgba(0,102,255,0.15); color: var(--blue-bright); border: 1px solid rgba(0,102,255,0.3); }
+  .badge-active { background: rgba(0,255,136,0.12); color: var(--neon); border: 1px solid rgba(0,255,136,0.3); animation: badge-glow 2s ease-in-out infinite; }
+  .badge-completed { background: rgba(0,229,255,0.1); color: var(--cyan); border: 1px solid rgba(0,229,255,0.3); }
+  @keyframes badge-glow { 0%,100%{box-shadow:none} 50%{box-shadow:0 0 8px rgba(0,255,136,0.2)} }
+  .progress-track { width: 100%; height: 4px; background: rgba(0,102,255,0.1); border-radius: 2px; margin: 8px 0 6px; overflow: hidden; }
+  .progress-fill { height: 100%; border-radius: 2px; background: linear-gradient(90deg, var(--blue), var(--neon)); transition: width 0.5s ease; }
+  .progress-fill-active { background: linear-gradient(90deg, var(--neon-dim), var(--neon)); }
+  .job-desc { font-size: 11px; color: var(--blue-bright); letter-spacing: 0.3px; line-height: 1.4; }
 
-  /* ===== BOTTOM-LEFT: TODAY'S JOBS ===== */
-  .job-card {
-    background: rgba(0, 102, 255, 0.04);
-    border: 1px solid rgba(0, 102, 255, 0.15);
-    border-radius: 6px;
-    padding: 12px 14px;
-    margin-bottom: 10px;
-    position: relative;
-  }
-  .job-card:hover {
-    border-color: rgba(0, 102, 255, 0.35);
-    background: rgba(0, 102, 255, 0.07);
-  }
-  .job-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 6px;
-  }
-  .job-name {
-    font-size: 13px;
-    font-weight: 700;
-    color: var(--white);
-    letter-spacing: 0.5px;
-  }
-  .job-time {
-    font-size: 11px;
-    color: var(--blue-bright);
-    letter-spacing: 0.5px;
-  }
-  .badge {
-    display: inline-block;
-    padding: 2px 8px;
-    border-radius: 3px;
-    font-size: 10px;
-    font-weight: 700;
-    letter-spacing: 1px;
-    text-transform: uppercase;
-  }
-  .badge-scheduled {
-    background: rgba(0, 102, 255, 0.15);
-    color: var(--blue-bright);
-    border: 1px solid rgba(0, 102, 255, 0.3);
-  }
-  .badge-active {
-    background: rgba(0, 255, 136, 0.12);
-    color: var(--neon);
-    border: 1px solid rgba(0, 255, 136, 0.3);
-    animation: badge-glow 2s ease-in-out infinite;
-  }
-  .badge-completed {
-    background: rgba(0, 229, 255, 0.1);
-    color: var(--cyan);
-    border: 1px solid rgba(0, 229, 255, 0.3);
-  }
-  @keyframes badge-glow {
-    0%, 100% { box-shadow: none; }
-    50% { box-shadow: 0 0 8px rgba(0, 255, 136, 0.2); }
-  }
+  /* ===== RIGHT: LIVE INTELLIGENCE FEED (MINIMAL) ===== */
+  .right-panel { grid-column: 2; grid-row: 1 / 3; display: flex; flex-direction: column; }
 
-  .progress-track {
-    width: 100%;
-    height: 4px;
-    background: rgba(0, 102, 255, 0.1);
-    border-radius: 2px;
-    margin: 8px 0 6px;
-    overflow: hidden;
-  }
-  .progress-fill {
-    height: 100%;
-    border-radius: 2px;
-    background: linear-gradient(90deg, var(--blue), var(--neon));
-    transition: width 0.5s ease;
-  }
-  .progress-fill-active {
-    background: linear-gradient(90deg, var(--neon-dim), var(--neon));
-  }
-
-  .job-desc {
-    font-size: 11px;
-    color: var(--blue-bright);
-    letter-spacing: 0.3px;
-    line-height: 1.4;
-  }
-
-  /* ===== RIGHT HALF: LIVE FEED (TWEET-STYLE) ===== */
-  .right-panel {
-    grid-column: 2;
-    grid-row: 1 / 3;
-    display: flex;
-    flex-direction: column;
-  }
-
-  /* Ticker bar at the top of right panel */
+  /* Ticker */
   .ticker-bar {
-    padding: 8px 18px;
-    border-bottom: 1px solid var(--border);
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    flex-shrink: 0;
-    overflow-x: auto;
-    background: rgba(0, 102, 255, 0.03);
-    font-size: 11px;
-    letter-spacing: 0.3px;
-    white-space: nowrap;
+    padding: 8px 18px; border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; gap: 16px; flex-shrink: 0;
+    overflow-x: auto; background: rgba(0,102,255,0.03);
+    font-size: 11px; letter-spacing: 0.3px; white-space: nowrap;
   }
   .ticker-bar::-webkit-scrollbar { height: 0; }
-  .ticker-item {
-    display: inline-flex;
-    align-items: center;
-    gap: 5px;
-  }
-  .ticker-symbol {
-    color: var(--cyan);
-    font-weight: 700;
-  }
-  .ticker-price {
-    color: var(--white-dim);
-  }
-  .ticker-change {
-    font-weight: 700;
-  }
+  .ticker-item { display: inline-flex; align-items: center; gap: 5px; }
+  .ticker-symbol { color: var(--cyan); font-weight: 700; }
+  .ticker-price { color: var(--white-dim); }
+  .ticker-change { font-weight: 700; }
   .ticker-up { color: var(--neon); }
   .ticker-down { color: var(--red); }
-  .ticker-flat { color: var(--white-dim); }
-  .ticker-sep {
-    color: rgba(0, 102, 255, 0.3);
-    font-size: 8px;
-  }
+  .ticker-sep { color: rgba(0,102,255,0.3); font-size: 8px; }
 
-  /* Feed sections */
-  .feed-section {
-    margin-bottom: 14px;
-    padding-bottom: 14px;
-    border-bottom: 1px solid rgba(0, 102, 255, 0.1);
-  }
-  .feed-section:last-child {
-    border-bottom: none;
-    margin-bottom: 0;
-    padding-bottom: 0;
-  }
+  /* Feed -- minimal section headers */
+  .feed-section { margin-bottom: 20px; }
+  .feed-section:last-child { margin-bottom: 0; }
   .feed-section-header {
-    font-size: 11px;
-    font-weight: 700;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    color: var(--cyan);
-    padding-bottom: 8px;
-    margin-bottom: 8px;
-    border-bottom: 1px solid rgba(0, 229, 255, 0.12);
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-  .feed-section-header .section-icon {
-    width: 6px; height: 6px;
-    background: var(--neon);
-    border-radius: 1px;
-    transform: rotate(45deg);
-    flex-shrink: 0;
+    font-size: 10px; font-weight: 700; letter-spacing: 2.5px; text-transform: uppercase;
+    color: var(--muted); margin-bottom: 12px; padding-bottom: 0;
   }
 
-  /* Feed items with signal icons */
+  /* Feed items -- clean, flat hierarchy */
   .feed-item {
-    padding: 5px 0 5px 12px;
-    border-left: 2px solid transparent;
-    margin-bottom: 4px;
-    font-size: 12px;
-    color: var(--white-dim);
-    line-height: 1.55;
-    transition: border-color 0.2s, background 0.2s;
-    border-radius: 0 3px 3px 0;
+    padding: 8px 0;
+    font-size: 12px; line-height: 1.6;
+    border-bottom: 1px solid rgba(255,255,255,0.03);
   }
-  .feed-item:hover {
-    border-left-color: var(--neon);
-    background: rgba(0, 255, 136, 0.02);
-  }
+  .feed-item:last-of-type { border-bottom: none; }
+
+  /* MUST READ = high signal, full opacity, neon accent */
   .feed-item.signal-fire {
-    border-left-color: var(--orange);
+    color: var(--white);
+    padding-left: 12px;
+    border-left: 2px solid var(--neon);
+    background: rgba(0,255,136,0.02);
+    border-radius: 0 3px 3px 0;
+    margin-bottom: 4px;
+    border-bottom: none;
   }
+  /* WATCH = medium signal */
   .feed-item.signal-watch {
-    border-left-color: var(--blue-bright);
+    color: var(--white-dim);
+    padding-left: 12px;
+    border-left: 2px solid rgba(0,102,255,0.25);
+    border-radius: 0 3px 3px 0;
+    margin-bottom: 4px;
+    border-bottom: none;
   }
+  /* NOISE = low signal, dimmed, smaller */
   .feed-item.signal-noise {
-    border-left-color: rgba(0, 102, 255, 0.15);
-  }
-  .signal-tag {
-    font-size: 10px;
-    font-weight: 700;
-    letter-spacing: 1px;
-    text-transform: uppercase;
-    margin-right: 6px;
-    display: inline-block;
-  }
-  .signal-tag.fire { color: var(--orange); }
-  .signal-tag.watch { color: var(--blue-bright); }
-  .signal-tag.noise { color: rgba(150, 150, 180, 0.6); }
-
-  .feed-item .ticker-ref {
-    color: var(--cyan);
-    font-weight: 600;
-  }
-  .feed-item .entity-ref {
-    color: var(--neon);
-    font-weight: 600;
-  }
-
-  /* My Take callout */
-  .my-take {
-    margin: 8px 0 2px;
-    padding: 8px 12px;
-    border-left: 3px solid var(--neon);
-    background: rgba(0, 255, 136, 0.04);
-    border-radius: 0 4px 4px 0;
+    color: var(--muted);
     font-size: 11px;
-    line-height: 1.55;
-    color: var(--neon);
-    font-style: italic;
+    padding-left: 12px;
+    border-left: 2px solid rgba(255,255,255,0.04);
+    border-radius: 0 3px 3px 0;
+    margin-bottom: 2px;
+    border-bottom: none;
+    opacity: 0.7;
+  }
+  .feed-item.signal-noise:hover { opacity: 1; color: var(--white-dim); }
+
+  /* Signal labels -- inline, subtle */
+  .signal-tag { font-size: 9px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; margin-right: 8px; }
+  .signal-tag.fire { color: var(--neon); }
+  .signal-tag.watch { color: var(--blue-bright); }
+  .signal-tag.noise { color: var(--muted); }
+
+  .feed-item .ticker-ref { color: var(--cyan); font-weight: 600; }
+  .feed-item .entity-ref { color: var(--neon); font-weight: 600; }
+
+  /* Insight callout -- the "My Take" is the payoff */
+  .my-take {
+    margin: 10px 0 4px;
+    padding: 10px 14px;
+    background: rgba(0,255,136,0.03);
+    border-radius: 4px;
+    font-size: 12px; line-height: 1.6;
+    color: var(--neon-dim);
     letter-spacing: 0.2px;
   }
   .my-take-label {
-    font-style: normal;
-    font-weight: 700;
-    letter-spacing: 1px;
-    text-transform: uppercase;
-    font-size: 10px;
-    display: block;
-    margin-bottom: 3px;
-    color: var(--neon);
-    opacity: 0.8;
+    font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase;
+    font-size: 9px; display: block; margin-bottom: 4px;
+    color: var(--neon); opacity: 0.6;
   }
 
-  /* Fear & Greed indicator */
+  /* Fear & Greed */
   .fear-greed {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 3px 10px;
-    border-radius: 3px;
-    font-size: 11px;
-    font-weight: 700;
-    letter-spacing: 0.5px;
-    background: rgba(255, 59, 59, 0.1);
-    border: 1px solid rgba(255, 59, 59, 0.25);
-    color: var(--red);
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 3px 10px; border-radius: 3px;
+    font-size: 11px; font-weight: 700; letter-spacing: 0.5px;
+    background: rgba(255,59,59,0.1); border: 1px solid rgba(255,59,59,0.25); color: var(--red);
   }
-  .fear-greed .fg-dot {
-    width: 6px; height: 6px;
-    border-radius: 50%;
-    background: var(--red);
-    animation: pulse-idle 2s ease-in-out infinite;
-  }
+  .fear-greed .fg-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--red); animation: pulse-idle 2s ease-in-out infinite; }
 
-  .divider {
-    height: 1px;
-    background: linear-gradient(90deg, transparent, var(--border), transparent);
-    margin: 14px 0;
-  }
+  /* Footer */
+  .footer-attr { position: fixed; bottom: 6px; left: 50%; transform: translateX(-50%); z-index: 100; font-size: 10px; letter-spacing: 0.5px; }
+  .footer-attr a { color: var(--blue-dim); text-decoration: none; }
+  .footer-attr a:hover { color: var(--blue-bright); }
 
-  /* ===== FOOTER ===== */
-  .footer-attr {
-    position: fixed;
-    bottom: 6px;
-    left: 50%;
-    transform: translateX(-50%);
-    z-index: 100;
-    font-size: 10px;
-    letter-spacing: 0.5px;
-  }
-  .footer-attr a {
-    color: var(--blue-dim);
-    text-decoration: none;
-  }
-  .footer-attr a:hover {
-    color: var(--blue-bright);
-  }
-
-  /* ===== RESPONSIVE ===== */
   @media (max-width: 1024px) {
-    .dashboard {
-      grid-template-columns: 1fr;
-      grid-template-rows: auto;
-      overflow-y: auto;
-      height: auto;
-    }
-    .right-panel {
-      grid-column: 1;
-      grid-row: auto;
-    }
+    .dashboard { grid-template-columns: 1fr; grid-template-rows: auto; overflow-y: auto; height: auto; }
+    .right-panel { grid-column: 1; grid-row: auto; }
   }
 </style>
 </head>
 <body>
 
-<!-- Ambient Orbs -->
 <div class="orb orb-1"></div>
 <div class="orb orb-2"></div>
 <div class="orb orb-3"></div>
 
-<!-- Top Bar -->
 <div class="top-bar">
   <div class="top-bar-title">J.AI.N'S Mind -- Command Center</div>
   <div class="top-bar-right">
@@ -663,7 +308,6 @@
   </div>
 </div>
 
-<!-- Dashboard Grid -->
 <div class="dashboard">
 
   <!-- TOP-LEFT: J.AI.N'S MIND -->
@@ -695,7 +339,7 @@
     <div class="panel-body" id="jobsContainer"></div>
   </div>
 
-  <!-- RIGHT HALF: LIVE FEED (TWEET-STYLE) -->
+  <!-- RIGHT: LIVE INTELLIGENCE FEED -->
   <div class="panel panel-glow-mixed right-panel">
     <div class="panel-header">
       <h2>Live Intelligence Feed</h2>
@@ -705,163 +349,115 @@
       </div>
     </div>
 
-    <!-- Ticker Bar -->
     <div class="ticker-bar" id="tickerBar">
-      <div class="ticker-item">
-        <span class="ticker-symbol">$SPY</span>
-        <span class="ticker-price">682.41</span>
-        <span class="ticker-change ticker-down">-1.02%</span>
-      </div>
+      <div class="ticker-item"><span class="ticker-symbol">$SPY</span><span class="ticker-price">682.41</span><span class="ticker-change ticker-down">-1.02%</span></div>
       <span class="ticker-sep">|</span>
-      <div class="ticker-item">
-        <span class="ticker-symbol">$TQQQ</span>
-        <span class="ticker-price">48.24</span>
-        <span class="ticker-change ticker-down">-3.64%</span>
-      </div>
+      <div class="ticker-item"><span class="ticker-symbol">$TQQQ</span><span class="ticker-price">48.24</span><span class="ticker-change ticker-down">-3.64%</span></div>
       <span class="ticker-sep">|</span>
-      <div class="ticker-item">
-        <span class="ticker-symbol">$NVDA</span>
-        <span class="ticker-price">191.55</span>
-        <span class="ticker-change ticker-up">+0.91%</span>
-      </div>
+      <div class="ticker-item"><span class="ticker-symbol">$NVDA</span><span class="ticker-price">191.55</span><span class="ticker-change ticker-up">+0.91%</span></div>
       <span class="ticker-sep">|</span>
-      <div class="ticker-item">
-        <span class="ticker-symbol">$SLV</span>
-        <span class="ticker-price">--</span>
-        <span class="ticker-change ticker-up">+5.14%</span>
-      </div>
+      <div class="ticker-item"><span class="ticker-symbol">$SLV</span><span class="ticker-price">--</span><span class="ticker-change ticker-up">+5.14%</span></div>
       <span class="ticker-sep">|</span>
-      <div class="ticker-item">
-        <span class="ticker-symbol">BTC</span>
-        <span class="ticker-price">$70,419</span>
-        <span class="ticker-change ticker-down">-0.07%</span>
-      </div>
+      <div class="ticker-item"><span class="ticker-symbol">BTC</span><span class="ticker-price">$70,419</span><span class="ticker-change ticker-down">-0.07%</span></div>
       <span class="ticker-sep">|</span>
-      <div class="ticker-item">
-        <span class="ticker-symbol">ETH</span>
-        <span class="ticker-price">$2,079</span>
-        <span class="ticker-change ticker-up">+0.80%</span>
-      </div>
+      <div class="ticker-item"><span class="ticker-symbol">ETH</span><span class="ticker-price">$2,079</span><span class="ticker-change ticker-up">+0.80%</span></div>
       <span class="ticker-sep">|</span>
-      <div class="ticker-item">
-        <span class="ticker-symbol">SOL</span>
-        <span class="ticker-price">$147.30</span>
-        <span class="ticker-change ticker-down">-2.74%</span>
-      </div>
+      <div class="ticker-item"><span class="ticker-symbol">SOL</span><span class="ticker-price">$147.30</span><span class="ticker-change ticker-down">-2.74%</span></div>
       <span class="ticker-sep">|</span>
-      <div class="ticker-item">
-        <span style="font-size: 10px; color: var(--blue-bright); letter-spacing: 0.5px;">STABLECOIN SUPPLY:</span>
-        <span class="ticker-price">$311.6B</span>
-      </div>
+      <div class="ticker-item"><span style="font-size:10px;color:var(--blue-bright);letter-spacing:0.5px">STABLECOIN SUPPLY:</span><span class="ticker-price">$311.6B</span></div>
     </div>
 
     <div class="panel-body">
 
       <!-- 1. AI PROVIDERS -->
       <div class="feed-section">
-        <div class="feed-section-header">
-          <div class="section-icon"></div>
-          AI Providers -- Geopolitics, Disruption &amp; Control
+        <div class="feed-section-header">AI Providers</div>
+        <div class="feed-item signal-fire">
+          <span class="signal-tag fire">SIGNAL</span>
+          <span class="entity-ref">DeepSeek</span> reportedly trained its upcoming model on <span class="ticker-ref">$NVDA</span> Blackwell despite US export bans -- fresh geopolitical risk in the chip supply chain.
         </div>
         <div class="feed-item signal-fire">
-          <span class="signal-tag fire">MUST READ</span>
-          <span class="entity-ref">DeepSeek</span> reportedly trained its upcoming model on <span class="ticker-ref">$NVDA</span> Blackwell despite US export bans, raising fresh geopolitical risks in the chip supply chain and tech cold war.
-        </div>
-        <div class="feed-item signal-fire">
-          <span class="signal-tag fire">MUST READ</span>
-          <span class="ticker-ref">$IBM</span> stock tumbles 10% after <span class="entity-ref">Anthropic</span> launches a COBOL AI tool, showcasing AI's disruptive potential for legacy tech stacks.
+          <span class="signal-tag fire">SIGNAL</span>
+          <span class="ticker-ref">$IBM</span> tumbles 10% after <span class="entity-ref">Anthropic</span> launches COBOL AI tool. AI disruption hitting legacy tech stacks directly.
         </div>
         <div class="feed-item signal-watch">
           <span class="signal-tag watch">WATCH</span>
-          <span class="entity-ref">OpenAI</span> announced "Frontier Alliances" with consultancies like BCG &amp; McKinsey to accelerate enterprise AI adoption beyond pilot programs.
+          <span class="entity-ref">OpenAI</span> "Frontier Alliances" with BCG &amp; McKinsey -- enterprise AI moving past pilots.
         </div>
         <div class="feed-item signal-noise">
           <span class="signal-tag noise">NOISE</span>
-          <span class="entity-ref">xAI</span>'s Grok reportedly inked a deal with the Pentagon to use its AI in classified systems, expanding AI's role in defense.
-        </div>
-        <div class="feed-item signal-noise">
-          <span class="signal-tag noise">NOISE</span>
-          Firefox 148 launched with an "AI Kill Switch Feature," signaling growing user demand for AI control &amp; transparency.
+          <span class="entity-ref">xAI</span> Grok-Pentagon deal. Firefox 148 "AI Kill Switch" feature.
         </div>
         <div class="my-take">
-          <span class="my-take-label">My Take</span>
-          AI's strategic resonance is now undeniable, driving both global hardware competition and immediate stock market reactions, alongside calls for more control.
+          <span class="my-take-label">Insight</span>
+          AI's strategic resonance is undeniable -- driving global hardware competition, immediate stock reactions, and calls for more control simultaneously.
         </div>
       </div>
 
-      <!-- 2. ENTERPRISE AI IMPACT -->
+      <!-- 2. ENTERPRISE AI -->
       <div class="feed-section">
-        <div class="feed-section-header">
-          <div class="section-icon"></div>
-          Enterprise AI -- Reality Check &amp; Agentic Progress
-        </div>
+        <div class="feed-section-header">Enterprise AI</div>
         <div class="feed-item signal-fire">
-          <span class="signal-tag fire">MUST READ</span>
-          "AI Added 'Basically Zero' to US Economic Growth Last Year," Goldman Sachs says -- a high-engagement counter-narrative to rampant AI hype.
+          <span class="signal-tag fire">SIGNAL</span>
+          Goldman Sachs: "AI Added Basically Zero to US Economic Growth Last Year." High-engagement counter-narrative to AI hype.
         </div>
         <div class="feed-item signal-watch">
           <span class="signal-tag watch">WATCH</span>
-          <span class="entity-ref">ServiceNow</span> (<span class="ticker-ref">$NOW</span>) expanded its AI strategy, integrating <span class="entity-ref">Anthropic</span>'s Claude for "agentic workflows," pointing to concrete enterprise deployments.
+          <span class="entity-ref">ServiceNow</span> (<span class="ticker-ref">$NOW</span>) integrating <span class="entity-ref">Anthropic</span> Claude for agentic workflows -- concrete enterprise deployment.
         </div>
         <div class="feed-item signal-watch">
           <span class="signal-tag watch">WATCH</span>
-          NASA working group advances "Autonomous Multi-Aircraft Operations," hinting at sophisticated agentic systems for complex tasks.
+          NASA advancing autonomous multi-aircraft operations -- agentic systems for complex tasks.
         </div>
         <div class="feed-item signal-noise">
           <span class="signal-tag noise">NOISE</span>
-          <span class="entity-ref">Meta</span>'s AI facial recognition smart glasses plan drew fire from critics, arguing it "will put women at risk."
+          <span class="entity-ref">Meta</span> AI facial recognition glasses backlash.
         </div>
         <div class="my-take">
-          <span class="my-take-label">My Take</span>
-          Enterprise AI is moving beyond hype, forcing real economic and ethical debates and driving demand for advanced autonomous systems with clear use cases.
+          <span class="my-take-label">Insight</span>
+          Enterprise AI moving beyond hype, forcing real economic and ethical debates. Demand for autonomous systems with clear use cases is accelerating.
         </div>
       </div>
 
       <!-- 3. VC/PE M&A -->
       <div class="feed-section">
-        <div class="feed-section-header">
-          <div class="section-icon"></div>
-          VC/PE M&amp;A -- Capital Tightens Amid Uncertainty
-        </div>
+        <div class="feed-section-header">VC/PE M&amp;A</div>
         <div class="feed-item signal-watch">
           <span class="signal-tag watch">WATCH</span>
-          Clear Street withdrew its US IPO filing amid broader market volatility, while Sharon AI (<span class="ticker-ref">$SHAZ</span>) began trading on Nasdaq.
+          Clear Street withdrew US IPO filing. Sharon AI (<span class="ticker-ref">$SHAZ</span>) began trading on Nasdaq.
         </div>
         <div class="feed-item signal-noise">
           <span class="signal-tag noise">NOISE</span>
-          Despite ongoing mega-rounds, the deal tape saw a quiet period for new, widely-reported VC/PE AI deals, suggesting investor caution.
+          Quiet period for new VC/PE AI deals -- investor caution despite mega-rounds.
         </div>
         <div class="my-take">
-          <span class="my-take-label">My Take</span>
-          The disconnect between sentiment and sideline capital has rarely been this stark. Stablecoins at $311.6B while Fear &amp; Greed sits at 12 -- that's a lot of dry powder if macro fears ease even slightly.
+          <span class="my-take-label">Insight</span>
+          Stablecoins at $311.6B while Fear &amp; Greed sits at 12 -- the disconnect between sentiment and sideline capital has rarely been this stark.
         </div>
       </div>
 
       <!-- 4. GEOPOLITICS & MACRO -->
       <div class="feed-section">
-        <div class="feed-section-header">
-          <div class="section-icon"></div>
-          Geopolitics &amp; Macro -- Escalation &amp; Market Fear
+        <div class="feed-section-header">Geopolitics &amp; Macro</div>
+        <div class="feed-item signal-fire">
+          <span class="signal-tag fire">SIGNAL</span>
+          Saudi Arabia reports first civilian deaths in Iranian attacks. Oil briefly spiked to $120 before settling below $100.
         </div>
         <div class="feed-item signal-fire">
-          <span class="signal-tag fire">MUST READ</span>
-          US-Israel War on Iran: Saudi Arabia reports first deaths in Iranian attack, significantly escalating the conflict and raising inflation risk on oil markets.
+          <span class="signal-tag fire">SIGNAL</span>
+          Fear &amp; Greed Index plummeted to 18 ("Extreme Fear"). Geopolitical tensions overshadowing economic data.
         </div>
         <div class="feed-item signal-watch">
           <span class="signal-tag watch">WATCH</span>
-          UAE intercepts Iranian drones, signaling widening regional conflict and increased instability.
+          UAE intercepting Iranian drones -- widening regional conflict. Powell watching inflation impact.
         </div>
         <div class="feed-item signal-noise">
           <span class="signal-tag noise">NOISE</span>
-          Oil prices whipsawed, briefly hitting $120 before settling below $100. Jerome Powell (Fed) is "watching Iran war for inflation impact."
-        </div>
-        <div class="feed-item signal-fire">
-          <span class="signal-tag fire">MUST READ</span>
-          Fear &amp; Greed Index plummeted to 18 ("Extreme Fear") as geopolitical tensions overshadowed economic data.
+          Oil price whipsaw details. Broader market commentary.
         </div>
         <div class="my-take">
-          <span class="my-take-label">My Take</span>
-          The immediate human cost of the Iran war is now visible, confirming geopolitical instability as the dominant market driver. Expect continued volatility into tomorrow.
+          <span class="my-take-label">Insight</span>
+          Geopolitical instability is now the dominant market driver. The Iran conflict's human cost confirms this isn't a temporary shock.
         </div>
       </div>
 
@@ -870,58 +466,43 @@
 
 </div>
 
-<!-- Footer -->
 <div class="footer-attr">
   <a href="https://www.perplexity.ai/computer" target="_blank" rel="noopener noreferrer">Created with Perplexity Computer</a>
 </div>
 
 <script>
 (function() {
-  // ===== STATE MANAGEMENT =====
   var STATE_URL = 'https://api.github.com/repos/jcubell/jains-mind/contents/state.json';
   var POLL_INTERVAL = 10000;
   var lastKnownState = null;
   var knownStepCount = 0;
 
-  // ===== LEFT+RIGHT ARROW FORCE REFRESH =====
+  // Left+Right arrow force refresh
   var arrowKeys = { left: false, right: false };
   var refreshing = false;
-
-  // Create flash overlay
   var flashEl = document.createElement('div');
   flashEl.style.cssText = 'position:fixed;inset:0;z-index:99998;pointer-events:none;opacity:0;transition:opacity 0.15s ease;background:radial-gradient(ellipse at center,rgba(0,255,136,0.12) 0%,transparent 70%);border:1px solid rgba(0,255,136,0.25);';
   document.body.appendChild(flashEl);
-
-  // Create "REFRESHED" toast
   var toastEl = document.createElement('div');
   toastEl.textContent = 'SYNCED';
   toastEl.style.cssText = 'position:fixed;top:52px;left:50%;transform:translateX(-50%) translateY(-8px);z-index:99998;pointer-events:none;opacity:0;font-family:var(--font);font-size:11px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:#00ff88;background:rgba(0,255,136,0.08);border:1px solid rgba(0,255,136,0.3);padding:5px 18px;border-radius:4px;text-shadow:0 0 10px rgba(0,255,136,0.5);box-shadow:0 0 15px rgba(0,255,136,0.15);transition:opacity 0.2s ease,transform 0.2s ease;';
   document.body.appendChild(toastEl);
-
   function showRefreshIndicator() {
-    // Flash the border
     flashEl.style.opacity = '1';
-    // Show toast
     toastEl.style.opacity = '1';
     toastEl.style.transform = 'translateX(-50%) translateY(0)';
-    // Fade out after 800ms
     setTimeout(function() {
       flashEl.style.opacity = '0';
       toastEl.style.opacity = '0';
       toastEl.style.transform = 'translateX(-50%) translateY(-8px)';
     }, 800);
   }
-
   document.addEventListener('keydown', function(e) {
     if (e.key === 'ArrowLeft') arrowKeys.left = true;
     if (e.key === 'ArrowRight') arrowKeys.right = true;
     if (arrowKeys.left && arrowKeys.right && !refreshing) {
-      refreshing = true;
-      arrowKeys.left = false;
-      arrowKeys.right = false;
-      // Force re-poll state instead of full reload so animation is visible
-      pollState();
-      showRefreshIndicator();
+      refreshing = true; arrowKeys.left = false; arrowKeys.right = false;
+      pollState(); showRefreshIndicator();
       setTimeout(function() { refreshing = false; }, 1000);
     }
   });
@@ -930,23 +511,15 @@
     if (e.key === 'ArrowRight') arrowKeys.right = false;
   });
 
-  // ===== LIVE CLOCK =====
+  // Clock
   function updateClock() {
     var now = new Date();
-    var options = {
-      timeZone: 'America/New_York',
-      hour: '2-digit',
-      minute: '2-digit',
-      second: '2-digit',
-      hour12: true
-    };
-    var timeStr = now.toLocaleTimeString('en-US', options);
+    var timeStr = now.toLocaleTimeString('en-US', { timeZone: 'America/New_York', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true });
     document.getElementById('liveClock').textContent = timeStr + ' ET';
   }
-  updateClock();
-  setInterval(updateClock, 1000);
+  updateClock(); setInterval(updateClock, 1000);
 
-  // ===== SET MODE (idle vs thinking) =====
+  // Mode
   function setMode(mode) {
     var panel = document.getElementById('mindPanel');
     var dot = document.getElementById('objDot');
@@ -954,11 +527,9 @@
     var cursor = document.getElementById('blinkCursor');
     var indicator = document.getElementById('statusIndicator');
     var statusText = document.getElementById('statusText');
-
     dot.className = 'objective-dot ' + mode;
     objText.className = 'objective-text ' + mode;
     cursor.className = 'blink-cursor ' + mode;
-
     if (mode === 'thinking') {
       panel.style.boxShadow = 'var(--glow-neon-active)';
       indicator.className = 'status-indicator status-thinking';
@@ -970,211 +541,80 @@
     }
   }
 
-  // ===== RENDER STEPS =====
+  // Steps
   function renderSteps(steps, isNewData) {
     var container = document.getElementById('logEntries');
     var html = '';
-
     for (var i = 0; i < steps.length; i++) {
       var step = steps[i];
       var classes = 'log-entry';
       if (i === 0) classes += ' newest';
-      if (isNewData && i < steps.length - knownStepCount) {
-        classes += ' new-entry';
-      }
-      html += '<div class="' + classes + '">';
-      html += '<span class="log-timestamp">' + escapeHtml(step.time) + '</span>';
-      html += '<span class="log-text"> -- ' + escapeHtml(step.text) + '</span>';
-      html += '</div>';
+      if (isNewData && i < steps.length - knownStepCount) classes += ' new-entry';
+      html += '<div class="' + classes + '"><span class="log-timestamp">' + escapeHtml(step.time) + '</span><span class="log-text"> -- ' + escapeHtml(step.text) + '</span></div>';
     }
-
     container.innerHTML = html;
     knownStepCount = steps.length;
-
-    var body = document.getElementById('stepsContainer');
-    body.scrollTop = 0;
+    document.getElementById('stepsContainer').scrollTop = 0;
   }
+  function escapeHtml(str) { var d = document.createElement('div'); d.textContent = str; return d.innerHTML; }
 
-  function escapeHtml(str) {
-    var div = document.createElement('div');
-    div.textContent = str;
-    return div.innerHTML;
-  }
-
-  // ===== POLL STATE =====
+  // Poll
   function pollState() {
-    var url = STATE_URL + '?t=' + Date.now();
-
-    fetch(url, { headers: { 'Accept': 'application/vnd.github.v3+json' } })
-      .then(function(res) { return res.json(); })
-      .then(function(apiResp) {
-        var data;
-        if (apiResp.content) {
-          data = JSON.parse(atob(apiResp.content.replace(/\n/g, '')));
-        } else {
-          data = apiResp;
-        }
+    fetch(STATE_URL + '?t=' + Date.now(), { headers: { 'Accept': 'application/vnd.github.v3+json' } })
+      .then(function(r) { return r.json(); })
+      .then(function(api) {
+        var data = api.content ? JSON.parse(atob(api.content.replace(/\n/g, ''))) : api;
         var isNew = !lastKnownState || data.updated_at !== lastKnownState.updated_at;
-
         document.getElementById('objText').textContent = data.objective || 'Awaiting directive...';
-
-        var mode = data.status === 'thinking' ? 'thinking' : 'idle';
-        setMode(mode);
-
-        if (data.steps && data.steps.length > 0) {
-          renderSteps(data.steps, isNew);
-        }
-
+        setMode(data.status === 'thinking' ? 'thinking' : 'idle');
+        if (data.steps && data.steps.length > 0) renderSteps(data.steps, isNew);
         lastKnownState = data;
-      })
-      .catch(function(err) {
-        console.log('State poll failed:', err);
-      });
+      }).catch(function() {});
   }
+  pollState(); setInterval(pollState, POLL_INTERVAL);
 
-  pollState();
-  setInterval(pollState, POLL_INTERVAL);
-
-  // ===== JOBS DATA & PROGRESS =====
+  // Jobs
   var jobs = [
-    {
-      name: 'Morning Brief',
-      time: '7:00 AM ET',
-      scheduleHour: 7, scheduleMinute: 0,
-      status: 'scheduled',
-      desc: 'AI news digest, market movers, SEC filing scan',
-      recurring: false,
-      prevHour: 0, prevMinute: 0
-    },
-    {
-      name: 'Sorare Morning Picks',
-      time: '11:00 AM ET',
-      scheduleHour: 11, scheduleMinute: 0,
-      status: 'active',
-      desc: 'Spin wheel, activate missions, Quick Play picks, burn dupes',
-      recurring: false,
-      prevHour: 7, prevMinute: 0
-    },
-    {
-      name: 'Afternoon Brief',
-      time: '1:00 PM ET',
-      scheduleHour: 13, scheduleMinute: 0,
-      status: 'scheduled',
-      desc: 'Midday market update, breaking AI announcements',
-      recurring: false,
-      prevHour: 11, prevMinute: 0
-    },
-    {
-      name: 'Sorare Evening Strategy',
-      time: '5:00 PM ET',
-      scheduleHour: 17, scheduleMinute: 0,
-      status: 'scheduled',
-      desc: 'Final lineup locks, injury updates, competition entry',
-      recurring: false,
-      prevHour: 13, prevMinute: 0
-    },
-    {
-      name: 'Evening Brief',
-      time: '8:00 PM ET',
-      scheduleHour: 20, scheduleMinute: 0,
-      status: 'scheduled',
-      desc: 'End of day wrap, after-hours moves, overnight preview',
-      recurring: false,
-      prevHour: 17, prevMinute: 0
-    },
-    {
-      name: 'Market Intelligence Scan',
-      time: 'Every 4 hours',
-      scheduleHour: -1, scheduleMinute: 0,
-      status: 'active',
-      desc: 'Continuous monitoring of AI value chain developments',
-      recurring: true
-    }
+    { name: 'Morning Brief', time: '7:00 AM ET', scheduleHour: 7, scheduleMinute: 0, status: 'scheduled', desc: 'AI news digest, market movers, SEC filing scan', recurring: false, prevHour: 0, prevMinute: 0 },
+    { name: 'Sorare Morning Picks', time: '11:00 AM ET', scheduleHour: 11, scheduleMinute: 0, status: 'active', desc: 'Spin wheel, activate missions, Quick Play picks, burn dupes', recurring: false, prevHour: 7, prevMinute: 0 },
+    { name: 'Afternoon Brief', time: '1:00 PM ET', scheduleHour: 13, scheduleMinute: 0, status: 'scheduled', desc: 'Midday market update, breaking AI announcements', recurring: false, prevHour: 11, prevMinute: 0 },
+    { name: 'Sorare Evening Strategy', time: '5:00 PM ET', scheduleHour: 17, scheduleMinute: 0, status: 'scheduled', desc: 'Final lineup locks, injury updates, competition entry', recurring: false, prevHour: 13, prevMinute: 0 },
+    { name: 'Evening Brief', time: '8:00 PM ET', scheduleHour: 20, scheduleMinute: 0, status: 'scheduled', desc: 'End of day wrap, after-hours moves, overnight preview', recurring: false, prevHour: 17, prevMinute: 0 },
+    { name: 'Market Intelligence Scan', time: 'Every 4 hours', scheduleHour: -1, scheduleMinute: 0, status: 'active', desc: 'Continuous monitoring of AI value chain developments', recurring: true }
   ];
-
-  function getETNow() {
-    var str = new Date().toLocaleString('en-US', { timeZone: 'America/New_York' });
-    return new Date(str);
-  }
-
+  function getETNow() { return new Date(new Date().toLocaleString('en-US', { timeZone: 'America/New_York' })); }
   function calcProgress(job) {
-    var now = getETNow();
-    var currentMinutes = now.getHours() * 60 + now.getMinutes();
-
-    if (job.recurring) {
-      var blockMinutes = 240;
-      var minutesIntoBlock = currentMinutes % blockMinutes;
-      return Math.min(100, Math.round((minutesIntoBlock / blockMinutes) * 100));
-    }
-
-    var targetMinutes = job.scheduleHour * 60 + job.scheduleMinute;
-    var prevMinutes = job.prevHour * 60 + job.prevMinute;
-
-    if (currentMinutes >= targetMinutes) {
-      return 100;
-    }
-
-    var windowSize = targetMinutes - prevMinutes;
-    if (windowSize <= 0) windowSize = 60;
-
-    var elapsed = currentMinutes - prevMinutes;
-    if (elapsed < 0) return 0;
-
-    return Math.min(100, Math.max(0, Math.round((elapsed / windowSize) * 100)));
+    var now = getETNow(), cm = now.getHours()*60+now.getMinutes();
+    if (job.recurring) return Math.min(100, Math.round((cm%240)/240*100));
+    var t = job.scheduleHour*60+job.scheduleMinute, p = job.prevHour*60+job.prevMinute;
+    if (cm >= t) return 100;
+    var w = t-p; if (w<=0) w=60;
+    var e = cm-p; if (e<0) return 0;
+    return Math.min(100, Math.max(0, Math.round(e/w*100)));
   }
-
   function getStatusForJob(job) {
-    var now = getETNow();
-    var currentMinutes = now.getHours() * 60 + now.getMinutes();
-    var targetMinutes = job.scheduleHour * 60 + job.scheduleMinute;
-
+    var now = getETNow(), cm = now.getHours()*60+now.getMinutes(), t = job.scheduleHour*60+job.scheduleMinute;
     if (job.recurring) return job.status;
-    if (currentMinutes >= targetMinutes) return 'completed';
-    if (targetMinutes - currentMinutes <= 30 && targetMinutes - currentMinutes > 0) return 'active';
+    if (cm >= t) return 'completed';
+    if (t-cm <= 30 && t-cm > 0) return 'active';
     return job.status;
   }
-
   function renderJobs() {
-    var container = document.getElementById('jobsContainer');
-    var html = '';
-
-    for (var i = 0; i < jobs.length; i++) {
-      var job = jobs[i];
-      var progress = calcProgress(job);
-      var status = getStatusForJob(job);
-
-      var badgeClass = 'badge-' + status;
-      var statusLabel = status.charAt(0).toUpperCase() + status.slice(1);
-      var fillClass = status === 'active' ? 'progress-fill progress-fill-active' : 'progress-fill';
-
-      html += '<div class="job-card">';
-      html += '  <div class="job-header">';
-      html += '    <div><span class="job-name">' + job.name + '</span> <span class="job-time">' + job.time + '</span></div>';
-      html += '    <span class="badge ' + badgeClass + '">' + statusLabel + '</span>';
-      html += '  </div>';
-      html += '  <div class="progress-track"><div class="' + fillClass + '" style="width:' + progress + '%"></div></div>';
-      html += '  <div class="job-desc">' + job.desc + '</div>';
-      html += '</div>';
+    var c = document.getElementById('jobsContainer'), h = '';
+    for (var i=0;i<jobs.length;i++) {
+      var j=jobs[i], p=calcProgress(j), s=getStatusForJob(j);
+      h += '<div class="job-card"><div class="job-header"><div><span class="job-name">'+j.name+'</span> <span class="job-time">'+j.time+'</span></div><span class="badge badge-'+s+'">'+s.charAt(0).toUpperCase()+s.slice(1)+'</span></div><div class="progress-track"><div class="'+(s==='active'?'progress-fill progress-fill-active':'progress-fill')+'" style="width:'+p+'%"></div></div><div class="job-desc">'+j.desc+'</div></div>';
     }
-
-    container.innerHTML = html;
+    c.innerHTML = h;
   }
+  renderJobs(); setInterval(renderJobs, 30000);
 
-  renderJobs();
-  setInterval(renderJobs, 30000);
-
-  // ===== FEED TIMESTAMP =====
   function updateFeedTime() {
-    var now = getETNow();
-    var h = now.getHours();
-    var m = now.getMinutes();
-    var ampm = h >= 12 ? 'PM' : 'AM';
-    h = h % 12 || 12;
-    m = m < 10 ? '0' + m : m;
-    document.getElementById('feedTimestamp').textContent = 'UPDATED ' + h + ':' + m + ' ' + ampm + ' ET';
+    var n=getETNow(), h=n.getHours(), m=n.getMinutes(), a=h>=12?'PM':'AM';
+    h=h%12||12; m=m<10?'0'+m:m;
+    document.getElementById('feedTimestamp').textContent = 'UPDATED '+h+':'+m+' '+a+' ET';
   }
-  updateFeedTime();
-  setInterval(updateFeedTime, 60000);
+  updateFeedTime(); setInterval(updateFeedTime, 60000);
 })();
 </script>
 </body>
