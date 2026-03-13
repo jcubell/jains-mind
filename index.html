@@ -522,7 +522,7 @@
     if (arrowKeys.left && arrowKeys.right && !refreshing) {
       refreshing = true; arrowKeys.left = false; arrowKeys.right = false;
       showRefreshIndicator();
-      setTimeout(function() { location.reload(); }, 400);
+      setTimeout(function() { window.location.href = window.location.pathname + '?t=' + Date.now(); }, 400);
     }
   });
   document.addEventListener('keyup', function(e) {
