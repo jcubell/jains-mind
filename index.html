@@ -1,0 +1,826 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>J.AI.N'S Mind — Command Center</title>
+<meta http-equiv="refresh" content="10">
+<style>
+  /* ===== RESET & BASE ===== */
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --bg: #0a0a0f;
+    --bg-panel: #0d0d18;
+    --blue: #0066ff;
+    --blue-bright: #3388ff;
+    --blue-dim: #003399;
+    --neon: #00ff88;
+    --neon-dim: #00cc6a;
+    --cyan: #00e5ff;
+    --white: #f0f0f5;
+    --white-dim: #c8c8d8;
+    --border: rgba(0, 102, 255, 0.25);
+    --glow-blue: 0 0 12px rgba(0, 102, 255, 0.35), 0 0 30px rgba(0, 102, 255, 0.15), inset 0 0 30px rgba(0, 102, 255, 0.03);
+    --glow-neon: 0 0 12px rgba(0, 255, 136, 0.35), 0 0 30px rgba(0, 255, 136, 0.15), inset 0 0 30px rgba(0, 255, 136, 0.03);
+    --font: 'Courier New', 'Consolas', 'SF Mono', 'Fira Code', monospace;
+  }
+
+  html, body {
+    width: 100%; height: 100%;
+    overflow: hidden;
+    background: var(--bg);
+    color: var(--white);
+    font-family: var(--font);
+    font-size: 13px;
+    line-height: 1.5;
+  }
+
+  /* ===== SCANLINE OVERLAY ===== */
+  body::before {
+    content: '';
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(0, 102, 255, 0.015) 2px,
+      rgba(0, 102, 255, 0.015) 4px
+    );
+    pointer-events: none;
+    z-index: 9999;
+  }
+
+  /* ===== AMBIENT GLOW ORBS ===== */
+  .orb {
+    position: fixed;
+    border-radius: 50%;
+    filter: blur(80px);
+    opacity: 0.12;
+    pointer-events: none;
+    z-index: 0;
+  }
+  .orb-1 {
+    width: 400px; height: 400px;
+    background: var(--blue);
+    top: -100px; left: -100px;
+    animation: orb-drift-1 20s ease-in-out infinite;
+  }
+  .orb-2 {
+    width: 350px; height: 350px;
+    background: var(--neon);
+    bottom: -80px; right: -80px;
+    animation: orb-drift-2 25s ease-in-out infinite;
+  }
+  .orb-3 {
+    width: 300px; height: 300px;
+    background: var(--cyan);
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    animation: orb-drift-3 30s ease-in-out infinite;
+  }
+
+  @keyframes orb-drift-1 {
+    0%, 100% { transform: translate(0, 0); }
+    25% { transform: translate(80px, 60px); }
+    50% { transform: translate(40px, 120px); }
+    75% { transform: translate(100px, 40px); }
+  }
+  @keyframes orb-drift-2 {
+    0%, 100% { transform: translate(0, 0); }
+    25% { transform: translate(-60px, -80px); }
+    50% { transform: translate(-100px, -40px); }
+    75% { transform: translate(-40px, -100px); }
+  }
+  @keyframes orb-drift-3 {
+    0%, 100% { transform: translate(-50%, -50%) scale(1); }
+    33% { transform: translate(-40%, -60%) scale(1.15); }
+    66% { transform: translate(-60%, -40%) scale(0.9); }
+  }
+
+  /* ===== MAIN LAYOUT ===== */
+  .dashboard {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+    gap: 12px;
+    padding: 12px;
+    width: 100%; height: 100vh;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* ===== PANEL STYLING ===== */
+  .panel {
+    background: var(--bg-panel);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+  }
+  .panel::before {
+    content: '';
+    position: absolute;
+    inset: -1px;
+    border-radius: 8px;
+    padding: 1px;
+    background: linear-gradient(135deg, rgba(0, 102, 255, 0.3), rgba(0, 255, 136, 0.15), rgba(0, 102, 255, 0.1));
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+  }
+  .panel-glow-blue { box-shadow: var(--glow-blue); }
+  .panel-glow-neon { box-shadow: var(--glow-neon); }
+  .panel-glow-mixed { box-shadow: 0 0 12px rgba(0, 102, 255, 0.25), 0 0 12px rgba(0, 255, 136, 0.2), 0 0 40px rgba(0, 102, 255, 0.08), inset 0 0 30px rgba(0, 102, 255, 0.02); }
+
+  .panel-header {
+    padding: 14px 18px 10px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-shrink: 0;
+    background: linear-gradient(180deg, rgba(0, 102, 255, 0.06) 0%, transparent 100%);
+  }
+  .panel-header h2 {
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--blue-bright);
+  }
+  .panel-body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 14px 18px;
+  }
+
+  /* Scrollbar */
+  .panel-body::-webkit-scrollbar { width: 4px; }
+  .panel-body::-webkit-scrollbar-track { background: transparent; }
+  .panel-body::-webkit-scrollbar-thumb { background: var(--blue-dim); border-radius: 4px; }
+
+  /* ===== TOP HEADER BAR ===== */
+  .top-bar {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    height: 44px;
+    background: linear-gradient(180deg, rgba(10, 10, 15, 0.98) 0%, rgba(10, 10, 15, 0.9) 100%);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 20px;
+    z-index: 100;
+    backdrop-filter: blur(10px);
+  }
+  .top-bar-title {
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--neon);
+    text-shadow: 0 0 20px rgba(0, 255, 136, 0.5), 0 0 40px rgba(0, 255, 136, 0.2);
+  }
+  .top-bar-right {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
+  .live-clock {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--cyan);
+    letter-spacing: 1px;
+  }
+  .status-indicator {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 11px;
+    color: var(--neon);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+  .status-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--neon);
+    box-shadow: 0 0 8px var(--neon), 0 0 16px var(--neon);
+    animation: pulse-dot 2s ease-in-out infinite;
+  }
+  @keyframes pulse-dot {
+    0%, 100% { opacity: 1; box-shadow: 0 0 8px var(--neon), 0 0 16px var(--neon); }
+    50% { opacity: 0.5; box-shadow: 0 0 4px var(--neon), 0 0 8px var(--neon); }
+  }
+
+  .dashboard {
+    padding-top: 56px;
+  }
+
+  /* ===== TOP-LEFT: J.AI.N'S MIND ===== */
+  .objective-section {
+    padding: 12px 18px;
+    border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
+  }
+  .objective-label {
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--blue-bright);
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .objective-dot {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: var(--cyan);
+    box-shadow: 0 0 8px var(--cyan);
+    animation: pulse-cyan 2.5s ease-in-out infinite;
+  }
+  @keyframes pulse-cyan {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+  .objective-text {
+    font-size: 14px;
+    color: var(--neon);
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    text-shadow: 0 0 15px rgba(0, 255, 136, 0.25);
+  }
+
+  /* Log entries */
+  .log-entry {
+    padding: 10px 12px;
+    border-left: 2px solid var(--blue-dim);
+    margin-bottom: 8px;
+    font-size: 12px;
+    color: var(--white-dim);
+    transition: all 0.3s;
+    background: transparent;
+    border-radius: 0 4px 4px 0;
+  }
+  .log-entry:first-child {
+    border-left-color: var(--neon);
+    border-left-width: 3px;
+    color: var(--white);
+    background: rgba(0, 255, 136, 0.05);
+    box-shadow: inset 0 0 20px rgba(0, 255, 136, 0.04), 0 0 10px rgba(0, 255, 136, 0.05);
+  }
+  .log-timestamp {
+    color: var(--blue-bright);
+    font-weight: 600;
+    margin-right: 4px;
+  }
+  .log-text {
+    color: inherit;
+  }
+  .blink-cursor {
+    display: inline-block;
+    margin-top: 12px;
+    margin-left: 12px;
+    color: var(--neon);
+    font-size: 14px;
+    animation: blink 1s step-end infinite;
+  }
+  @keyframes blink {
+    0%, 50% { opacity: 1; }
+    51%, 100% { opacity: 0; }
+  }
+
+  /* ===== BOTTOM-LEFT: TODAY'S JOBS ===== */
+  .job-card {
+    background: rgba(0, 102, 255, 0.04);
+    border: 1px solid rgba(0, 102, 255, 0.15);
+    border-radius: 6px;
+    padding: 12px 14px;
+    margin-bottom: 10px;
+    position: relative;
+  }
+  .job-card:hover {
+    border-color: rgba(0, 102, 255, 0.35);
+    background: rgba(0, 102, 255, 0.07);
+  }
+  .job-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 6px;
+  }
+  .job-name {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--white);
+    letter-spacing: 0.5px;
+  }
+  .job-time {
+    font-size: 11px;
+    color: var(--blue-bright);
+    letter-spacing: 0.5px;
+  }
+  .badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 3px;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+  .badge-scheduled {
+    background: rgba(0, 102, 255, 0.15);
+    color: var(--blue-bright);
+    border: 1px solid rgba(0, 102, 255, 0.3);
+  }
+  .badge-active {
+    background: rgba(0, 255, 136, 0.12);
+    color: var(--neon);
+    border: 1px solid rgba(0, 255, 136, 0.3);
+    animation: badge-glow 2s ease-in-out infinite;
+  }
+  .badge-completed {
+    background: rgba(0, 229, 255, 0.1);
+    color: var(--cyan);
+    border: 1px solid rgba(0, 229, 255, 0.3);
+  }
+  @keyframes badge-glow {
+    0%, 100% { box-shadow: none; }
+    50% { box-shadow: 0 0 8px rgba(0, 255, 136, 0.2); }
+  }
+
+  .progress-track {
+    width: 100%;
+    height: 4px;
+    background: rgba(0, 102, 255, 0.1);
+    border-radius: 2px;
+    margin: 8px 0 6px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    border-radius: 2px;
+    background: linear-gradient(90deg, var(--blue), var(--neon));
+    transition: width 0.5s ease;
+  }
+  .progress-fill-active {
+    background: linear-gradient(90deg, var(--neon-dim), var(--neon));
+  }
+
+  .job-desc {
+    font-size: 11px;
+    color: var(--blue-bright);
+    letter-spacing: 0.3px;
+    line-height: 1.4;
+  }
+
+  /* ===== RIGHT HALF: LIVE INTELLIGENCE ===== */
+  .right-panel {
+    grid-column: 2;
+    grid-row: 1 / 3;
+  }
+  .intel-section {
+    margin-bottom: 16px;
+  }
+  .intel-section:last-child {
+    margin-bottom: 0;
+  }
+  .intel-section-header {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--blue-bright);
+    padding-bottom: 8px;
+    margin-bottom: 10px;
+    border-bottom: 1px solid rgba(0, 102, 255, 0.15);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .intel-section-header .section-icon {
+    width: 6px; height: 6px;
+    background: var(--neon);
+    border-radius: 1px;
+    transform: rotate(45deg);
+  }
+
+  .intel-item {
+    padding: 9px 12px;
+    border-left: 2px solid rgba(0, 102, 255, 0.2);
+    margin-bottom: 6px;
+    transition: all 0.2s;
+    border-radius: 0 4px 4px 0;
+  }
+  .intel-item:hover {
+    border-left-color: var(--neon);
+    background: rgba(0, 255, 136, 0.03);
+  }
+  .intel-item a {
+    text-decoration: none;
+    color: var(--neon);
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.2px;
+    line-height: 1.5;
+    display: block;
+    text-shadow: 0 0 10px rgba(0, 255, 136, 0.1);
+  }
+  .intel-item a:hover {
+    color: var(--white);
+    text-shadow: 0 0 10px rgba(0, 255, 136, 0.3);
+  }
+  .intel-source {
+    font-size: 10px;
+    color: var(--blue-bright);
+    margin-top: 3px;
+    letter-spacing: 0.5px;
+  }
+
+  .divider {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--border), transparent);
+    margin: 16px 0;
+  }
+
+  /* ===== FOOTER ===== */
+  .footer-attr {
+    position: fixed;
+    bottom: 6px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 100;
+    font-size: 10px;
+    letter-spacing: 0.5px;
+  }
+  .footer-attr a {
+    color: var(--blue-dim);
+    text-decoration: none;
+  }
+  .footer-attr a:hover {
+    color: var(--blue-bright);
+  }
+
+  /* ===== RESPONSIVE ===== */
+  @media (max-width: 1024px) {
+    .dashboard {
+      grid-template-columns: 1fr;
+      grid-template-rows: auto;
+      overflow-y: auto;
+      height: auto;
+    }
+    .right-panel {
+      grid-column: 1;
+      grid-row: auto;
+    }
+  }
+</style>
+</head>
+<body>
+
+<!-- Ambient Orbs -->
+<div class="orb orb-1"></div>
+<div class="orb orb-2"></div>
+<div class="orb orb-3"></div>
+
+<!-- Top Bar -->
+<div class="top-bar">
+  <div class="top-bar-title">J.AI.N'S Mind -- Command Center</div>
+  <div class="top-bar-right">
+    <div class="status-indicator">
+      <div class="status-dot"></div>
+      <span>Systems Online</span>
+    </div>
+    <div class="live-clock" id="liveClock">--:--:-- ET</div>
+  </div>
+</div>
+
+<!-- Dashboard Grid -->
+<div class="dashboard">
+
+  <!-- TOP-LEFT: J.AI.N'S MIND -->
+  <div class="panel panel-glow-neon">
+    <div class="panel-header">
+      <h2>J.AI.N'S Mind</h2>
+      <span style="font-size: 10px; color: var(--blue-bright); letter-spacing: 1px;">COGNITIVE ENGINE v2.6</span>
+    </div>
+    <div class="objective-section">
+      <div class="objective-label">
+        <div class="objective-dot"></div>
+        Current Objective
+      </div>
+      <div class="objective-text">Monitoring AI Value Chain &amp; Sorare Automation</div>
+    </div>
+    <div class="panel-body">
+      <div style="font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--blue-bright); margin-bottom: 10px;">Steps &amp; Decisions</div>
+
+      <div class="log-entry">
+        <span class="log-timestamp">03/13 11:00 AM</span>
+        <span class="log-text">-- Configured daily brief schedule (7 AM / 1 PM / 8 PM ET)</span>
+      </div>
+      <div class="log-entry">
+        <span class="log-timestamp">03/13 10:45 AM</span>
+        <span class="log-text">-- Sorare NBA lineups optimized for GW Mar 13-16</span>
+      </div>
+      <div class="log-entry">
+        <span class="log-timestamp">03/13 10:30 AM</span>
+        <span class="log-text">-- Scrapped 28 duplicate common cards -> 328 Common Essence</span>
+      </div>
+      <div class="log-entry">
+        <span class="log-timestamp">03/13 10:15 AM</span>
+        <span class="log-text">-- Market intelligence scan completed</span>
+      </div>
+      <div class="log-entry">
+        <span class="log-timestamp">03/13 10:00 AM</span>
+        <span class="log-text">-- X API integration configured</span>
+      </div>
+      <div class="log-entry">
+        <span class="log-timestamp">03/13 09:45 AM</span>
+        <span class="log-text">-- Dashboard deployed to GitHub Pages</span>
+      </div>
+
+      <div class="blink-cursor">_</div>
+    </div>
+  </div>
+
+  <!-- BOTTOM-LEFT: TODAY'S JOBS -->
+  <div class="panel panel-glow-blue">
+    <div class="panel-header">
+      <h2>Today's Jobs</h2>
+      <span style="font-size: 10px; color: var(--neon); letter-spacing: 1px;" id="jobCount">6 JOBS</span>
+    </div>
+    <div class="panel-body" id="jobsContainer">
+      <!-- Jobs populated by JS -->
+    </div>
+  </div>
+
+  <!-- RIGHT HALF: LIVE INTELLIGENCE FEED -->
+  <div class="panel panel-glow-mixed right-panel">
+    <div class="panel-header">
+      <h2>Live Intelligence Feed</h2>
+      <span style="font-size: 10px; color: var(--neon); letter-spacing: 1px;" id="feedTimestamp">LIVE</span>
+    </div>
+    <div class="panel-body">
+
+      <!-- AI Value Chain Updates -->
+      <div class="intel-section">
+        <div class="intel-section-header">
+          <div class="section-icon"></div>
+          AI Value Chain Updates
+        </div>
+
+        <div class="intel-item">
+          <a href="https://www.nvidia.com/gtc/" target="_blank" rel="noopener noreferrer">NVIDIA GTC 2026: Jensen Huang Keynote Set for Monday Mar 16</a>
+          <div class="intel-source">nvidia.com</div>
+        </div>
+        <div class="intel-item">
+          <a href="https://www.reuters.com" target="_blank" rel="noopener noreferrer">OpenAI Closes $110B Mega-Round -- $50B Amazon, $30B Each from NVIDIA &amp; SoftBank</a>
+          <div class="intel-source">reuters.com</div>
+        </div>
+        <div class="intel-item">
+          <a href="https://www.deepseek.com" target="_blank" rel="noopener noreferrer">DeepSeek V4: 1T Parameter Open-Weight Model Released</a>
+          <div class="intel-source">deepseek.com</div>
+        </div>
+        <div class="intel-item">
+          <a href="https://openai.com" target="_blank" rel="noopener noreferrer">GPT-5.3 'Garlic' Approaching Full API Rollout</a>
+          <div class="intel-source">openai.com</div>
+        </div>
+        <div class="intel-item">
+          <a href="https://x.ai" target="_blank" rel="noopener noreferrer">Grok 4.20 Four-Agent Architecture Debuts</a>
+          <div class="intel-source">x.ai</div>
+        </div>
+        <div class="intel-item">
+          <a href="https://deepmind.google" target="_blank" rel="noopener noreferrer">Gemini 3.1 Pro Dominates Benchmarks</a>
+          <div class="intel-source">deepmind.google</div>
+        </div>
+        <div class="intel-item">
+          <a href="https://www.anthropic.com" target="_blank" rel="noopener noreferrer">Anthropic Wins Pentagon AI Contract Over OpenAI</a>
+          <div class="intel-source">anthropic.com</div>
+        </div>
+        <div class="intel-item">
+          <a href="https://www.reuters.com" target="_blank" rel="noopener noreferrer">Chinese AI Labs Accelerate Release Velocity</a>
+          <div class="intel-source">reuters.com</div>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <!-- AI Impact on Enterprise SaaS -->
+      <div class="intel-section">
+        <div class="intel-section-header">
+          <div class="section-icon"></div>
+          AI Impact on Enterprise SaaS
+        </div>
+
+        <div class="intel-item">
+          <a href="https://www.bloomberg.com" target="_blank" rel="noopener noreferrer">SaaS Sector Down 21% YTD -- $1T+ Market Cap Wiped</a>
+          <div class="intel-source">bloomberg.com</div>
+        </div>
+        <div class="intel-item">
+          <a href="https://www.salesforce.com" target="_blank" rel="noopener noreferrer">Salesforce Announces $25B Accelerated Share Repurchase</a>
+          <div class="intel-source">salesforce.com</div>
+        </div>
+        <div class="intel-item">
+          <a href="https://www.servicenow.com" target="_blank" rel="noopener noreferrer">ServiceNow Down 33% YTD Despite Sub Revenue +21%</a>
+          <div class="intel-source">servicenow.com</div>
+        </div>
+        <div class="intel-item">
+          <a href="https://www.cfodive.com" target="_blank" rel="noopener noreferrer">85% of Fortune 500 Mention AI in 10-K, Few Tie to Revenue -- CFO Dive</a>
+          <div class="intel-source">cfodive.com</div>
+        </div>
+        <div class="intel-item">
+          <a href="https://www.atlassian.com" target="_blank" rel="noopener noreferrer">Atlassian Cuts 10% Workforce Citing AI Efficiency</a>
+          <div class="intel-source">atlassian.com</div>
+        </div>
+        <div class="intel-item">
+          <a href="https://www.c3.ai" target="_blank" rel="noopener noreferrer">C3.ai Reports $135M Cost Reduction, 26% Headcount Cut</a>
+          <div class="intel-source">c3.ai</div>
+        </div>
+        <div class="intel-item">
+          <a href="https://www.gartner.com" target="_blank" rel="noopener noreferrer">Gartner: Enterprise Software Spend +15% to $1.4T Despite Selloff</a>
+          <div class="intel-source">gartner.com</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+
+<!-- Footer -->
+<div class="footer-attr">
+  <a href="https://www.perplexity.ai/computer" target="_blank" rel="noopener noreferrer">Created with Perplexity Computer</a>
+</div>
+
+<script>
+(function() {
+  // ===== LIVE CLOCK =====
+  function updateClock() {
+    var now = new Date();
+    var options = {
+      timeZone: 'America/New_York',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+      hour12: true
+    };
+    var timeStr = now.toLocaleTimeString('en-US', options);
+    document.getElementById('liveClock').textContent = timeStr + ' ET';
+  }
+  updateClock();
+  setInterval(updateClock, 1000);
+
+  // ===== JOBS DATA & PROGRESS =====
+  var jobs = [
+    {
+      name: 'Morning Brief',
+      time: '7:00 AM ET',
+      scheduleHour: 7, scheduleMinute: 0,
+      status: 'scheduled',
+      desc: 'AI news digest, market movers, SEC filing scan',
+      recurring: false,
+      prevHour: 0, prevMinute: 0
+    },
+    {
+      name: 'Sorare Morning Picks',
+      time: '11:00 AM ET',
+      scheduleHour: 11, scheduleMinute: 0,
+      status: 'active',
+      desc: 'Spin wheel, activate missions, Quick Play picks, burn dupes',
+      recurring: false,
+      prevHour: 7, prevMinute: 0
+    },
+    {
+      name: 'Afternoon Brief',
+      time: '1:00 PM ET',
+      scheduleHour: 13, scheduleMinute: 0,
+      status: 'scheduled',
+      desc: 'Midday market update, breaking AI announcements',
+      recurring: false,
+      prevHour: 11, prevMinute: 0
+    },
+    {
+      name: 'Sorare Evening Strategy',
+      time: '5:00 PM ET',
+      scheduleHour: 17, scheduleMinute: 0,
+      status: 'scheduled',
+      desc: 'Final lineup locks, injury updates, competition entry',
+      recurring: false,
+      prevHour: 13, prevMinute: 0
+    },
+    {
+      name: 'Evening Brief',
+      time: '8:00 PM ET',
+      scheduleHour: 20, scheduleMinute: 0,
+      status: 'scheduled',
+      desc: 'End of day wrap, after-hours moves, overnight preview',
+      recurring: false,
+      prevHour: 17, prevMinute: 0
+    },
+    {
+      name: 'Market Intelligence Scan',
+      time: 'Every 4 hours',
+      scheduleHour: -1, scheduleMinute: 0,
+      status: 'active',
+      desc: 'Continuous monitoring of AI value chain developments',
+      recurring: true
+    }
+  ];
+
+  function getETNow() {
+    var str = new Date().toLocaleString('en-US', { timeZone: 'America/New_York' });
+    return new Date(str);
+  }
+
+  function calcProgress(job) {
+    var now = getETNow();
+    var currentMinutes = now.getHours() * 60 + now.getMinutes();
+
+    if (job.recurring) {
+      // Every 4 hours: show progress within current 4-hour block
+      var blockMinutes = 240;
+      var minutesIntoBlock = currentMinutes % blockMinutes;
+      return Math.min(100, Math.round((minutesIntoBlock / blockMinutes) * 100));
+    }
+
+    var targetMinutes = job.scheduleHour * 60 + job.scheduleMinute;
+    var prevMinutes = job.prevHour * 60 + job.prevMinute;
+
+    if (currentMinutes >= targetMinutes) {
+      return 100;
+    }
+
+    var windowSize = targetMinutes - prevMinutes;
+    if (windowSize <= 0) windowSize = 60;
+
+    var elapsed = currentMinutes - prevMinutes;
+    if (elapsed < 0) return 0;
+
+    return Math.min(100, Math.max(0, Math.round((elapsed / windowSize) * 100)));
+  }
+
+  function getStatusForJob(job) {
+    var now = getETNow();
+    var currentMinutes = now.getHours() * 60 + now.getMinutes();
+    var targetMinutes = job.scheduleHour * 60 + job.scheduleMinute;
+
+    if (job.recurring) return job.status;
+    if (currentMinutes >= targetMinutes) return 'completed';
+    // Check if within 30 min of scheduled time
+    if (targetMinutes - currentMinutes <= 30 && targetMinutes - currentMinutes > 0) return 'active';
+    return job.status;
+  }
+
+  function renderJobs() {
+    var container = document.getElementById('jobsContainer');
+    var html = '';
+
+    for (var i = 0; i < jobs.length; i++) {
+      var job = jobs[i];
+      var progress = calcProgress(job);
+      var status = getStatusForJob(job);
+
+      var badgeClass = 'badge-' + status;
+      var statusLabel = status.charAt(0).toUpperCase() + status.slice(1);
+      var fillClass = status === 'active' ? 'progress-fill progress-fill-active' : 'progress-fill';
+
+      html += '<div class="job-card">';
+      html += '  <div class="job-header">';
+      html += '    <div><span class="job-name">' + job.name + '</span> <span class="job-time">' + job.time + '</span></div>';
+      html += '    <span class="badge ' + badgeClass + '">' + statusLabel + '</span>';
+      html += '  </div>';
+      html += '  <div class="progress-track"><div class="' + fillClass + '" style="width:' + progress + '%"></div></div>';
+      html += '  <div class="job-desc">' + job.desc + '</div>';
+      html += '</div>';
+    }
+
+    container.innerHTML = html;
+  }
+
+  renderJobs();
+  // Update jobs every 30 seconds
+  setInterval(renderJobs, 30000);
+
+  // ===== FEED TIMESTAMP =====
+  function updateFeedTime() {
+    var now = getETNow();
+    var h = now.getHours();
+    var m = now.getMinutes();
+    var ampm = h >= 12 ? 'PM' : 'AM';
+    h = h % 12 || 12;
+    m = m < 10 ? '0' + m : m;
+    document.getElementById('feedTimestamp').textContent = 'UPDATED ' + h + ':' + m + ' ' + ampm + ' ET';
+  }
+  updateFeedTime();
+  setInterval(updateFeedTime, 60000);
+})();
+</script>
+</body>
+</html>
