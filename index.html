@@ -885,13 +885,44 @@
 
   // ===== LEFT+RIGHT ARROW FORCE REFRESH =====
   var arrowKeys = { left: false, right: false };
+  var refreshing = false;
+
+  // Create flash overlay
+  var flashEl = document.createElement('div');
+  flashEl.style.cssText = 'position:fixed;inset:0;z-index:99998;pointer-events:none;opacity:0;transition:opacity 0.15s ease;background:radial-gradient(ellipse at center,rgba(0,255,136,0.12) 0%,transparent 70%);border:1px solid rgba(0,255,136,0.25);';
+  document.body.appendChild(flashEl);
+
+  // Create "REFRESHED" toast
+  var toastEl = document.createElement('div');
+  toastEl.textContent = 'SYNCED';
+  toastEl.style.cssText = 'position:fixed;top:52px;left:50%;transform:translateX(-50%) translateY(-8px);z-index:99998;pointer-events:none;opacity:0;font-family:var(--font);font-size:11px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:#00ff88;background:rgba(0,255,136,0.08);border:1px solid rgba(0,255,136,0.3);padding:5px 18px;border-radius:4px;text-shadow:0 0 10px rgba(0,255,136,0.5);box-shadow:0 0 15px rgba(0,255,136,0.15);transition:opacity 0.2s ease,transform 0.2s ease;';
+  document.body.appendChild(toastEl);
+
+  function showRefreshIndicator() {
+    // Flash the border
+    flashEl.style.opacity = '1';
+    // Show toast
+    toastEl.style.opacity = '1';
+    toastEl.style.transform = 'translateX(-50%) translateY(0)';
+    // Fade out after 800ms
+    setTimeout(function() {
+      flashEl.style.opacity = '0';
+      toastEl.style.opacity = '0';
+      toastEl.style.transform = 'translateX(-50%) translateY(-8px)';
+    }, 800);
+  }
+
   document.addEventListener('keydown', function(e) {
     if (e.key === 'ArrowLeft') arrowKeys.left = true;
     if (e.key === 'ArrowRight') arrowKeys.right = true;
-    if (arrowKeys.left && arrowKeys.right) {
+    if (arrowKeys.left && arrowKeys.right && !refreshing) {
+      refreshing = true;
       arrowKeys.left = false;
       arrowKeys.right = false;
-      location.reload();
+      // Force re-poll state instead of full reload so animation is visible
+      pollState();
+      showRefreshIndicator();
+      setTimeout(function() { refreshing = false; }, 1000);
     }
   });
   document.addEventListener('keyup', function(e) {
