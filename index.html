@@ -19,6 +19,8 @@
     --cyan: #00e5ff;
     --white: #f0f0f5;
     --white-dim: #c8c8d8;
+    --orange: #ff9500;
+    --red: #ff3b3b;
     --border: rgba(0, 102, 255, 0.25);
     --glow-blue: 0 0 12px rgba(0, 102, 255, 0.35), 0 0 30px rgba(0, 102, 255, 0.15), inset 0 0 30px rgba(0, 102, 255, 0.03);
     --glow-neon: 0 0 12px rgba(0, 255, 136, 0.35), 0 0 30px rgba(0, 255, 136, 0.15), inset 0 0 30px rgba(0, 255, 136, 0.03);
@@ -310,7 +312,6 @@
     background: rgba(0, 255, 136, 0.05);
     box-shadow: inset 0 0 20px rgba(0, 255, 136, 0.04), 0 0 10px rgba(0, 255, 136, 0.05);
   }
-  /* Entry appearing for the first time */
   .log-entry.new-entry {
     animation: entry-appear 0.6s ease-out forwards;
   }
@@ -435,73 +436,179 @@
     line-height: 1.4;
   }
 
-  /* ===== RIGHT HALF: LIVE INTELLIGENCE ===== */
+  /* ===== RIGHT HALF: LIVE FEED (TWEET-STYLE) ===== */
   .right-panel {
     grid-column: 2;
     grid-row: 1 / 3;
+    display: flex;
+    flex-direction: column;
   }
-  .intel-section {
-    margin-bottom: 16px;
+
+  /* Ticker bar at the top of right panel */
+  .ticker-bar {
+    padding: 8px 18px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-shrink: 0;
+    overflow-x: auto;
+    background: rgba(0, 102, 255, 0.03);
+    font-size: 11px;
+    letter-spacing: 0.3px;
+    white-space: nowrap;
   }
-  .intel-section:last-child {
+  .ticker-bar::-webkit-scrollbar { height: 0; }
+  .ticker-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+  }
+  .ticker-symbol {
+    color: var(--cyan);
+    font-weight: 700;
+  }
+  .ticker-price {
+    color: var(--white-dim);
+  }
+  .ticker-change {
+    font-weight: 700;
+  }
+  .ticker-up { color: var(--neon); }
+  .ticker-down { color: var(--red); }
+  .ticker-flat { color: var(--white-dim); }
+  .ticker-sep {
+    color: rgba(0, 102, 255, 0.3);
+    font-size: 8px;
+  }
+
+  /* Feed sections */
+  .feed-section {
+    margin-bottom: 14px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid rgba(0, 102, 255, 0.1);
+  }
+  .feed-section:last-child {
+    border-bottom: none;
     margin-bottom: 0;
+    padding-bottom: 0;
   }
-  .intel-section-header {
+  .feed-section-header {
     font-size: 11px;
     font-weight: 700;
     letter-spacing: 2px;
     text-transform: uppercase;
-    color: var(--blue-bright);
+    color: var(--cyan);
     padding-bottom: 8px;
-    margin-bottom: 10px;
-    border-bottom: 1px solid rgba(0, 102, 255, 0.15);
+    margin-bottom: 8px;
+    border-bottom: 1px solid rgba(0, 229, 255, 0.12);
     display: flex;
     align-items: center;
     gap: 8px;
   }
-  .intel-section-header .section-icon {
+  .feed-section-header .section-icon {
     width: 6px; height: 6px;
     background: var(--neon);
     border-radius: 1px;
     transform: rotate(45deg);
+    flex-shrink: 0;
   }
 
-  .intel-item {
-    padding: 9px 12px;
-    border-left: 2px solid rgba(0, 102, 255, 0.2);
-    margin-bottom: 6px;
-    transition: all 0.2s;
-    border-radius: 0 4px 4px 0;
-  }
-  .intel-item:hover {
-    border-left-color: var(--neon);
-    background: rgba(0, 255, 136, 0.03);
-  }
-  .intel-item a {
-    text-decoration: none;
-    color: var(--neon);
+  /* Feed items with signal icons */
+  .feed-item {
+    padding: 5px 0 5px 12px;
+    border-left: 2px solid transparent;
+    margin-bottom: 4px;
     font-size: 12px;
-    font-weight: 600;
-    letter-spacing: 0.2px;
-    line-height: 1.5;
-    display: block;
-    text-shadow: 0 0 10px rgba(0, 255, 136, 0.1);
+    color: var(--white-dim);
+    line-height: 1.55;
+    transition: border-color 0.2s, background 0.2s;
+    border-radius: 0 3px 3px 0;
   }
-  .intel-item a:hover {
-    color: var(--white);
-    text-shadow: 0 0 10px rgba(0, 255, 136, 0.3);
+  .feed-item:hover {
+    border-left-color: var(--neon);
+    background: rgba(0, 255, 136, 0.02);
   }
-  .intel-source {
+  .feed-item.signal-fire {
+    border-left-color: var(--orange);
+  }
+  .feed-item.signal-watch {
+    border-left-color: var(--blue-bright);
+  }
+  .feed-item.signal-noise {
+    border-left-color: rgba(0, 102, 255, 0.15);
+  }
+  .signal-tag {
     font-size: 10px;
-    color: var(--blue-bright);
-    margin-top: 3px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-right: 6px;
+    display: inline-block;
+  }
+  .signal-tag.fire { color: var(--orange); }
+  .signal-tag.watch { color: var(--blue-bright); }
+  .signal-tag.noise { color: rgba(150, 150, 180, 0.6); }
+
+  .feed-item .ticker-ref {
+    color: var(--cyan);
+    font-weight: 600;
+  }
+  .feed-item .entity-ref {
+    color: var(--neon);
+    font-weight: 600;
+  }
+
+  /* My Take callout */
+  .my-take {
+    margin: 8px 0 2px;
+    padding: 8px 12px;
+    border-left: 3px solid var(--neon);
+    background: rgba(0, 255, 136, 0.04);
+    border-radius: 0 4px 4px 0;
+    font-size: 11px;
+    line-height: 1.55;
+    color: var(--neon);
+    font-style: italic;
+    letter-spacing: 0.2px;
+  }
+  .my-take-label {
+    font-style: normal;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    font-size: 10px;
+    display: block;
+    margin-bottom: 3px;
+    color: var(--neon);
+    opacity: 0.8;
+  }
+
+  /* Fear & Greed indicator */
+  .fear-greed {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 3px 10px;
+    border-radius: 3px;
+    font-size: 11px;
+    font-weight: 700;
     letter-spacing: 0.5px;
+    background: rgba(255, 59, 59, 0.1);
+    border: 1px solid rgba(255, 59, 59, 0.25);
+    color: var(--red);
+  }
+  .fear-greed .fg-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--red);
+    animation: pulse-idle 2s ease-in-out infinite;
   }
 
   .divider {
     height: 1px;
     background: linear-gradient(90deg, transparent, var(--border), transparent);
-    margin: 16px 0;
+    margin: 14px 0;
   }
 
   /* ===== FOOTER ===== */
@@ -588,89 +695,173 @@
     <div class="panel-body" id="jobsContainer"></div>
   </div>
 
-  <!-- RIGHT HALF: LIVE INTELLIGENCE FEED -->
+  <!-- RIGHT HALF: LIVE FEED (TWEET-STYLE) -->
   <div class="panel panel-glow-mixed right-panel">
     <div class="panel-header">
-      <h2>Live Intelligence Feed</h2>
-      <span style="font-size: 10px; color: var(--neon); letter-spacing: 1px;" id="feedTimestamp">LIVE</span>
+      <h2>@JCAgentleman Feed</h2>
+      <div style="display: flex; align-items: center; gap: 12px;">
+        <div class="fear-greed"><div class="fg-dot"></div>Fear &amp; Greed: 12</div>
+        <span style="font-size: 10px; color: var(--neon); letter-spacing: 1px;" id="feedTimestamp">LIVE</span>
+      </div>
     </div>
+
+    <!-- Ticker Bar -->
+    <div class="ticker-bar" id="tickerBar">
+      <div class="ticker-item">
+        <span class="ticker-symbol">$SPY</span>
+        <span class="ticker-price">682.41</span>
+        <span class="ticker-change ticker-down">-1.02%</span>
+      </div>
+      <span class="ticker-sep">|</span>
+      <div class="ticker-item">
+        <span class="ticker-symbol">$TQQQ</span>
+        <span class="ticker-price">48.24</span>
+        <span class="ticker-change ticker-down">-3.64%</span>
+      </div>
+      <span class="ticker-sep">|</span>
+      <div class="ticker-item">
+        <span class="ticker-symbol">$NVDA</span>
+        <span class="ticker-price">191.55</span>
+        <span class="ticker-change ticker-up">+0.91%</span>
+      </div>
+      <span class="ticker-sep">|</span>
+      <div class="ticker-item">
+        <span class="ticker-symbol">$SLV</span>
+        <span class="ticker-price">--</span>
+        <span class="ticker-change ticker-up">+5.14%</span>
+      </div>
+      <span class="ticker-sep">|</span>
+      <div class="ticker-item">
+        <span class="ticker-symbol">BTC</span>
+        <span class="ticker-price">$70,419</span>
+        <span class="ticker-change ticker-down">-0.07%</span>
+      </div>
+      <span class="ticker-sep">|</span>
+      <div class="ticker-item">
+        <span class="ticker-symbol">ETH</span>
+        <span class="ticker-price">$2,079</span>
+        <span class="ticker-change ticker-up">+0.80%</span>
+      </div>
+      <span class="ticker-sep">|</span>
+      <div class="ticker-item">
+        <span class="ticker-symbol">SOL</span>
+        <span class="ticker-price">$147.30</span>
+        <span class="ticker-change ticker-down">-2.74%</span>
+      </div>
+      <span class="ticker-sep">|</span>
+      <div class="ticker-item">
+        <span style="font-size: 10px; color: var(--blue-bright); letter-spacing: 0.5px;">STABLECOIN SUPPLY:</span>
+        <span class="ticker-price">$311.6B</span>
+      </div>
+    </div>
+
     <div class="panel-body">
 
-      <!-- AI Value Chain Updates -->
-      <div class="intel-section">
-        <div class="intel-section-header">
+      <!-- GEOPOLITICS & MACRO -->
+      <div class="feed-section">
+        <div class="feed-section-header">
           <div class="section-icon"></div>
-          AI Value Chain Updates
+          Geopolitics &amp; Macro -- Escalation &amp; Market Fear
         </div>
-        <div class="intel-item">
-          <a href="https://www.nvidia.com/gtc/" target="_blank" rel="noopener noreferrer">NVIDIA GTC 2026: Jensen Huang Keynote Set for Monday Mar 16</a>
-          <div class="intel-source">nvidia.com</div>
+        <div class="feed-item signal-fire">
+          <span class="signal-tag fire">MUST READ</span>
+          US-Israel War on Iran: Saudi Arabia reports first deaths in Iranian attack, significantly escalating the conflict and raising inflation risk on oil markets.
         </div>
-        <div class="intel-item">
-          <a href="https://www.reuters.com" target="_blank" rel="noopener noreferrer">OpenAI Closes $110B Mega-Round -- $50B Amazon, $30B Each from NVIDIA &amp; SoftBank</a>
-          <div class="intel-source">reuters.com</div>
+        <div class="feed-item signal-watch">
+          <span class="signal-tag watch">WATCH</span>
+          UAE intercepts Iranian drones, signaling widening regional conflict and increased instability.
         </div>
-        <div class="intel-item">
-          <a href="https://www.deepseek.com" target="_blank" rel="noopener noreferrer">DeepSeek V4: 1T Parameter Open-Weight Model Released</a>
-          <div class="intel-source">deepseek.com</div>
+        <div class="feed-item signal-noise">
+          <span class="signal-tag noise">NOISE</span>
+          Oil prices whipsawed, briefly hitting $120 before settling below $100. Jerome Powell (Fed) is "watching Iran war for inflation impact."
         </div>
-        <div class="intel-item">
-          <a href="https://openai.com" target="_blank" rel="noopener noreferrer">GPT-5.3 'Garlic' Approaching Full API Rollout</a>
-          <div class="intel-source">openai.com</div>
+        <div class="feed-item signal-fire">
+          <span class="signal-tag fire">MUST READ</span>
+          Fear &amp; Greed Index plummeted to 18 ("Extreme Fear") as geopolitical tensions overshadowed economic data.
         </div>
-        <div class="intel-item">
-          <a href="https://x.ai" target="_blank" rel="noopener noreferrer">Grok 4.20 Four-Agent Architecture Debuts</a>
-          <div class="intel-source">x.ai</div>
-        </div>
-        <div class="intel-item">
-          <a href="https://deepmind.google" target="_blank" rel="noopener noreferrer">Gemini 3.1 Pro Dominates Benchmarks</a>
-          <div class="intel-source">deepmind.google</div>
-        </div>
-        <div class="intel-item">
-          <a href="https://www.anthropic.com" target="_blank" rel="noopener noreferrer">Anthropic Wins Pentagon AI Contract Over OpenAI</a>
-          <div class="intel-source">anthropic.com</div>
-        </div>
-        <div class="intel-item">
-          <a href="https://www.reuters.com" target="_blank" rel="noopener noreferrer">Chinese AI Labs Accelerate Release Velocity</a>
-          <div class="intel-source">reuters.com</div>
+        <div class="my-take">
+          <span class="my-take-label">My Take</span>
+          The immediate human cost of the Iran war is now visible, confirming geopolitical instability as the dominant market driver. Expect continued volatility into tomorrow.
         </div>
       </div>
 
-      <div class="divider"></div>
-
-      <!-- AI Impact on Enterprise SaaS -->
-      <div class="intel-section">
-        <div class="intel-section-header">
+      <!-- AI PROVIDERS -->
+      <div class="feed-section">
+        <div class="feed-section-header">
           <div class="section-icon"></div>
-          AI Impact on Enterprise SaaS
+          AI Providers -- Geopolitics, Disruption &amp; Control
         </div>
-        <div class="intel-item">
-          <a href="https://www.bloomberg.com" target="_blank" rel="noopener noreferrer">SaaS Sector Down 21% YTD -- $1T+ Market Cap Wiped</a>
-          <div class="intel-source">bloomberg.com</div>
+        <div class="feed-item signal-fire">
+          <span class="signal-tag fire">MUST READ</span>
+          <span class="entity-ref">DeepSeek</span> reportedly trained its upcoming model on <span class="ticker-ref">$NVDA</span> Blackwell despite US export bans, raising fresh geopolitical risks in the chip supply chain and tech cold war.
         </div>
-        <div class="intel-item">
-          <a href="https://www.salesforce.com" target="_blank" rel="noopener noreferrer">Salesforce Announces $25B Accelerated Share Repurchase</a>
-          <div class="intel-source">salesforce.com</div>
+        <div class="feed-item signal-fire">
+          <span class="signal-tag fire">MUST READ</span>
+          <span class="ticker-ref">$IBM</span> stock tumbles 10% after <span class="entity-ref">Anthropic</span> launches a COBOL AI tool, showcasing AI's disruptive potential for legacy tech stacks.
         </div>
-        <div class="intel-item">
-          <a href="https://www.servicenow.com" target="_blank" rel="noopener noreferrer">ServiceNow Down 33% YTD Despite Sub Revenue +21%</a>
-          <div class="intel-source">servicenow.com</div>
+        <div class="feed-item signal-watch">
+          <span class="signal-tag watch">WATCH</span>
+          <span class="entity-ref">OpenAI</span> announced "Frontier Alliances" with consultancies like BCG &amp; McKinsey to accelerate enterprise AI adoption beyond pilot programs.
         </div>
-        <div class="intel-item">
-          <a href="https://www.cfodive.com" target="_blank" rel="noopener noreferrer">85% of Fortune 500 Mention AI in 10-K, Few Tie to Revenue -- CFO Dive</a>
-          <div class="intel-source">cfodive.com</div>
+        <div class="feed-item signal-noise">
+          <span class="signal-tag noise">NOISE</span>
+          <span class="entity-ref">xAI</span>'s Grok reportedly inked a deal with the Pentagon to use its AI in classified systems, expanding AI's role in defense.
         </div>
-        <div class="intel-item">
-          <a href="https://www.atlassian.com" target="_blank" rel="noopener noreferrer">Atlassian Cuts 10% Workforce Citing AI Efficiency</a>
-          <div class="intel-source">atlassian.com</div>
+        <div class="feed-item signal-noise">
+          <span class="signal-tag noise">NOISE</span>
+          Firefox 148 launched with an "AI Kill Switch Feature," signaling growing user demand for AI control &amp; transparency.
         </div>
-        <div class="intel-item">
-          <a href="https://www.c3.ai" target="_blank" rel="noopener noreferrer">C3.ai Reports $135M Cost Reduction, 26% Headcount Cut</a>
-          <div class="intel-source">c3.ai</div>
+        <div class="my-take">
+          <span class="my-take-label">My Take</span>
+          AI's strategic resonance is now undeniable, driving both global hardware competition and immediate stock market reactions, alongside calls for more control.
         </div>
-        <div class="intel-item">
-          <a href="https://www.gartner.com" target="_blank" rel="noopener noreferrer">Gartner: Enterprise Software Spend +15% to $1.4T Despite Selloff</a>
-          <div class="intel-source">gartner.com</div>
+      </div>
+
+      <!-- ENTERPRISE AI IMPACT -->
+      <div class="feed-section">
+        <div class="feed-section-header">
+          <div class="section-icon"></div>
+          Enterprise AI -- Reality Check &amp; Agentic Progress
+        </div>
+        <div class="feed-item signal-fire">
+          <span class="signal-tag fire">MUST READ</span>
+          "AI Added 'Basically Zero' to US Economic Growth Last Year," Goldman Sachs says -- a high-engagement counter-narrative to rampant AI hype.
+        </div>
+        <div class="feed-item signal-watch">
+          <span class="signal-tag watch">WATCH</span>
+          <span class="entity-ref">ServiceNow</span> (<span class="ticker-ref">$NOW</span>) expanded its AI strategy, integrating <span class="entity-ref">Anthropic</span>'s Claude for "agentic workflows," pointing to concrete enterprise deployments.
+        </div>
+        <div class="feed-item signal-watch">
+          <span class="signal-tag watch">WATCH</span>
+          NASA working group advances "Autonomous Multi-Aircraft Operations," hinting at sophisticated agentic systems for complex tasks.
+        </div>
+        <div class="feed-item signal-noise">
+          <span class="signal-tag noise">NOISE</span>
+          <span class="entity-ref">Meta</span>'s AI facial recognition smart glasses plan drew fire from critics, arguing it "will put women at risk."
+        </div>
+        <div class="my-take">
+          <span class="my-take-label">My Take</span>
+          Enterprise AI is moving beyond hype, forcing real economic and ethical debates and driving demand for advanced autonomous systems with clear use cases.
+        </div>
+      </div>
+
+      <!-- VC/PE M&A -->
+      <div class="feed-section">
+        <div class="feed-section-header">
+          <div class="section-icon"></div>
+          VC/PE M&amp;A -- Capital Tightens Amid Uncertainty
+        </div>
+        <div class="feed-item signal-watch">
+          <span class="signal-tag watch">WATCH</span>
+          Clear Street withdrew its US IPO filing amid broader market volatility, while Sharon AI (<span class="ticker-ref">$SHAZ</span>) began trading on Nasdaq.
+        </div>
+        <div class="feed-item signal-noise">
+          <span class="signal-tag noise">NOISE</span>
+          Despite ongoing mega-rounds, the deal tape saw a quiet period for new, widely-reported VC/PE AI deals, suggesting investor caution.
+        </div>
+        <div class="my-take">
+          <span class="my-take-label">My Take</span>
+          The disconnect between sentiment and sideline capital has rarely been this stark. Stablecoins at $311.6B while Fear &amp; Greed sits at 12 -- that's a lot of dry powder if macro fears ease even slightly.
         </div>
       </div>
 
@@ -687,9 +878,8 @@
 <script>
 (function() {
   // ===== STATE MANAGEMENT =====
-  // Use GitHub API (no CDN cache) for faster updates
   var STATE_URL = 'https://api.github.com/repos/jcubell/jains-mind/contents/state.json';
-  var POLL_INTERVAL = 10000; // 10 seconds
+  var POLL_INTERVAL = 10000;
   var lastKnownState = null;
   var knownStepCount = 0;
 
@@ -742,7 +932,6 @@
       var step = steps[i];
       var classes = 'log-entry';
       if (i === 0) classes += ' newest';
-      // Animate new entries that weren't there before
       if (isNewData && i < steps.length - knownStepCount) {
         classes += ' new-entry';
       }
@@ -755,7 +944,6 @@
     container.innerHTML = html;
     knownStepCount = steps.length;
 
-    // Auto-scroll to top to show newest entry
     var body = document.getElementById('stepsContainer');
     body.scrollTop = 0;
   }
@@ -768,29 +956,24 @@
 
   // ===== POLL STATE =====
   function pollState() {
-    // Cache-bust the GitHub API URL
     var url = STATE_URL + '?t=' + Date.now();
 
     fetch(url, { headers: { 'Accept': 'application/vnd.github.v3+json' } })
       .then(function(res) { return res.json(); })
       .then(function(apiResp) {
-        // GitHub API returns base64-encoded content
         var data;
         if (apiResp.content) {
           data = JSON.parse(atob(apiResp.content.replace(/\n/g, '')));
         } else {
-          data = apiResp; // fallback if served directly
+          data = apiResp;
         }
         var isNew = !lastKnownState || data.updated_at !== lastKnownState.updated_at;
 
-        // Update objective
         document.getElementById('objText').textContent = data.objective || 'Awaiting directive...';
 
-        // Set mode based on status
         var mode = data.status === 'thinking' ? 'thinking' : 'idle';
         setMode(mode);
 
-        // Render steps
         if (data.steps && data.steps.length > 0) {
           renderSteps(data.steps, isNew);
         }
@@ -798,12 +981,10 @@
         lastKnownState = data;
       })
       .catch(function(err) {
-        // Silently fail — keep showing last known state
         console.log('State poll failed:', err);
       });
   }
 
-  // Initial load + start polling
   pollState();
   setInterval(pollState, POLL_INTERVAL);
 
