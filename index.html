@@ -93,7 +93,7 @@
     flex: 1;
     display: grid;
     grid-template-columns: 1fr 1fr;
-    grid-template-rows: 1fr 1fr;
+    grid-template-rows: 1fr;
     min-height: 0;
     overflow: hidden;
   }
@@ -106,11 +106,19 @@
     border-bottom: 1px solid var(--border);
     background: var(--bg);
   }
-  .panel:nth-child(2) { border-right: none; }
-  .panel:nth-child(3) { border-bottom: none; }
-  .panel:nth-child(4) { border-right: none; border-bottom: none; }
+  .panel:nth-child(2) { border-right: none; border-bottom: none; }
 
-  .right-panel { grid-column: 2; grid-row: 1 / 3; border-bottom: none; border-right: none; }
+  .right-panel { grid-column: 2; grid-row: 1; border-bottom: none; border-right: none; }
+
+  /* Left column: objective + jobs in single panel */
+  .left-panel {
+    grid-column: 1; grid-row: 1;
+    display: flex; flex-direction: column;
+    overflow: hidden;
+    border-right: 1px solid var(--border);
+    border-bottom: none;
+    background: var(--bg);
+  }
 
   .panel-header {
     padding: 16px 24px 12px;
@@ -138,7 +146,7 @@
 
   /* ===== OBJECTIVE ===== */
   .objective-section {
-    padding: 24px 24px 20px;
+    padding: 16px 24px 12px;
     border-bottom: 1px solid var(--border-light);
     flex-shrink: 0;
   }
@@ -158,53 +166,39 @@
   .objective-dot.thinking { background: var(--accent); animation: pulse-think 1s ease-in-out infinite; }
   .objective-text {
     font-family: var(--font);
-    font-size: 18px; font-weight: 600;
-    line-height: 1.45;
+    font-size: 15px; font-weight: 600;
+    line-height: 1.4;
     transition: color 0.6s ease;
   }
   .objective-text.idle { color: var(--text); }
   .objective-text.thinking { color: var(--text); }
 
-  /* Steps */
-  .steps-label {
-    font-family: var(--font);
-    font-size: 10px; font-weight: 700;
-    letter-spacing: 0.18em; text-transform: uppercase;
-    color: var(--accent);
-    margin-bottom: 12px;
-  }
-  .log-entry {
-    display: flex; align-items: flex-start; gap: 12px;
-    padding: 8px 0;
-    font-family: var(--mono);
-    font-size: 12px; color: var(--text-3);
+  /* Compressed latest-step line */
+  .latest-step {
+    padding: 8px 24px 10px;
     border-bottom: 1px solid var(--border-light);
-    transition: all 0.4s ease;
-  }
-  .log-entry:last-child { border-bottom: none; }
-  .log-entry.newest { color: var(--text); }
-  .log-entry.new-entry { animation: entry-appear 0.4s ease-out forwards; }
-  @keyframes entry-appear { 0%{opacity:0;transform:translateY(-4px)} 100%{opacity:1;transform:translateY(0)} }
-  .log-timestamp { color: var(--text-muted); font-weight: 400; white-space: nowrap; min-width: 90px; flex-shrink: 0; }
-  .log-dot {
-    width: 4px; height: 4px; border-radius: 50%;
-    background: var(--border);
-    margin-top: 6px; flex-shrink: 0;
-  }
-  .log-entry.newest .log-dot { background: var(--accent); }
-  .blink-cursor {
-    display: inline-block; margin-top: 8px;
+    flex-shrink: 0;
+    display: flex; align-items: center; gap: 8px;
     font-family: var(--mono);
-    color: var(--accent); font-size: 13px;
-    opacity: 0.4;
+    font-size: 11px; color: var(--text-3);
+    min-height: 0;
   }
-  .blink-cursor.idle { animation: blink-s 2s step-end infinite; }
-  .blink-cursor.thinking { animation: blink-f 0.5s step-end infinite; opacity: 0.8; }
+  .latest-step-dot {
+    width: 4px; height: 4px; border-radius: 50%;
+    background: var(--accent); flex-shrink: 0;
+    animation: pulse-idle 2.5s ease-in-out infinite;
+  }
+  .latest-step-time { color: var(--text-muted); white-space: nowrap; flex-shrink: 0; }
+  .latest-step-text { color: var(--text-2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .blink-cursor-inline {
+    font-family: var(--mono);
+    color: var(--accent); font-size: 11px;
+    margin-left: 4px; opacity: 0.4;
+  }
+  .blink-cursor-inline.idle { animation: blink-s 2s step-end infinite; }
+  .blink-cursor-inline.thinking { animation: blink-f 0.5s step-end infinite; opacity: 0.8; }
   @keyframes blink-s { 0%,50%{opacity:0.4} 51%,100%{opacity:0} }
   @keyframes blink-f { 0%,50%{opacity:0.8} 51%,100%{opacity:0} }
-
-  /* Nth-child fade */
-  .log-entry:nth-child(n+5) { color: var(--text-muted); }
 
   /* ===== JOBS ===== */
   .job-card {
@@ -252,6 +246,39 @@
     font-family: var(--mono);
     font-size: 11px; color: var(--text-muted);
     line-height: 1.5;
+  }
+  .job-subtasks {
+    margin-top: 8px;
+    padding: 0;
+    list-style: none;
+  }
+  .job-subtask {
+    font-family: var(--mono);
+    font-size: 10px; color: var(--text-3);
+    line-height: 1.6;
+    padding: 2px 0 2px 12px;
+    border-left: 1px solid var(--border);
+    margin-bottom: 1px;
+  }
+  .job-subtask .st-icon {
+    margin-right: 4px;
+    font-size: 9px;
+  }
+  .job-strategy {
+    margin-top: 6px;
+    padding: 6px 10px;
+    background: var(--accent-soft);
+    border-radius: 3px;
+    font-family: var(--mono);
+    font-size: 10px; color: var(--accent);
+    line-height: 1.5;
+    border-left: 2px solid rgba(0, 184, 212, 0.3);
+  }
+  .job-strategy-label {
+    font-family: var(--font);
+    font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
+    font-size: 8px; display: block; margin-bottom: 2px;
+    color: var(--accent); opacity: 0.6;
   }
 
   /* ===== FEED ===== */
@@ -369,7 +396,7 @@
     border-bottom: 1px solid var(--border-light);
   }
 
-  /* Refresh flash — subtle */
+  /* Refresh flash */
   .refresh-flash {
     position: fixed; inset: 0; z-index: 99998;
     pointer-events: none; opacity: 0;
@@ -406,6 +433,7 @@
 
   @media (max-width: 1024px) {
     .dashboard { grid-template-columns: 1fr; grid-template-rows: auto; overflow-y: auto; height: auto; }
+    .left-panel { grid-column: 1; grid-row: auto; border-right: none; min-height: 50vh; }
     .right-panel { grid-column: 1; grid-row: auto; }
     .panel { border-right: none; }
   }
@@ -427,8 +455,8 @@
 
   <div class="dashboard">
 
-    <!-- TOP-LEFT: MIND -->
-    <div class="panel" id="mindPanel">
+    <!-- LEFT: OBJECTIVE + JOBS -->
+    <div class="left-panel" id="leftPanel">
       <div class="objective-section">
         <div class="objective-label">
           <div class="objective-dot idle" id="objDot"></div>
@@ -436,11 +464,17 @@
         </div>
         <div class="objective-text idle" id="objText">Loading...</div>
       </div>
-      <div class="panel-body" id="stepsContainer">
-        <div class="steps-label">Steps &amp; Decisions</div>
-        <div id="logEntries"></div>
-        <div class="blink-cursor idle" id="blinkCursor">_</div>
+      <div class="latest-step" id="latestStep">
+        <div class="latest-step-dot"></div>
+        <span class="latest-step-time" id="latestStepTime"></span>
+        <span class="latest-step-text" id="latestStepText">Awaiting...</span>
+        <span class="blink-cursor-inline idle" id="blinkCursor">_</span>
       </div>
+      <div class="panel-header">
+        <h2>Today's Jobs</h2>
+        <span class="panel-meta" id="jobCount">6 Jobs</span>
+      </div>
+      <div class="panel-body" id="jobsContainer"></div>
     </div>
 
     <!-- RIGHT: FEED -->
@@ -586,15 +620,6 @@
       </div>
     </div>
 
-    <!-- BOTTOM-LEFT: JOBS -->
-    <div class="panel">
-      <div class="panel-header">
-        <h2>Today's Jobs</h2>
-        <span class="panel-meta" id="jobCount">6 Jobs</span>
-      </div>
-      <div class="panel-body" id="jobsContainer"></div>
-    </div>
-
   </div>
 </div>
 
@@ -612,7 +637,6 @@
   var lastKnownState = null;
   var knownStepCount = 0;
 
-  // Left+Right arrow force refresh
   var arrowKeys = { left: false, right: false };
   var refreshing = false;
   function showRefreshIndicator() {
@@ -641,7 +665,6 @@
     if (e.key === 'ArrowRight') arrowKeys.right = false;
   });
 
-  // Clock
   function updateClock() {
     var now = new Date();
     var timeStr = now.toLocaleTimeString('en-US', { timeZone: 'America/New_York', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true });
@@ -649,7 +672,6 @@
   }
   updateClock(); setInterval(updateClock, 1000);
 
-  // Mode
   function setMode(mode) {
     var dot = document.getElementById('objDot');
     var objText = document.getElementById('objText');
@@ -658,7 +680,7 @@
     var statusText = document.getElementById('statusText');
     dot.className = 'objective-dot ' + mode;
     objText.className = 'objective-text ' + mode;
-    cursor.className = 'blink-cursor ' + mode;
+    cursor.className = 'blink-cursor-inline ' + mode;
     if (mode === 'thinking') {
       indicator.className = 'status-indicator status-thinking';
       statusText.textContent = 'Processing';
@@ -668,24 +690,16 @@
     }
   }
 
-  // Steps
   function renderSteps(steps, isNewData) {
-    var container = document.getElementById('logEntries');
-    var html = '';
-    for (var i = 0; i < steps.length; i++) {
-      var step = steps[i];
-      var classes = 'log-entry';
-      if (i === 0) classes += ' newest';
-      if (isNewData && i < steps.length - knownStepCount) classes += ' new-entry';
-      html += '<div class="' + classes + '"><span class="log-timestamp">' + escapeHtml(step.time) + '</span><span class="log-dot"></span><span class="log-text">' + escapeHtml(step.text) + '</span></div>';
+    if (steps && steps.length > 0) {
+      var latest = steps[0];
+      document.getElementById('latestStepTime').textContent = latest.time;
+      document.getElementById('latestStepText').textContent = latest.text;
     }
-    container.innerHTML = html;
     knownStepCount = steps.length;
-    document.getElementById('stepsContainer').scrollTop = 0;
   }
   function escapeHtml(str) { var d = document.createElement('div'); d.textContent = str; return d.innerHTML; }
 
-  // Poll
   function pollState() {
     fetch(STATE_URL + '?t=' + Date.now(), { headers: { 'Accept': 'application/vnd.github.v3+json' } })
       .then(function(r) { return r.json(); })
@@ -700,12 +714,32 @@
   }
   pollState(); setInterval(pollState, POLL_INTERVAL);
 
-  // Jobs
   var jobs = [
     { name: 'Morning Brief', time: '7:00 AM ET', scheduleHour: 7, scheduleMinute: 0, status: 'scheduled', desc: 'AI news digest, market movers, SEC filing scan', recurring: false, prevHour: 0, prevMinute: 0 },
-    { name: 'Sorare Morning Picks', time: '11:00 AM ET', scheduleHour: 11, scheduleMinute: 0, status: 'active', desc: 'Spin wheel, activate missions, Quick Play picks, burn dupes', recurring: false, prevHour: 7, prevMinute: 0 },
+    { name: 'Sorare Morning Picks', time: '11:00 AM ET', scheduleHour: 11, scheduleMinute: 0, status: 'active', desc: 'Daily farming + missions + strategic picks', recurring: false, prevHour: 7, prevMinute: 0,
+      subtasks: [
+        'Claim free WNTR pack \u2192 Open Daily Pack mission (+1 Wheel Ticket)',
+        'Spin Wheel (Golden Spin: 3/10) \u2192 target 1 golden spin every 3-5 days',
+        'Quick Play \u2192 high-variance players, L10+5 target, avoid B2Bs',
+        'Daily Picker \u2192 pace-up matchups | Scorer Picker \u2192 guards L10 20-34',
+        'WNTR Sprint \u2192 buy Bronze packs, quick-sell dupes, cycle board L1-L2',
+        'Monitor: Collections (35/36 NBA, 142/150 WNTR) + Hot Streaks'
+      ],
+      strategy: 'WNTR deadline Mar 22 \u2014 spend ALL Essence on packs before conversion. Punt watch: Sabonis/Curry/Nurkic at L10=0, slot immediately on return.'
+    },
     { name: 'Afternoon Brief', time: '1:00 PM ET', scheduleHour: 13, scheduleMinute: 0, status: 'scheduled', desc: 'Midday market update, breaking AI announcements', recurring: false, prevHour: 11, prevMinute: 0 },
-    { name: 'Sorare Evening Strategy', time: '5:00 PM ET', scheduleHour: 17, scheduleMinute: 0, status: 'scheduled', desc: 'Final lineup locks, injury updates, competition entry', recurring: false, prevHour: 13, prevMinute: 0 },
+    { name: 'Sorare Evening Strategy', time: '5:00 PM ET', scheduleHour: 17, scheduleMinute: 0, status: 'scheduled', desc: 'Lineup optimization + catch-up for missed morning tasks', recurring: false, prevHour: 13, prevMinute: 0,
+      subtasks: [
+        'Catch-up \u2192 verify pack/wheel/Quick Play/Picker all completed',
+        'API auth \u2192 fetch collection (305 cards) \u2192 fetch open fixtures',
+        'Score cards: 30% form + 20% season + 15% matchup + 15% proj + 10% H/A + 10% power',
+        'Build 3-5 lineups per comp: Floor/Streak, Balanced, Ceiling, Correlation, Contrarian',
+        'Cap 120+MVP \u2192 Jokic permanent MVP (64.3), 4 slots under 120 cap',
+        'Daily Pickup + Limited Contender + Common Champion lineups',
+        'Hot Streak check \u2192 L1-L2: always submit | L3+: skip weak GWs'
+      ],
+      strategy: 'MVP hierarchy: Jokic (64.3) > Bam (50.4) > Edwards (46.6) > KD (41.5) > Cade (41.3). Protect L3+ streaks \u2014 skipping beats risking $50-$1K reset.'
+    },
     { name: 'Evening Brief', time: '8:00 PM ET', scheduleHour: 20, scheduleMinute: 0, status: 'scheduled', desc: 'End of day wrap, after-hours moves, overnight preview', recurring: false, prevHour: 17, prevMinute: 0 },
     { name: 'Market Intelligence Scan', time: 'Every 4 hours', scheduleHour: -1, scheduleMinute: 0, status: 'active', desc: 'Continuous monitoring of AI value chain developments', recurring: true }
   ];
@@ -733,7 +767,14 @@
       var fillClass = 'progress-fill';
       if (s === 'active') fillClass += ' progress-fill-active';
       else if (s === 'completed') fillClass += ' progress-fill-done';
-      h += '<div class="job-card"><div class="job-header"><div><span class="job-name">'+j.name+'</span><span class="job-time">'+j.time+'</span></div><span class="badge badge-'+s+'">'+s.charAt(0).toUpperCase()+s.slice(1)+'</span></div><div class="progress-track"><div class="'+fillClass+'" style="width:'+p+'%"></div></div><div class="job-desc">'+j.desc+'</div></div>';
+      var extra = '';
+      if (j.subtasks) {
+        extra += '<ul class="job-subtasks">';
+        for (var k=0;k<j.subtasks.length;k++) { extra += '<li class="job-subtask"><span class="st-icon">\u25B8</span>'+j.subtasks[k]+'</li>'; }
+        extra += '</ul>';
+      }
+      if (j.strategy) { extra += '<div class="job-strategy"><span class="job-strategy-label">Strategy</span>'+j.strategy+'</div>'; }
+      h += '<div class="job-card"><div class="job-header"><div><span class="job-name">'+j.name+'</span><span class="job-time">'+j.time+'</span></div><span class="badge badge-'+s+'">'+s.charAt(0).toUpperCase()+s.slice(1)+'</span></div><div class="progress-track"><div class="'+fillClass+'" style="width:'+p+'%"></div></div><div class="job-desc">'+j.desc+'</div>'+extra+'</div>';
     }
     c.innerHTML = h;
   }
