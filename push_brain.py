@@ -75,10 +75,12 @@ def push(focus, thought_text=None, thought_type="action", mode="working",
     # Update model only if explicitly provided
     if model:
         state["brain"]["model"] = model
+        state["brain"]["currentModel"] = model
 
-    # Handle subagent
+    # Handle subagent (legacy single) and subagents (array)
     if subagent == "clear":
         state["brain"]["subagent"] = None
+        state["brain"]["subagents"] = []
     elif subagent is not None:
         state["brain"]["subagent"] = subagent
 
@@ -151,20 +153,98 @@ def clear_subagent():
 
 
 if __name__ == "__main__":
-    focus        = sys.argv[1] if len(sys.argv) > 1 else "Idle — awaiting instruction"
-    thought      = sys.argv[2] if len(sys.argv) > 2 else None
-    thought_type = sys.argv[3] if len(sys.argv) > 3 else "action"
-    mode         = sys.argv[4] if len(sys.argv) > 4 else "working"
-    model        = sys.argv[5] if len(sys.argv) > 5 else None
-    subagent_raw = sys.argv[6] if len(sys.argv) > 6 else None
+    import argparse
 
-    subagent = None
-    if subagent_raw == "clear":
-        subagent = "clear"
-    elif subagent_raw:
+    # Support both legacy positional args and new --flag style
+    # If first arg starts with "--" or no positional args given, use argparse
+    use_flags = len(sys.argv) > 1 and (sys.argv[1].startswith('--') or '--current-model' in sys.argv or '--subagents' in sys.argv)
+
+    if use_flags:
+        parser = argparse.ArgumentParser(description='Push brain state to dashboard')
+        parser.add_argument('focus', nargs='?', default='Idle — awaiting instruction')
+        parser.add_argument('thought', nargs='?', default=None)
+        parser.add_argument('thought_type', nargs='?', default='action')
+        parser.add_argument('mode', nargs='?', default='working')
+        parser.add_argument('--model', default=None, help='Current model short name')
+        parser.add_argument('--current-model', dest='current_model', default=None,
+                            help='Current model to highlight (stored as currentModel in state)')
+        parser.add_argument('--subagents', default=None,
+                            help='JSON array of active subagents, e.g. \'[{"model":"sonnet","task":"coding"}]\'')
+        args = parser.parse_args()
+        focus        = args.focus
+        thought      = args.thought
+        thought_type = args.thought_type
+        mode         = args.mode
+        model        = args.current_model or args.model
+
+        subagents_raw = args.subagents
+        subagents = None
+        if subagents_raw == 'clear':
+            subagents = 'clear'
+        elif subagents_raw:
+            try:
+                subagents = json.loads(subagents_raw)
+            except Exception:
+                pass
+
+        # Push with subagents support
         try:
-            subagent = json.loads(subagent_raw)
+            with open(STATE_FILE) as f:
+                state = json.load(f)
+        except Exception:
+            state = {"objective": "", "status": "idle", "brain": {"mode": "idle", "focus": "", "model": "grok-4", "thoughts": [], "subagent": None}, "steps": [], "updated_at": ""}
+        if "brain" not in state:
+            state["brain"] = {"mode": "idle", "focus": "", "model": "grok-4", "thoughts": [], "subagent": None}
+
+        state["brain"]["focus"] = focus
+        state["brain"]["mode"] = mode
+        if model:
+            state["brain"]["model"] = model
+            state["brain"]["currentModel"] = model
+        if subagents == 'clear':
+            state["brain"]["subagents"] = []
+        elif subagents is not None:
+            state["brain"]["subagents"] = subagents
+
+        if thought:
+            from datetime import timezone, timedelta
+            et = timezone(timedelta(hours=-4))
+            t_str = datetime.datetime.now(et).strftime("%-I:%M %p ET")
+            thoughts = state["brain"].get("thoughts", [])
+            thoughts.insert(0, {"time": t_str, "type": thought_type, "text": thought})
+            state["brain"]["thoughts"] = thoughts[:12]
+
+        state["updated_at"] = datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+        try:
+            url = open("/tmp/current-tunnel-url.txt").read().strip()
+            if url: state["_tunnel_url"] = url
         except Exception:
             pass
 
-    push(focus, thought, thought_type, mode, model, subagent)
+        with open(STATE_FILE, "w") as f:
+            json.dump(state, f, indent=2, ensure_ascii=True)
+        try:
+            subprocess.Popen(["/opt/homebrew/bin/python3", PUSH_SCRIPT, STATE_FILE],
+                             stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, start_new_session=True)
+        except Exception:
+            pass
+        print(f"Pushed: {focus}")
+    else:
+        # Legacy positional args
+        focus        = sys.argv[1] if len(sys.argv) > 1 else "Idle — awaiting instruction"
+        thought      = sys.argv[2] if len(sys.argv) > 2 else None
+        thought_type = sys.argv[3] if len(sys.argv) > 3 else "action"
+        mode         = sys.argv[4] if len(sys.argv) > 4 else "working"
+        model        = sys.argv[5] if len(sys.argv) > 5 else None
+        subagent_raw = sys.argv[6] if len(sys.argv) > 6 else None
+
+        subagent = None
+        if subagent_raw == "clear":
+            subagent = "clear"
+        elif subagent_raw:
+            try:
+                subagent = json.loads(subagent_raw)
+            except Exception:
+                pass
+
+        push(focus, thought, thought_type, mode, model, subagent)

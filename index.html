@@ -596,6 +596,105 @@
   }
   .footer-attr a:hover { color: var(--text-3); }
 
+  /* ===== MODEL BUBBLES & SUB-AGENTS PANEL ===== */
+  .model-panel {
+    display: flex; flex-direction: column; gap: 16px;
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
+  }
+  .model-panel-label {
+    font-family: var(--font);
+    font-size: 10px; font-weight: 700;
+    letter-spacing: 0.18em; text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 6px;
+  }
+  .model-bubbles {
+    display: flex; flex-direction: row; align-items: center;
+    gap: 10px; flex-wrap: wrap;
+  }
+  .model-bubble {
+    width: 40px; height: 40px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--mono); font-size: 8px; font-weight: 700;
+    color: #fff; text-align: center; line-height: 1.1;
+    letter-spacing: 0.02em; cursor: default;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    flex-shrink: 0;
+    border: 2px solid transparent;
+    position: relative;
+  }
+  .model-bubble:hover { transform: scale(1.1); }
+  .model-bubble.active-model {
+    border: 2px solid rgba(255,255,255,0.5);
+    box-shadow: 0 0 12px 4px rgba(255,255,255,0.15);
+    transform: scale(1.08);
+  }
+  .model-bubble.active-model::after {
+    content: '▸';
+    position: absolute; top: -12px; left: 50%;
+    transform: translateX(-50%);
+    font-size: 8px; color: rgba(255,255,255,0.7);
+  }
+  .model-bubble-grok4    { background: #cc2222; }
+  .model-bubble-sonnet   { background: #7c3aed; }
+  .model-bubble-gpt4o    { background: #16a34a; }
+  .model-bubble-llama3   { background: #1d4ed8; }
+  .model-bubble-mistral  { background: #ea580c; }
+
+  .subagents-section { }
+  .subagents-label {
+    font-family: var(--font);
+    font-size: 10px; font-weight: 700;
+    letter-spacing: 0.18em; text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 8px;
+  }
+  .subagents-list { display: flex; flex-direction: column; gap: 6px; }
+  .subagent-card {
+    display: flex; align-items: center; gap: 10px;
+    padding: 7px 10px; border-radius: 6px;
+    border: 1px solid rgba(255,255,255,0.06);
+    background: rgba(255,255,255,0.02);
+    transition: background 0.2s ease;
+  }
+  .subagent-bubble {
+    width: 28px; height: 28px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--mono); font-size: 7px; font-weight: 700;
+    color: #fff; flex-shrink: 0;
+    position: relative;
+  }
+  @keyframes spin-ring {
+    to { transform: rotate(360deg); }
+  }
+  .subagent-bubble::before {
+    content: '';
+    position: absolute; inset: -3px;
+    border-radius: 50%;
+    border: 2px solid transparent;
+    border-top-color: rgba(255,255,255,0.5);
+    animation: spin-ring 1s linear infinite;
+  }
+  .subagent-info { flex: 1; min-width: 0; }
+  .subagent-model-name {
+    font-family: var(--mono); font-size: 10px; font-weight: 600;
+    color: var(--text-2);
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .subagent-task {
+    font-family: var(--mono); font-size: 10px;
+    color: var(--text-muted);
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    margin-top: 1px;
+  }
+  .subagents-empty {
+    font-family: var(--mono); font-size: 10px;
+    color: var(--text-muted); opacity: 0.5;
+    font-style: italic;
+  }
+
   @media (max-width: 1024px) {
     .dashboard { grid-template-columns: 1fr; grid-template-rows: auto; overflow-y: auto; height: auto; }
     .left-panel { grid-column: 1; grid-row: auto; border-right: none; min-height: 50vh; }
@@ -1159,12 +1258,32 @@
             <span class="brain-hero-label"><img src="openclaw-icon.png" alt="OpenClaw">Brain Feed</span>
             <span class="brain-powered">Powered by <span>OpenClaw</span></span>
             <span style="font-family:var(--mono);font-size:9px;color:rgba(255,60,60,0.5);margin-left:12px;" id="brainLastUpdated"></span>
-            <span style="font-family:var(--mono);font-size:9px;padding:2px 7px;border-radius:3px;background:rgba(255,0,0,0.08);color:rgba(255,80,80,0.7);margin-left:8px;letter-spacing:0.04em;" id="brainModelBadge">grok-4</span>
+            <span style="font-family:var(--mono);font-size:9px;padding:2px 7px;border-radius:3px;margin-left:8px;letter-spacing:0.04em;transition:background 0.4s,color 0.4s;" id="brainModelBadge">grok-4</span>
           </div>
           <div class="brain-hero-focus">
             <div class="brain-focus-text" id="brainFocus">Loading...</div>
           </div>
           <div class="brain-hero-stream" id="brainStream"></div>
+        </div>
+      </div>
+
+      <!-- Model Bubbles + Sub-agents Panel -->
+      <div class="model-panel" id="modelPanel">
+        <div>
+          <div class="model-panel-label">Model Arsenal</div>
+          <div class="model-bubbles" id="modelBubbles">
+            <div class="model-bubble model-bubble-grok4"   data-model="grok-4"   title="Grok-4">Grok&#8209;4</div>
+            <div class="model-bubble model-bubble-sonnet"  data-model="sonnet"   title="Claude Sonnet">Sonnet</div>
+            <div class="model-bubble model-bubble-gpt4o"   data-model="gpt-4o"   title="GPT-4o">GPT&#8209;4o</div>
+            <div class="model-bubble model-bubble-llama3"  data-model="llama3"   title="Llama 3">Llama 3</div>
+            <div class="model-bubble model-bubble-mistral" data-model="mistral"  title="Mistral">Mistral</div>
+          </div>
+        </div>
+        <div class="subagents-section">
+          <div class="subagents-label">Active Sub-Agents</div>
+          <div class="subagents-list" id="subagentsList">
+            <div class="subagents-empty">No active sub-agents</div>
+          </div>
         </div>
       </div>
 
@@ -1463,6 +1582,77 @@
     var objEl = document.getElementById('objText');
     if (objEl && !document.getElementById('brainFocus')) {
       objEl.textContent = (data.brain && data.brain.focus) || data.objective || 'Awaiting directive...';
+    }
+
+    // Model bubbles + current model highlight
+    var MODEL_META = {
+      'grok-4':   { cls: 'model-bubble-grok4',   color: '#cc2222', bg: 'rgba(204,34,34,0.12)',   textColor: 'rgba(255,100,100,0.9)' },
+      'grok':     { cls: 'model-bubble-grok4',   color: '#cc2222', bg: 'rgba(204,34,34,0.12)',   textColor: 'rgba(255,100,100,0.9)' },
+      'sonnet':   { cls: 'model-bubble-sonnet',  color: '#7c3aed', bg: 'rgba(124,58,237,0.12)',  textColor: 'rgba(180,130,255,0.9)' },
+      'claude':   { cls: 'model-bubble-sonnet',  color: '#7c3aed', bg: 'rgba(124,58,237,0.12)',  textColor: 'rgba(180,130,255,0.9)' },
+      'gpt-4o':   { cls: 'model-bubble-gpt4o',   color: '#16a34a', bg: 'rgba(22,163,74,0.12)',   textColor: 'rgba(80,200,100,0.9)'  },
+      'gpt':      { cls: 'model-bubble-gpt4o',   color: '#16a34a', bg: 'rgba(22,163,74,0.12)',   textColor: 'rgba(80,200,100,0.9)'  },
+      'llama3':   { cls: 'model-bubble-llama3',  color: '#1d4ed8', bg: 'rgba(29,78,216,0.12)',   textColor: 'rgba(100,150,255,0.9)' },
+      'llama':    { cls: 'model-bubble-llama3',  color: '#1d4ed8', bg: 'rgba(29,78,216,0.12)',   textColor: 'rgba(100,150,255,0.9)' },
+      'mistral':  { cls: 'model-bubble-mistral', color: '#ea580c', bg: 'rgba(234,88,12,0.12)',   textColor: 'rgba(255,160,80,0.9)'  },
+    };
+    function matchModelMeta(modelStr) {
+      if (!modelStr) return null;
+      var m = modelStr.toLowerCase();
+      for (var k in MODEL_META) { if (m.indexOf(k) !== -1) return MODEL_META[k]; }
+      return null;
+    }
+
+    var currentModel = (data.brain && data.brain.currentModel) || (data.brain && data.brain.model) || null;
+    var modelBubbles = document.querySelectorAll('#modelBubbles .model-bubble');
+    for (var bi = 0; bi < modelBubbles.length; bi++) {
+      modelBubbles[bi].classList.remove('active-model');
+    }
+    if (currentModel) {
+      var cmLower = currentModel.toLowerCase();
+      for (var bi = 0; bi < modelBubbles.length; bi++) {
+        var dmAttr = modelBubbles[bi].getAttribute('data-model');
+        if (cmLower.indexOf(dmAttr) !== -1 || dmAttr.indexOf(cmLower) !== -1) {
+          modelBubbles[bi].classList.add('active-model');
+        }
+      }
+      // Color the badge in brain header
+      var meta = matchModelMeta(currentModel);
+      var badgeEl2 = document.getElementById('brainModelBadge');
+      if (badgeEl2 && meta) {
+        badgeEl2.style.background = meta.bg;
+        badgeEl2.style.color = meta.textColor;
+      } else if (badgeEl2) {
+        badgeEl2.style.background = 'rgba(255,0,0,0.08)';
+        badgeEl2.style.color = 'rgba(255,80,80,0.7)';
+      }
+    }
+
+    // Sub-agents
+    var subagentsList = document.getElementById('subagentsList');
+    var subagents = (data.brain && data.brain.subagents) || null;
+    // Legacy single subagent fallback
+    if (!subagents && data.brain && data.brain.subagent) subagents = [data.brain.subagent];
+    if (subagentsList) {
+      if (!subagents || subagents.length === 0) {
+        subagentsList.innerHTML = '<div class="subagents-empty">No active sub-agents</div>';
+      } else {
+        var saHtml = '';
+        for (var si = 0; si < subagents.length; si++) {
+          var sa = subagents[si];
+          var saModel = sa.model || sa.name || 'unknown';
+          var saTask = sa.task || '';
+          var saMeta = matchModelMeta(saModel);
+          var saBg = saMeta ? saMeta.color : '#444';
+          saHtml += '<div class="subagent-card">'
+            + '<div class="subagent-bubble" style="background:' + saBg + ';">' + escHtml(saModel.slice(0,6)) + '</div>'
+            + '<div class="subagent-info">'
+            + '<div class="subagent-model-name">' + escHtml(saModel) + '</div>'
+            + '<div class="subagent-task">' + escHtml(saTask) + '</div>'
+            + '</div></div>';
+        }
+        subagentsList.innerHTML = saHtml;
+      }
     }
 
     if (data.steps && data.steps.length > 0) renderSteps(data.steps, true);
