@@ -392,8 +392,11 @@
     letter-spacing: 0.06em; text-transform: uppercase;
   }
   .badge-scheduled { background: var(--bg-alt); color: var(--text-muted); }
-  .badge-active { background: rgba(255,34,34,0.1); color: var(--accent); }
+  .badge-active, .badge-running { background: rgba(255,34,34,0.1); color: var(--accent); animation: badgePulse 2s ease-in-out infinite; }
   .badge-completed { background: var(--green-soft); color: var(--green); }
+  .badge-missed { background: var(--amber-soft); color: var(--amber); }
+  .badge-failed { background: var(--red-soft); color: var(--red); }
+  @keyframes badgePulse { 0%,100% { opacity: 1; } 50% { opacity: 0.6; } }
 
   .progress-track {
     width: 100%; height: 2px;
@@ -405,7 +408,10 @@
     background: var(--border);
     transition: width 0.5s ease;
   }
-  .progress-fill-active { background: var(--accent); }
+  .progress-fill-active { background: var(--accent); animation: progressPulse 2s ease-in-out infinite; }
+  .progress-fill-missed { background: var(--amber); opacity: 0.6; }
+  .progress-fill-failed { background: var(--red); }
+  @keyframes progressPulse { 0%,100% { opacity: 1; } 50% { opacity: 0.5; } }
   .progress-fill-done { background: var(--green); }
   .job-desc {
     font-family: var(--mono);
@@ -429,6 +435,13 @@
     margin-right: 4px;
     font-size: 9px;
   }
+  .job-subtask.st-done { color: var(--green); border-left-color: var(--green); }
+  .job-subtask.st-done .st-icon { color: var(--green); }
+  .job-subtask.st-skipped { color: var(--text-muted); text-decoration: line-through; opacity: 0.5; }
+  .job-subtask.st-failed { color: var(--red); border-left-color: var(--red); }
+  .job-subtask.st-failed .st-icon { color: var(--red); }
+  .job-subtask.st-running { color: var(--accent); border-left-color: var(--accent); }
+  .job-subtask.st-running .st-icon { color: var(--accent); animation: badgePulse 1.5s ease-in-out infinite; }
   .job-strategy {
     margin-top: 6px;
     padding: 6px 10px;
@@ -1486,7 +1499,6 @@
     root.style.setProperty('--m-color',  t.color);
     root.style.setProperty('--m-glow',   t.glow);
     root.style.setProperty('--m-border', t.border);
-    // Also update legacy --accent vars
     root.style.setProperty('--accent',        t.color);
     root.style.setProperty('--accent-soft',   t.glow);
     root.style.setProperty('--accent-glow',   t.glow);
@@ -1496,7 +1508,6 @@
     if (hero) {
       hero.className = hero.className.replace(/\bmodel-\w+/g, '').trim() + ' ' + t.cls;
     }
-    // Whisper chip: show only when active
     var whisperChip = document.querySelector('.model-chip[data-model="whisper"]');
     if (whisperChip) whisperChip.style.display = (key === 'whisper') ? '' : 'none';
   }
@@ -1620,6 +1631,19 @@
     }
 
     if (data.steps && data.steps.length > 0) renderSteps(data.steps, true);
+
+    /* === Jobs: apply dynamic overrides from state.json === */
+    /* Merge jobs from any source that has them (tunnel or GitHub) */
+    if (data.jobs) {
+      for (var jk in data.jobs) {
+        if (data.jobs.hasOwnProperty(jk)) {
+          jobOverrides[jk] = data.jobs[jk];
+        }
+      }
+      if (typeof saveJobsToLocal === 'function') saveJobsToLocal();
+      renderJobs();
+    }
+
     lastKnownState = data;
   }
 
@@ -1665,74 +1689,177 @@
   tunnelUrl = 'https://charged-unique-architects-fusion.trycloudflare.com';
   pollTunnel();
   pollTimer = setInterval(pollTunnel, POLL_FAST);
+
+  // Jobs persistence: state.json jobs key may be overwritten by other agents
+  // Use localStorage as cache so job status survives between state.json pushes
+  function saveJobsToLocal() {
+    try {
+      var today = getETNow().toISOString().slice(0, 10);
+      localStorage.setItem('jain_jobs_date', today);
+      localStorage.setItem('jain_jobs', JSON.stringify(jobOverrides));
+    } catch(e) {}
+  }
+  function loadJobsFromLocal() {
+    try {
+      var today = getETNow().toISOString().slice(0, 10);
+      var stored = localStorage.getItem('jain_jobs_date');
+      if (stored === today) {
+        var data = JSON.parse(localStorage.getItem('jain_jobs') || '{}');
+        for (var k in data) { if (data.hasOwnProperty(k)) jobOverrides[k] = data[k]; }
+        renderJobs();
+      } else {
+        // New day: clear stale overrides
+        localStorage.removeItem('jain_jobs');
+        localStorage.removeItem('jain_jobs_date');
+      }
+    } catch(e) {}
+  }
+  loadJobsFromLocal(); // Restore immediately on page load
+
+  // Fetch jobs from GitHub (authoritative source for job status)
+  // Also checks tunnel state -- merges jobs from any source that has them
+  function fetchJobsFromGitHub() {
+    fetch(GITHUB_STATE_URL + '?t=' + Date.now(), { headers: { 'Accept': 'application/vnd.github.v3+json' } })
+      .then(function(r) { if (!r.ok) throw new Error('gh ' + r.status); return r.json(); })
+      .then(function(ghData) {
+        var raw = JSON.parse(atob(ghData.content.replace(/\n/g, '')));
+        if (raw.jobs) {
+          var changed = false;
+          for (var jk in raw.jobs) {
+            if (raw.jobs.hasOwnProperty(jk)) {
+              jobOverrides[jk] = raw.jobs[jk];
+              changed = true;
+            }
+          }
+          if (changed) { saveJobsToLocal(); renderJobs(); }
+        }
+      })
+      .catch(function() { /* silent fail */ });
+  }
+  fetchJobsFromGitHub();
+  setInterval(fetchJobsFromGitHub, 30000); // Refresh job status every 30s from GitHub
   // Refresh relative timestamps every 30s
   setInterval(function() { var u = document.getElementById('brainLastUpdated'); if (u && lastKnownState) u.textContent = relTime(lastKnownState.updated_at); }, 30000);
 
+  /* ===== JOBS ENGINE — Dynamic status from state.json ===== */
   var jobs = [
-    { name: 'Morning Brief', time: '7:00 AM ET', scheduleHour: 7, scheduleMinute: 0, status: 'scheduled', desc: 'AI news digest, market movers, SEC filing scan', recurring: false, prevHour: 0, prevMinute: 0 },
-    { name: 'Sorare Morning Picks', time: '11:00 AM ET', scheduleHour: 11, scheduleMinute: 0, status: 'active', desc: 'Daily farming + missions + strategic picks', recurring: false, prevHour: 7, prevMinute: 0,
+    { id: 'morning_brief', name: 'Morning Brief', time: '7:00 AM ET', scheduleHour: 7, scheduleMinute: 0, status: 'scheduled', desc: 'AI news digest, market movers, SEC filing scan', recurring: false, prevHour: 0, prevMinute: 0 },
+    { id: 'sorare_morning', name: 'Sorare Morning Picks', time: '11:00 AM ET', scheduleHour: 11, scheduleMinute: 0, status: 'scheduled', desc: 'Daily farming + missions + strategic picks', recurring: false, prevHour: 7, prevMinute: 0,
       subtasks: [
-        'Claim free WNTR pack \u2192 Open Daily Pack mission (+1 Wheel Ticket)',
-        'Spin Wheel (Golden Spin: 3/10) \u2192 target 1 golden spin every 3-5 days',
-        'Quick Play \u2192 high-variance players, L10+5 target, avoid B2Bs',
-        'Daily Picker \u2192 pace-up matchups | Scorer Picker \u2192 guards L10 20-34',
-        'WNTR Sprint \u2192 buy Bronze packs, quick-sell dupes, cycle board L1-L2',
-        'Monitor: Collections (35/36 NBA, 142/150 WNTR) + Hot Streaks'
+        { text: 'T1 Claim free WNTR pack \u2192 Open Daily Pack mission', id: 'wntr_pack' },
+        { text: 'T2 Spin Wheel (Golden Spin progress) \u2192 target 1 golden every 3-5 days', id: 'wheel' },
+        { text: 'T1 Quick Play \u2192 high-floor players, L10+5 target', id: 'quick_play' },
+        { text: 'T3 Daily Picker \u2192 pace-up matchups | Scorer Picker \u2192 guards L10 20-34', id: 'pickers' },
+        { text: 'T1 Hot Streak check \u2192 verify active streaks, guard threshold', id: 'hot_streak' },
+        { text: 'T2 Monitor: Collections + WNTR progress', id: 'collections' }
       ],
-      strategy: 'WNTR deadline Mar 22 \u2014 spend ALL Essence on packs before conversion. Punt watch: Sabonis/Curry/Nurkic at L10=0, slot immediately on return.'
+      strategy: 'T1 = cash lineups, T2 = collection growth, T3 = engagement. WNTR deadline Mar 22.'
     },
-    { name: 'Afternoon Brief', time: '1:00 PM ET', scheduleHour: 13, scheduleMinute: 0, status: 'scheduled', desc: 'Midday market update, breaking AI announcements', recurring: false, prevHour: 11, prevMinute: 0 },
-    { name: 'Sorare Evening Strategy', time: '5:00 PM ET', scheduleHour: 17, scheduleMinute: 0, status: 'scheduled', desc: 'Lineup optimization + catch-up for missed morning tasks', recurring: false, prevHour: 13, prevMinute: 0,
+    { id: 'afternoon_brief', name: 'Afternoon Brief', time: '1:00 PM ET', scheduleHour: 13, scheduleMinute: 0, status: 'scheduled', desc: 'Midday market update, breaking AI announcements', recurring: false, prevHour: 11, prevMinute: 0 },
+    { id: 'sorare_evening', name: 'Sorare Evening Strategy', time: '5:00 PM ET', scheduleHour: 17, scheduleMinute: 0, status: 'scheduled', desc: 'Lineup optimization + catch-up for missed morning tasks', recurring: false, prevHour: 13, prevMinute: 0,
       subtasks: [
-        'Catch-up \u2192 verify pack/wheel/Quick Play/Picker all completed',
-        'API auth \u2192 fetch collection (305 cards) \u2192 fetch open fixtures',
-        'Score cards: 30% form + 20% season + 15% matchup + 15% proj + 10% H/A + 10% power',
-        'Build 3-5 lineups per comp: Floor/Streak, Balanced, Ceiling, Correlation, Contrarian',
-        'Cap 120+MVP \u2192 Jokic permanent MVP (64.3), 4 slots under 120 cap',
-        'Daily Pickup + Limited Contender + Common Champion lineups',
-        'Hot Streak check \u2192 L1-L2: always submit | L3+: skip weak GWs'
+        { text: 'Catch-up \u2192 verify pack/wheel/Quick Play/Picker all completed', id: 'catchup' },
+        { text: 'Injury re-check \u2192 swap OUT/DOUBTFUL players in all lineups', id: 'injury_check' },
+        { text: 'Re-optimize lineups \u2192 3 strong lineups per comp, floor 25+', id: 'lineup_optimize' },
+        { text: 'Hot Streak guard \u2192 only submit if projected 240+', id: 'hot_streak_guard' },
+        { text: 'Daily Pickup + Limited Contender + Common Champion', id: 'competitions' },
+        { text: 'Arena evaluation \u2192 enter if essence budget healthy', id: 'arena' }
       ],
-      strategy: 'MVP hierarchy: Jokic (64.3) > Bam (50.4) > Edwards (46.6) > KD (41.5) > Cade (41.3). Protect L3+ streaks \u2014 skipping beats risking $50-$1K reset.'
+      strategy: 'MVP hierarchy: Jokic (64.3) > Bam (50.4) > Edwards (46.6) > KD (41.5). Protect L3+ streaks \u2014 skipping beats risking reset.'
     },
-    { name: 'Evening Brief', time: '8:00 PM ET', scheduleHour: 20, scheduleMinute: 0, status: 'scheduled', desc: 'End of day wrap, after-hours moves, overnight preview', recurring: false, prevHour: 17, prevMinute: 0 },
-    { name: 'Market Intelligence Scan', time: 'Every 4 hours', scheduleHour: -1, scheduleMinute: 0, status: 'active', desc: 'Continuous monitoring of AI value chain developments', recurring: true }
+    { id: 'evening_brief', name: 'Evening Brief', time: '8:00 PM ET', scheduleHour: 20, scheduleMinute: 0, status: 'scheduled', desc: 'End of day wrap, after-hours moves, overnight preview', recurring: false, prevHour: 17, prevMinute: 0 },
+    { id: 'market_scan', name: 'Market Intelligence Scan', time: 'Every 4 hours', scheduleHour: -1, scheduleMinute: 0, status: 'active', desc: 'Continuous monitoring of AI value chain developments', recurring: true }
   ];
+
+  /* Track dynamic overrides from state.json */
+  var jobOverrides = {}; // { jobId: { status, completedAt, subtasks: { subtaskId: status } } }
+
   function getETNow() { return new Date(new Date().toLocaleString('en-US', { timeZone: 'America/New_York' })); }
+
   function calcProgress(job) {
     var now = getETNow(), cm = now.getHours()*60+now.getMinutes();
+    var override = jobOverrides[job.id];
+    /* If state.json says completed, progress is 100% */
+    if (override && override.status === 'completed') return 100;
+    if (override && override.status === 'running') {
+      /* Running: pulse between 40-80% */
+      return 40 + Math.round(Math.abs(Math.sin(Date.now() / 3000)) * 40);
+    }
+    if (override && override.status === 'failed') return 100;
+    /* Fallback: time-based but ONLY up to scheduled time, never auto-complete */
     if (job.recurring) return Math.min(100, Math.round((cm%240)/240*100));
     var t = job.scheduleHour*60+job.scheduleMinute, p = job.prevHour*60+job.prevMinute;
-    if (cm >= t) return 100;
+    if (cm >= t) {
+      /* Past schedule time but no override = missed, show 100% bar but status handles color */
+      return 100;
+    }
     var w = t-p; if (w<=0) w=60;
     var e = cm-p; if (e<0) return 0;
     return Math.min(100, Math.max(0, Math.round(e/w*100)));
   }
+
   function getStatusForJob(job) {
     var now = getETNow(), cm = now.getHours()*60+now.getMinutes(), t = job.scheduleHour*60+job.scheduleMinute;
+    var override = jobOverrides[job.id];
+    /* Dynamic override from state.json takes priority */
+    if (override && override.status) {
+      return override.status; // 'completed', 'running', 'failed', 'missed', 'scheduled'
+    }
+    /* No override: time-based logic */
     if (job.recurring) return job.status;
-    if (cm >= t) return 'completed';
-    if (t-cm <= 30 && t-cm > 0) return 'active';
-    return job.status;
+    if (cm >= t) return 'missed'; // Past time + no state.json confirmation = missed
+    if (t - cm <= 30 && t - cm > 0) return 'scheduled'; // Upcoming
+    return 'scheduled';
   }
+
+  function getSubtaskStatus(jobId, subtaskId) {
+    var override = jobOverrides[jobId];
+    if (override && override.subtasks && override.subtasks[subtaskId]) {
+      return override.subtasks[subtaskId]; // 'done', 'skipped', 'failed', 'pending'
+    }
+    return null;
+  }
+
   function renderJobs() {
     var c = document.getElementById('jobsContainer'), h = '';
     for (var i=0;i<jobs.length;i++) {
       var j=jobs[i], p=calcProgress(j), s=getStatusForJob(j);
       var fillClass = 'progress-fill';
-      if (s === 'active') fillClass += ' progress-fill-active';
+      if (s === 'running') fillClass += ' progress-fill-active';
       else if (s === 'completed') fillClass += ' progress-fill-done';
+      else if (s === 'failed') fillClass += ' progress-fill-failed';
+      else if (s === 'missed') fillClass += ' progress-fill-missed';
+      /* Badge label */
+      var badgeLabel = s.charAt(0).toUpperCase() + s.slice(1);
+      var override = jobOverrides[j.id];
+      if (override && override.completedAt && s === 'completed') {
+        badgeLabel = '\u2713 ' + override.completedAt;
+      }
+      if (s === 'missed') badgeLabel = 'Missed';
       var extra = '';
       if (j.subtasks) {
         extra += '<ul class="job-subtasks">';
-        for (var k=0;k<j.subtasks.length;k++) { extra += '<li class="job-subtask"><span class="st-icon">\u25B8</span>'+j.subtasks[k]+'</li>'; }
+        for (var k=0;k<j.subtasks.length;k++) {
+          var st = j.subtasks[k];
+          var stText = typeof st === 'string' ? st : st.text;
+          var stId = typeof st === 'string' ? null : st.id;
+          var stStatus = stId ? getSubtaskStatus(j.id, stId) : null;
+          var stIcon = '\u25B8'; // default triangle
+          var stClass = 'job-subtask';
+          if (stStatus === 'done') { stIcon = '\u2713'; stClass += ' st-done'; }
+          else if (stStatus === 'skipped') { stIcon = '\u2014'; stClass += ' st-skipped'; }
+          else if (stStatus === 'failed') { stIcon = '\u2717'; stClass += ' st-failed'; }
+          else if (stStatus === 'running') { stIcon = '\u25CF'; stClass += ' st-running'; }
+          extra += '<li class="'+stClass+'"><span class="st-icon">'+stIcon+'</span>'+escHtml(stText)+'</li>';
+        }
         extra += '</ul>';
       }
-      if (j.strategy) { extra += '<div class="job-strategy"><span class="job-strategy-label">Strategy</span>'+j.strategy+'</div>'; }
-      h += '<div class="job-card"><div class="job-header"><div><span class="job-name">'+j.name+'</span><span class="job-time">'+j.time+'</span></div><span class="badge badge-'+s+'">'+s.charAt(0).toUpperCase()+s.slice(1)+'</span></div><div class="progress-track"><div class="'+fillClass+'" style="width:'+p+'%"></div></div><div class="job-desc">'+j.desc+'</div>'+extra+'</div>';
+      if (j.strategy) { extra += '<div class="job-strategy"><span class="job-strategy-label">Strategy</span>'+escHtml(j.strategy)+'</div>'; }
+      h += '<div class="job-card"><div class="job-header"><div><span class="job-name">'+escHtml(j.name)+'</span><span class="job-time">'+escHtml(j.time)+'</span></div><span class="badge badge-'+s+'">'+badgeLabel+'</span></div><div class="progress-track"><div class="'+fillClass+'" style="width:'+p+'%"></div></div><div class="job-desc">'+escHtml(j.desc)+'</div>'+extra+'</div>';
     }
     c.innerHTML = h;
   }
-  renderJobs(); setInterval(renderJobs, 30000);
+  renderJobs(); setInterval(renderJobs, 5000); // Faster refresh for running jobs
 
   function updateFeedTime() {
     var n=getETNow(), h=n.getHours(), m=n.getMinutes(), a=h>=12?'PM':'AM';
