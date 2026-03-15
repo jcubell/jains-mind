@@ -4,15 +4,27 @@ This file tracks who owns what in `index.html` and documents all significant cha
 
 ---
 
+## ⚠️ Critical Rules for Perplexity Computer
+
+**DO NOT overwrite the Brain Feed section.** It is owned exclusively by J.AI.N and contains live state wiring. If you regenerate index.html, you MUST preserve:
+- The `.brain-hero-wrap` / `.brain-hero` HTML structure (lines containing `brain-hero-wrap`, `modelRoster`, `subagentPanel`, `brainFocus`, `brainStream`)
+- The `setModelTheme()` function in JS
+- The `.model-chip`, `.brain-subagents`, `.subagent-row`, `.model-roster` CSS blocks
+- The per-model conic-gradient rules (`.brain-hero.model-grok`, `.brain-hero.model-sonnet`, etc.)
+
+**Safe to modify:** Jobs section JS (job definitions, overrides), right panel feed content, CSS that doesn't touch `--m-color/--m-glow/--m-border` or `.brain-hero` styles.
+
+---
+
 ## Ownership Map
 
 | Section | Owner | Notes |
 |---|---|---|
-| **Brain Feed Hero** (top-left panel, top 50%) | **J.AI.N** | Real-time brain state widget, push via push_brain.py |
-| **Today's Jobs** (bottom-left panel) | **J.AI.N** | Job scheduling logic in JS at bottom of index.html |
+| **Brain Feed Hero** (`.brain-hero-wrap`, top of left panel) | **J.AI.N** | Real-time brain state, model chips, sub-agents — DO NOT OVERWRITE |
+| **Today's Jobs** (bottom-left panel) | Shared | Job definitions and JS engine — Perplexity manages job data |
 | **Live Intelligence Feed** (right panel) | **Perplexity Computer** | News feed, ticker bar, macro/AI/VC sections |
 | **Top bar** (title + clock + status dot) | Shared | Clock JS is J.AI.N's; title/layout is Perplexity's |
-| **CSS variables / :root** | **J.AI.N (last edit)** | See change log below — accent color changed |
+| **CSS variables / :root** | **J.AI.N** | `--m-color/--m-glow/--m-border` are model theme vars — do not hardcode |
 
 ---
 
