@@ -1261,6 +1261,36 @@
     <!-- LEFT: BRAIN FEED HERO (top 50%) + JOBS (bottom 50%) -->
     <div class="left-panel" id="leftPanel">
 
+      <!-- Credits & Usage Widget -->
+      <div class="credits-panel" id="creditsPanel">
+        <span class="credits-label">Credits &amp; Usage</span>
+        <div class="credit-pill">
+          <div class="credit-pill-dot" style="background:#ff9500;"></div>
+          <span class="credit-pill-name">Anthropic</span>
+          <span class="credit-pill-value" id="creditAnthropic">API key</span>
+        </div>
+        <div class="credit-pill">
+          <div class="credit-pill-dot" style="background:#ff2222;"></div>
+          <span class="credit-pill-name">xAI</span>
+          <span class="credit-pill-value" id="creditXai">API key</span>
+        </div>
+        <div class="credit-pill">
+          <div class="credit-pill-dot" style="background:#a855f7;"></div>
+          <span class="credit-pill-name">OpenRouter</span>
+          <span class="credit-pill-value" id="creditOpenRouter">—</span>
+        </div>
+        <div class="credit-pill" style="margin-left:auto;">
+          <div class="credit-pill-dot" style="background:rgba(255,255,255,0.25);"></div>
+          <span class="credit-pill-name">Session cost</span>
+          <span class="credit-pill-value" id="usageCost">—</span>
+        </div>
+        <div class="credit-pill">
+          <div class="credit-pill-dot" style="background:rgba(255,255,255,0.25);"></div>
+          <span class="credit-pill-name">Tokens out</span>
+          <span class="credit-pill-value" id="usageTokens">—</span>
+        </div>
+      </div>
+
       <!-- Brain Feed Hero -->
       <div class="brain-hero-wrap">
         <div class="brain-hero">
@@ -1792,28 +1822,44 @@
   // Refresh relative timestamps every 30s
   setInterval(function() { var u = document.getElementById('brainLastUpdated'); if (u && lastKnownState) u.textContent = relTime(lastKnownState.updated_at); }, 30000);
 
-  // Credits widget — poll tunnel /credits every 5 min
-  function updateCredits() {
+  // Credits & Usage widget — poll tunnel /usage every 60s
+  function updateUsage() {
     if (!tunnelUrl) return;
-    fetch(tunnelUrl + '/credits?t=' + Date.now())
+    fetch(tunnelUrl + '/usage?t=' + Date.now())
       .then(function(r) { return r.json(); })
       .then(function(data) {
-        var el = document.getElementById('creditOpenRouter');
-        if (!el) return;
-        var or = data && data.openrouter;
-        if (or && or.remaining != null) {
-          var rem = parseFloat(or.remaining).toFixed(2);
-          el.textContent = '$' + rem;
-          el.className = 'credit-pill-value ' + (rem < 10 ? 'low' : rem < 30 ? 'med' : 'ok');
-        } else {
-          el.textContent = '—';
-          el.className = 'credit-pill-value';
+        // OpenRouter balance
+        var orEl = document.getElementById('creditOpenRouter');
+        if (orEl) {
+          var or = data.credits && data.credits.openrouter;
+          if (or && or.remaining != null) {
+            var rem = parseFloat(or.remaining).toFixed(2);
+            orEl.textContent = '$' + rem;
+            orEl.className = 'credit-pill-value ' + (rem < 10 ? 'low' : rem < 30 ? 'med' : 'ok');
+          } else {
+            orEl.textContent = '—';
+            orEl.className = 'credit-pill-value';
+          }
+        }
+        // Session cost
+        var costEl = document.getElementById('usageCost');
+        if (costEl && data.usage) {
+          var c = parseFloat(data.usage.totalCost || 0);
+          costEl.textContent = '$' + c.toFixed(3);
+          costEl.className = 'credit-pill-value ' + (c > 5 ? 'med' : 'ok');
+        }
+        // Output tokens
+        var tokEl = document.getElementById('usageTokens');
+        if (tokEl && data.usage) {
+          var t = data.usage.totalOutput || 0;
+          tokEl.textContent = t > 1000 ? Math.round(t/1000) + 'k' : t;
+          tokEl.className = 'credit-pill-value';
         }
       })
       .catch(function() {});
   }
-  updateCredits();
-  setInterval(updateCredits, 5 * 60 * 1000);
+  updateUsage();
+  setInterval(updateUsage, 60000);
 
   /* ===== JOBS ENGINE — Dynamic status from state.json ===== */
   var jobs = [
