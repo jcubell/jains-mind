@@ -1096,6 +1096,7 @@
       <!-- Brain Feed Hero -->
       <div class="brain-hero-wrap">
         <div class="brain-hero">
+          <canvas id="neuralCanvas" style="position:absolute;inset:0;width:100%;height:100%;border-radius:16px;pointer-events:none;opacity:0;transition:opacity 1.2s ease;z-index:1;"></canvas>
           <div class="brain-hero-header">
             <div class="objective-dot idle" id="objDot"></div>
             <span class="brain-hero-label"><img src="openclaw-icon.png" alt="OpenClaw">Brain Feed</span>
@@ -1527,6 +1528,151 @@
     if(dateEl){dateEl.textContent=days[n.getDay()]+', '+months[n.getMonth()]+' '+n.getDate()+', '+n.getFullYear();}
   }
   updateFeedTime(); setInterval(updateFeedTime, 60000);
+
+  // ===== NEURAL NETWORK CANVAS ANIMATION =====
+  (function() {
+    var canvas = document.getElementById('neuralCanvas');
+    if (!canvas) return;
+    var ctx = canvas.getContext('2d');
+    var nodes = [], pulses = [], animId = null, active = false;
+    var NODE_COUNT = 28, MAX_DIST = 120;
+
+    function resize() {
+      var wrap = canvas.parentElement;
+      canvas.width = wrap.offsetWidth;
+      canvas.height = wrap.offsetHeight;
+    }
+
+    function initNodes() {
+      nodes = [];
+      for (var i = 0; i < NODE_COUNT; i++) {
+        nodes.push({
+          x: Math.random() * canvas.width,
+          y: Math.random() * canvas.height,
+          vx: (Math.random() - 0.5) * 0.4,
+          vy: (Math.random() - 0.5) * 0.4,
+          r: Math.random() * 2 + 1.5
+        });
+      }
+    }
+
+    function spawnPulse() {
+      // pick a random edge
+      var i = Math.floor(Math.random() * nodes.length);
+      var j, attempts = 0;
+      do { j = Math.floor(Math.random() * nodes.length); attempts++; } while (j === i && attempts < 10);
+      var dx = nodes[j].x - nodes[i].x, dy = nodes[j].y - nodes[i].y;
+      if (Math.sqrt(dx*dx+dy*dy) < MAX_DIST) {
+        pulses.push({ from: i, to: j, t: 0, speed: 0.012 + Math.random() * 0.018 });
+      }
+    }
+
+    function draw() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      // Move nodes
+      for (var i = 0; i < nodes.length; i++) {
+        var n = nodes[i];
+        n.x += n.vx; n.y += n.vy;
+        if (n.x < 0 || n.x > canvas.width)  n.vx *= -1;
+        if (n.y < 0 || n.y > canvas.height) n.vy *= -1;
+      }
+
+      // Draw edges
+      for (var i = 0; i < nodes.length; i++) {
+        for (var j = i+1; j < nodes.length; j++) {
+          var dx = nodes[j].x - nodes[i].x, dy = nodes[j].y - nodes[i].y;
+          var dist = Math.sqrt(dx*dx + dy*dy);
+          if (dist < MAX_DIST) {
+            var alpha = (1 - dist/MAX_DIST) * 0.18;
+            ctx.beginPath();
+            ctx.moveTo(nodes[i].x, nodes[i].y);
+            ctx.lineTo(nodes[j].x, nodes[j].y);
+            ctx.strokeStyle = 'rgba(255,30,30,' + alpha + ')';
+            ctx.lineWidth = 0.8;
+            ctx.stroke();
+          }
+        }
+      }
+
+      // Draw nodes
+      for (var i = 0; i < nodes.length; i++) {
+        var n = nodes[i];
+        ctx.beginPath();
+        ctx.arc(n.x, n.y, n.r, 0, Math.PI*2);
+        ctx.fillStyle = 'rgba(255,40,40,0.55)';
+        ctx.fill();
+      }
+
+      // Draw pulses (travelling dots along edges)
+      pulses = pulses.filter(function(p) {
+        p.t += p.speed;
+        if (p.t > 1) return false;
+        var from = nodes[p.from], to = nodes[p.to];
+        var dx = to.x - from.x, dy = to.y - from.y;
+        var dist = Math.sqrt(dx*dx + dy*dy);
+        if (dist > MAX_DIST) return false;
+        var px = from.x + dx * p.t, py = from.y + dy * p.t;
+        var fade = Math.sin(p.t * Math.PI);
+        ctx.beginPath();
+        ctx.arc(px, py, 2.5, 0, Math.PI*2);
+        ctx.fillStyle = 'rgba(255,80,80,' + (fade * 0.9) + ')';
+        ctx.fill();
+        // glow
+        var grad = ctx.createRadialGradient(px, py, 0, px, py, 8);
+        grad.addColorStop(0, 'rgba(255,60,60,' + (fade * 0.4) + ')');
+        grad.addColorStop(1, 'rgba(255,0,0,0)');
+        ctx.beginPath();
+        ctx.arc(px, py, 8, 0, Math.PI*2);
+        ctx.fillStyle = grad;
+        ctx.fill();
+        return true;
+      });
+
+      // Randomly spawn new pulses
+      if (Math.random() < 0.06) spawnPulse();
+
+      animId = requestAnimationFrame(draw);
+    }
+
+    function startNeural() {
+      if (active) return;
+      active = true;
+      resize();
+      initNodes();
+      canvas.style.opacity = '1';
+      draw();
+    }
+
+    function stopNeural() {
+      if (!active) return;
+      active = false;
+      canvas.style.opacity = '0';
+      if (animId) { cancelAnimationFrame(animId); animId = null; }
+    }
+
+    // Hook into setMode
+    var _origSetMode = window._setModeOrig || null;
+    window._neuralSetMode = function(mode) {
+      if (mode === 'thinking') startNeural();
+      else stopNeural();
+    };
+
+    // Patch the existing setMode by watching objDot class changes
+    var dot = document.getElementById('objDot');
+    if (dot) {
+      var observer = new MutationObserver(function() {
+        if (dot.classList.contains('thinking')) startNeural();
+        else stopNeural();
+      });
+      observer.observe(dot, { attributes: true, attributeFilter: ['class'] });
+    }
+
+    window.addEventListener('resize', function() {
+      if (active) { resize(); initNodes(); }
+    });
+  })();
+
 })();
 </script>
 </body>
