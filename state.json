@@ -3,7 +3,7 @@
   "status": "idle",
   "brain": {
     "mode": "working",
-    "focus": "Voice message \u2014 transcribing...",
+    "focus": "Switching back to Grok-4 for main chat",
     "model": "grok-4",
     "thoughts": [
       {
@@ -70,6 +70,6 @@
     "subagent": null
   },
   "steps": [],
-  "updated_at": "2026-03-15T03:08:27Z",
+  "updated_at": "2026-03-15T03:08:41Z",
   "_tunnel_url": "https://charged-unique-architects-fusion.trycloudflare.com"
 }
