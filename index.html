@@ -615,33 +615,36 @@
     gap: 10px; flex-wrap: wrap;
   }
   .model-bubble {
-    width: 40px; height: 40px; border-radius: 50%;
+    width: 24px; height: 24px; border-radius: 50%;
     display: flex; align-items: center; justify-content: center;
-    font-family: var(--mono); font-size: 8px; font-weight: 700;
+    font-family: var(--mono); font-size: 7px; font-weight: 700;
     color: #fff; text-align: center; line-height: 1.1;
     letter-spacing: 0.02em; cursor: default;
     transition: transform 0.2s ease, box-shadow 0.2s ease;
     flex-shrink: 0;
-    border: 2px solid transparent;
+    border: 1px solid rgba(255,255,255,0.3);
     position: relative;
   }
-  .model-bubble:hover { transform: scale(1.1); }
+  .model-bubble:hover { transform: scale(1.05); }
   .model-bubble.active-model {
-    border: 2px solid rgba(255,255,255,0.5);
-    box-shadow: 0 0 12px 4px rgba(255,255,255,0.15);
-    transform: scale(1.08);
+    border: 1px solid rgba(255,255,255,0.8);
+    box-shadow: 0 0 8px 2px rgba(255,255,255,0.2);
+    transform: scale(1.04);
   }
   .model-bubble.active-model::after {
     content: '▸';
-    position: absolute; top: -12px; left: 50%;
+    position: absolute; top: -10px; left: 50%;
     transform: translateX(-50%);
-    font-size: 8px; color: rgba(255,255,255,0.7);
+    font-size: 7px; color: rgba(255,255,255,0.8);
   }
-  .model-bubble-grok4    { background: #cc2222; }
-  .model-bubble-sonnet   { background: #7c3aed; }
-  .model-bubble-gpt4o    { background: #16a34a; }
-  .model-bubble-llama3   { background: #1d4ed8; }
-  .model-bubble-mistral  { background: #ea580c; }
+  .model-bubble-grok4    { background: rgba(204,34,34,0.8); }
+  .model-bubble-sonnet   { background: rgba(217,119,6,0.8); }
+  .model-bubble-gemini   { background: rgba(37,99,235,0.8); }
+  .model-bubble-deepseek { background: rgba(124,58,237,0.8); }
+  .model-bubble-gpt4o    { background: rgba(22,163,74,0.8); }
+  .model-bubble-llama3   { background: rgba(22,163,74,0.8); }
+  .model-bubble-mistral  { background: rgba(234,88,12,0.8); }
+  .model-bubble-whisper  { background: rgba(226,232,240,0.8); }
 
   .subagents-section { }
   .subagents-label {
@@ -1272,11 +1275,11 @@
         <div>
           <div class="model-panel-label">Model Arsenal</div>
           <div class="model-bubbles" id="modelBubbles">
-            <div class="model-bubble model-bubble-grok4"   data-model="grok-4"   title="Grok-4">Grok&#8209;4</div>
-            <div class="model-bubble model-bubble-sonnet"  data-model="sonnet"   title="Claude Sonnet">Sonnet</div>
-            <div class="model-bubble model-bubble-gpt4o"   data-model="gpt-4o"   title="GPT-4o">GPT&#8209;4o</div>
-            <div class="model-bubble model-bubble-llama3"  data-model="llama3"   title="Llama 3">Llama 3</div>
-            <div class="model-bubble model-bubble-mistral" data-model="mistral"  title="Mistral">Mistral</div>
+            <div class="model-bubble model-bubble-grok4"    data-model="grok"     title="Grok-4">Grok&#8209;4</div>
+            <div class="model-bubble model-bubble-sonnet"   data-model="sonnet"   title="Claude Sonnet">Sonnet</div>
+            <div class="model-bubble model-bubble-gemini"   data-model="gemini"   title="Gemini Flash">Gemini</div>
+            <div class="model-bubble model-bubble-deepseek" data-model="deepseek" title="DeepSeek">DeepSeek</div>
+            <div class="model-bubble model-bubble-llama3"   data-model="llama"    title="Llama">Llama</div>
           </div>
         </div>
         <div class="subagents-section">
@@ -1586,21 +1589,32 @@
 
     // Model bubbles + current model highlight
     var MODEL_META = {
-      'grok-4':   { cls: 'model-bubble-grok4',   color: '#cc2222', bg: 'rgba(204,34,34,0.12)',   textColor: 'rgba(255,100,100,0.9)' },
-      'grok':     { cls: 'model-bubble-grok4',   color: '#cc2222', bg: 'rgba(204,34,34,0.12)',   textColor: 'rgba(255,100,100,0.9)' },
-      'sonnet':   { cls: 'model-bubble-sonnet',  color: '#7c3aed', bg: 'rgba(124,58,237,0.12)',  textColor: 'rgba(180,130,255,0.9)' },
-      'claude':   { cls: 'model-bubble-sonnet',  color: '#7c3aed', bg: 'rgba(124,58,237,0.12)',  textColor: 'rgba(180,130,255,0.9)' },
-      'gpt-4o':   { cls: 'model-bubble-gpt4o',   color: '#16a34a', bg: 'rgba(22,163,74,0.12)',   textColor: 'rgba(80,200,100,0.9)'  },
-      'gpt':      { cls: 'model-bubble-gpt4o',   color: '#16a34a', bg: 'rgba(22,163,74,0.12)',   textColor: 'rgba(80,200,100,0.9)'  },
-      'llama3':   { cls: 'model-bubble-llama3',  color: '#1d4ed8', bg: 'rgba(29,78,216,0.12)',   textColor: 'rgba(100,150,255,0.9)' },
-      'llama':    { cls: 'model-bubble-llama3',  color: '#1d4ed8', bg: 'rgba(29,78,216,0.12)',   textColor: 'rgba(100,150,255,0.9)' },
-      'mistral':  { cls: 'model-bubble-mistral', color: '#ea580c', bg: 'rgba(234,88,12,0.12)',   textColor: 'rgba(255,160,80,0.9)'  },
+      'grok-4':    { cls: 'model-bubble-grok4',    color: '#cc2222', bg: 'rgba(204,34,34,0.12)',   textColor: 'rgba(255,100,100,0.9)',  accent: '#cc2222',  accentSoft: 'rgba(204,34,34,0.08)',  accentGlow: 'rgba(204,34,34,0.15)',  accentBorder: 'rgba(204,34,34,0.25)',  accentMuted: 'rgba(204,34,34,0.5)'  },
+      'grok':      { cls: 'model-bubble-grok4',    color: '#cc2222', bg: 'rgba(204,34,34,0.12)',   textColor: 'rgba(255,100,100,0.9)',  accent: '#cc2222',  accentSoft: 'rgba(204,34,34,0.08)',  accentGlow: 'rgba(204,34,34,0.15)',  accentBorder: 'rgba(204,34,34,0.25)',  accentMuted: 'rgba(204,34,34,0.5)'  },
+      'sonnet':    { cls: 'model-bubble-sonnet',   color: '#d97706', bg: 'rgba(217,119,6,0.12)',   textColor: 'rgba(255,185,80,0.9)',   accent: '#d97706',  accentSoft: 'rgba(217,119,6,0.08)',  accentGlow: 'rgba(217,119,6,0.15)',  accentBorder: 'rgba(217,119,6,0.25)',  accentMuted: 'rgba(217,119,6,0.5)'  },
+      'claude':    { cls: 'model-bubble-sonnet',   color: '#d97706', bg: 'rgba(217,119,6,0.12)',   textColor: 'rgba(255,185,80,0.9)',   accent: '#d97706',  accentSoft: 'rgba(217,119,6,0.08)',  accentGlow: 'rgba(217,119,6,0.15)',  accentBorder: 'rgba(217,119,6,0.25)',  accentMuted: 'rgba(217,119,6,0.5)'  },
+      'gemini':    { cls: 'model-bubble-gemini',   color: '#2563eb', bg: 'rgba(37,99,235,0.12)',   textColor: 'rgba(100,160,255,0.9)',  accent: '#2563eb',  accentSoft: 'rgba(37,99,235,0.08)',  accentGlow: 'rgba(37,99,235,0.15)',  accentBorder: 'rgba(37,99,235,0.25)',  accentMuted: 'rgba(37,99,235,0.5)'  },
+      'deepseek':  { cls: 'model-bubble-deepseek', color: '#7c3aed', bg: 'rgba(124,58,237,0.12)',  textColor: 'rgba(180,130,255,0.9)', accent: '#7c3aed',  accentSoft: 'rgba(124,58,237,0.08)', accentGlow: 'rgba(124,58,237,0.15)', accentBorder: 'rgba(124,58,237,0.25)', accentMuted: 'rgba(124,58,237,0.5)' },
+      'llama':     { cls: 'model-bubble-llama3',   color: '#16a34a', bg: 'rgba(22,163,74,0.12)',   textColor: 'rgba(80,200,100,0.9)',   accent: '#16a34a',  accentSoft: 'rgba(22,163,74,0.08)',  accentGlow: 'rgba(22,163,74,0.15)',  accentBorder: 'rgba(22,163,74,0.25)',  accentMuted: 'rgba(22,163,74,0.5)'  },
+      'gpt-4o':    { cls: 'model-bubble-gpt4o',    color: '#16a34a', bg: 'rgba(22,163,74,0.12)',   textColor: 'rgba(80,200,100,0.9)',   accent: '#16a34a',  accentSoft: 'rgba(22,163,74,0.08)',  accentGlow: 'rgba(22,163,74,0.15)',  accentBorder: 'rgba(22,163,74,0.25)',  accentMuted: 'rgba(22,163,74,0.5)'  },
+      'gpt':       { cls: 'model-bubble-gpt4o',    color: '#16a34a', bg: 'rgba(22,163,74,0.12)',   textColor: 'rgba(80,200,100,0.9)',   accent: '#16a34a',  accentSoft: 'rgba(22,163,74,0.08)',  accentGlow: 'rgba(22,163,74,0.15)',  accentBorder: 'rgba(22,163,74,0.25)',  accentMuted: 'rgba(22,163,74,0.5)'  },
+      'mistral':   { cls: 'model-bubble-mistral',  color: '#ea580c', bg: 'rgba(234,88,12,0.12)',   textColor: 'rgba(255,160,80,0.9)',   accent: '#ea580c',  accentSoft: 'rgba(234,88,12,0.08)',  accentGlow: 'rgba(234,88,12,0.15)',  accentBorder: 'rgba(234,88,12,0.25)',  accentMuted: 'rgba(234,88,12,0.5)'  },
+      'whisper':   { cls: 'model-bubble-whisper',  color: '#e2e8f0', bg: 'rgba(226,232,240,0.12)', textColor: 'rgba(255,255,255,0.9)',  accent: '#e2e8f0',  accentSoft: 'rgba(226,232,240,0.08)',accentGlow: 'rgba(226,232,240,0.15)',accentBorder: 'rgba(226,232,240,0.25)',accentMuted: 'rgba(226,232,240,0.5)' },
     };
     function matchModelMeta(modelStr) {
       if (!modelStr) return null;
       var m = modelStr.toLowerCase();
       for (var k in MODEL_META) { if (m.indexOf(k) !== -1) return MODEL_META[k]; }
       return null;
+    }
+    function applyModelTheme(meta) {
+      if (!meta || !meta.accent) return;
+      var r = document.documentElement;
+      r.style.setProperty('--accent',        meta.accent);
+      r.style.setProperty('--accent-soft',   meta.accentSoft);
+      r.style.setProperty('--accent-glow',   meta.accentGlow);
+      r.style.setProperty('--accent-border', meta.accentBorder);
+      r.style.setProperty('--accent-muted',  meta.accentMuted);
     }
 
     var currentModel = (data.brain && data.brain.currentModel) || (data.brain && data.brain.model) || null;
@@ -1616,8 +1630,9 @@
           modelBubbles[bi].classList.add('active-model');
         }
       }
-      // Color the badge in brain header
+      // Update accent theme + badge
       var meta = matchModelMeta(currentModel);
+      applyModelTheme(meta);
       var badgeEl2 = document.getElementById('brainModelBadge');
       if (badgeEl2 && meta) {
         badgeEl2.style.background = meta.bg;
