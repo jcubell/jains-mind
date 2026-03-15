@@ -2,9 +2,9 @@
   "objective": "",
   "status": "idle",
   "brain": {
-    "mode": "working",
-    "focus": "Running Gemini 2.5 Pro via OpenRouter",
-    "model": "openrouter/google/gemini-2.5-pro",
+    "mode": "idle",
+    "focus": "Done \u2014 OpenRouter confirmed working, usage reflects with delay",
+    "model": "claude-sonnet-4-6",
     "thoughts": [
       {
         "time": "2:38 PM ET",
@@ -68,9 +68,9 @@
       }
     ],
     "subagent": null,
-    "currentModel": "openrouter/google/gemini-2.5-pro"
+    "currentModel": "claude-sonnet-4-6"
   },
   "steps": [],
-  "updated_at": "2026-03-15T19:09:36Z",
+  "updated_at": "2026-03-15T19:10:17Z",
   "_tunnel_url": "https://charged-unique-architects-fusion.trycloudflare.com"
 }
