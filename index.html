@@ -128,10 +128,18 @@
     initial-value: 0deg;
   }
 
-  /* IDLE: slow breathe — uses CSS var so color shifts with model */
+  /* IDLE: organic breathing — multi-step for a natural heartbeat feel */
   @keyframes border-breathe {
-    0%,100% { opacity: 0.55; box-shadow: 0 0 10px 1px var(--m-glow, rgba(255,34,34,0.25)), inset 0 0 12px var(--m-glow, rgba(255,34,34,0.06)); }
-    50%      { opacity: 1;    box-shadow: 0 0 28px 6px var(--m-glow, rgba(255,34,34,0.5)),  inset 0 0 28px var(--m-glow, rgba(255,34,34,0.12)); }
+    0%   { opacity: 0.5;  box-shadow: 0 0 8px 1px var(--m-glow, rgba(255,34,34,0.2)),  inset 0 0 10px var(--m-glow, rgba(255,34,34,0.04)); }
+    30%  { opacity: 0.85; box-shadow: 0 0 22px 4px var(--m-glow, rgba(255,34,34,0.42)), inset 0 0 22px var(--m-glow, rgba(255,34,34,0.09)); }
+    50%  { opacity: 1;    box-shadow: 0 0 32px 8px var(--m-glow, rgba(255,34,34,0.58)), inset 0 0 32px var(--m-glow, rgba(255,34,34,0.14)); }
+    70%  { opacity: 0.85; box-shadow: 0 0 22px 4px var(--m-glow, rgba(255,34,34,0.42)), inset 0 0 22px var(--m-glow, rgba(255,34,34,0.09)); }
+    100% { opacity: 0.5;  box-shadow: 0 0 8px 1px var(--m-glow, rgba(255,34,34,0.2)),  inset 0 0 10px var(--m-glow, rgba(255,34,34,0.04)); }
+  }
+  /* Idle inner ambient glow — pulsing background halo behind content */
+  @keyframes hero-ambient {
+    0%,100% { background-color: var(--bg); }
+    50%      { background-color: color-mix(in srgb, var(--bg) 96%, var(--m-color, #ff2222) 4%); }
   }
   /* WORKING: fast laser spin */
   @keyframes laser-spin {
@@ -139,8 +147,18 @@
     100% { --laser-angle: 360deg; }
   }
   @keyframes border-working-pulse {
-    0%,100% { opacity: 1; box-shadow: 0 0 20px 4px rgba(255,20,20,0.6), 0 0 50px 8px rgba(255,0,0,0.25), inset 0 0 30px rgba(255,0,0,0.1); }
-    50%      { opacity: 0.85; box-shadow: 0 0 30px 8px rgba(255,50,50,0.8), 0 0 70px 16px rgba(255,0,0,0.4), inset 0 0 40px rgba(255,0,0,0.15); }
+    0%,100% { opacity: 1;    box-shadow: 0 0 20px 4px var(--m-glow, rgba(255,20,20,0.6)),  0 0 50px 8px  var(--m-glow, rgba(255,0,0,0.25)),  inset 0 0 30px var(--m-glow, rgba(255,0,0,0.1)); }
+    50%      { opacity: 0.88; box-shadow: 0 0 38px 10px var(--m-glow, rgba(255,50,50,0.8)), 0 0 80px 20px var(--m-glow, rgba(255,0,0,0.4)),  inset 0 0 48px var(--m-glow, rgba(255,0,0,0.18)); }
+  }
+  /* Working: focus text shimmer/pulse */
+  @keyframes focus-text-glow {
+    0%,100% { text-shadow: 0 0 16px var(--m-glow, rgba(255,40,40,0.4)),  0 0 32px var(--m-glow, rgba(255,40,40,0.15)); }
+    50%      { text-shadow: 0 0 28px var(--m-glow, rgba(255,80,80,0.7)),  0 0 56px var(--m-glow, rgba(255,40,40,0.35)), 0 0 80px var(--m-glow, rgba(255,20,20,0.15)); }
+  }
+  /* Working: thought row highlight flash for newest */
+  @keyframes thought-flash {
+    0%   { background: rgba(255,60,60,0.12); }
+    100% { background: transparent; }
   }
   @keyframes scanline {
     0% { transform: translateY(-100%); opacity: 0; }
@@ -164,10 +182,10 @@
     display: flex; flex-direction: column;
     overflow: hidden;
     border-radius: 12px;
-    /* IDLE: bright model-colored border that breathes */
+    /* IDLE: bright model-colored border that breathes organically */
     border: 2px solid var(--m-color, rgba(255,34,34,0.8));
     box-shadow: 0 0 14px 2px var(--m-glow, rgba(255,34,34,0.3)), inset 0 0 14px var(--m-glow, rgba(255,34,34,0.06));
-    animation: border-breathe 4s ease-in-out infinite;
+    animation: border-breathe 5s ease-in-out infinite, hero-ambient 5s ease-in-out infinite;
     transition: border-color 0.6s ease, box-shadow 0.6s ease;
   }
   /* WORKING state — laser spin + intense glow */
@@ -187,7 +205,7 @@
         #ff0000 360deg
       ) border-box;
     border: 2px solid transparent;
-    animation: laser-spin 1.2s linear infinite, border-working-pulse 1.8s ease-in-out infinite;
+    animation: laser-spin 1.2s linear infinite, border-working-pulse 2s ease-in-out infinite;
   }
   .brain-hero::before {
     content: '';
@@ -208,7 +226,8 @@
   }
   .brain-hero.working::after {
     opacity: 1;
-    animation: scanline 2.5s ease-in-out infinite;
+    animation: scanline 3s ease-in-out infinite;
+    background: linear-gradient(90deg, transparent, rgba(255,60,60,0.08), rgba(255,100,100,0.45), rgba(255,60,60,0.08), transparent);
   }
   .brain-hero-header {
     padding: 16px 20px 14px;
@@ -216,13 +235,19 @@
     display: flex; align-items: center; gap: 14px;
     flex-shrink: 0;
     position: relative; z-index: 2;
+    transition: border-bottom-color 0.6s ease;
+  }
+  .brain-hero.working .brain-hero-header {
+    border-bottom-color: rgba(255,40,40,0.25);
   }
   .brain-hero-label {
     font-family: var(--font);
     font-size: 20px; font-weight: 700;
     letter-spacing: 0.18em; text-transform: uppercase;
-    color: rgba(255,80,80,0.9);
+    color: var(--m-color, rgba(255,80,80,0.95));
     display: flex; align-items: center; gap: 12px;
+    text-shadow: 0 0 16px var(--m-glow, rgba(255,60,60,0.3));
+    transition: color 0.6s ease, text-shadow 0.6s ease;
   }
   .brain-hero-label img {
     width: 36px; height: 36px;
@@ -235,10 +260,10 @@
     font-size: 9px;
     letter-spacing: 0.1em;
     text-transform: uppercase;
-    color: rgba(255,50,50,0.45);
+    color: rgba(255,80,80,0.5);
     margin-left: auto;
   }
-  .brain-powered span { color: rgba(255,80,80,0.7); }
+  .brain-powered span { color: rgba(255,100,100,0.8); }
   .brain-hero-focus {
     flex: 0 0 auto;
     padding: 16px 16px 12px;
@@ -251,12 +276,18 @@
     line-height: 1.25;
     color: #ffffff;
     letter-spacing: -0.02em;
-    text-shadow: 0 0 20px var(--m-glow, rgba(255,34,34,0.2));
+    /* Idle: subtle ambient text glow synced with border breathe */
+    text-shadow: 0 0 24px var(--m-glow, rgba(255,34,34,0.25));
+    animation: focus-idle-glow 5s ease-in-out infinite;
     transition: color 0.4s ease, text-shadow 0.4s ease;
+  }
+  @keyframes focus-idle-glow {
+    0%,100% { text-shadow: 0 0 12px var(--m-glow, rgba(255,34,34,0.15)); }
+    50%      { text-shadow: 0 0 32px var(--m-glow, rgba(255,34,34,0.35)), 0 0 8px rgba(255,255,255,0.05); }
   }
   .brain-focus-text.working {
     color: var(--m-color, #ff6060);
-    text-shadow: 0 0 28px var(--m-glow, rgba(255,40,40,0.5));
+    animation: focus-text-glow 2s ease-in-out infinite;
   }
   .brain-hero-stream {
     flex: 1;
@@ -274,10 +305,12 @@
     font-size: 11px; line-height: 1.5;
   }
   .thought-row:last-child { border-bottom: none; }
-  .thought-row .t-time { color: rgba(255,60,60,0.6); white-space: nowrap; flex-shrink: 0; min-width: 60px; }
-  .thought-row .t-icon { color: rgba(255,80,80,0.7); flex-shrink: 0; }
-  .thought-row .t-text { color: var(--text-2); }
-  .thought-row.new .t-text { color: var(--text); }
+  .thought-row .t-time { color: rgba(255,80,80,0.7); white-space: nowrap; flex-shrink: 0; min-width: 60px; }
+  .thought-row .t-icon { color: rgba(255,100,100,0.8); flex-shrink: 0; }
+  .thought-row .t-text { color: #b0b0b0; }
+  .thought-row.new .t-text { color: #e0e0e0; }
+  /* Newest entry gets a brief flash highlight when injected */
+  .thought-row.new { animation: thought-flash 1.2s ease-out forwards; }
 
   /* Jobs section — bottom half */
   .jobs-section {
