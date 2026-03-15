@@ -611,6 +611,35 @@
   }
   .footer-attr a:hover { color: var(--text-3); }
 
+  /* ===== CREDITS WIDGET ===== */
+  .credits-panel {
+    display: flex; flex-direction: row; align-items: center;
+    gap: 10px; padding: 8px 16px 10px;
+    border-bottom: 1px solid var(--border);
+    flex-shrink: 0; flex-wrap: wrap;
+  }
+  .credits-label {
+    font-family: var(--font); font-size: 9px; font-weight: 700;
+    letter-spacing: 0.16em; text-transform: uppercase;
+    color: var(--text-muted); flex-shrink: 0;
+  }
+  .credit-pill {
+    display: flex; align-items: center; gap: 5px;
+    font-family: var(--mono); font-size: 10px;
+    padding: 3px 9px; border-radius: 20px;
+    border: 1px solid rgba(255,255,255,0.08);
+    background: rgba(255,255,255,0.03);
+    white-space: nowrap;
+  }
+  .credit-pill-dot {
+    width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0;
+  }
+  .credit-pill-name { color: rgba(255,255,255,0.45); }
+  .credit-pill-value { color: rgba(255,255,255,0.9); font-weight: 600; }
+  .credit-pill-value.low { color: #f87171; }
+  .credit-pill-value.ok  { color: #4ade80; }
+  .credit-pill-value.med { color: #fbbf24; }
+
   /* ===== MODEL CHIPS & SUB-AGENTS (inline in brain hero) ===== */
   /* Model roster — inline with Brain Feed title */
   .model-roster {
@@ -1261,6 +1290,26 @@
         </div>
       </div>
 
+      <!-- Credits Widget -->
+      <div class="credits-panel" id="creditsPanel">
+        <span class="credits-label">Credits</span>
+        <div class="credit-pill">
+          <div class="credit-pill-dot" style="background:#ff9500;"></div>
+          <span class="credit-pill-name">Anthropic</span>
+          <span class="credit-pill-value" id="creditAnthropic">API key</span>
+        </div>
+        <div class="credit-pill">
+          <div class="credit-pill-dot" style="background:#ff2222;"></div>
+          <span class="credit-pill-name">xAI</span>
+          <span class="credit-pill-value" id="creditXai">API key</span>
+        </div>
+        <div class="credit-pill">
+          <div class="credit-pill-dot" style="background:#a855f7;"></div>
+          <span class="credit-pill-name">OpenRouter</span>
+          <span class="credit-pill-value" id="creditOpenRouter">—</span>
+        </div>
+      </div>
+
       <!-- Jobs Section -->
       <!-- Perplexity Computer: Enhanced with glassmorphism cards, teal accents, hover states, staggered animations -->
       <div class="jobs-section">
@@ -1742,6 +1791,29 @@
   setInterval(fetchJobsFromGitHub, 30000); // Refresh job status every 30s from GitHub
   // Refresh relative timestamps every 30s
   setInterval(function() { var u = document.getElementById('brainLastUpdated'); if (u && lastKnownState) u.textContent = relTime(lastKnownState.updated_at); }, 30000);
+
+  // Credits widget — poll tunnel /credits every 5 min
+  function updateCredits() {
+    if (!tunnelUrl) return;
+    fetch(tunnelUrl + '/credits?t=' + Date.now())
+      .then(function(r) { return r.json(); })
+      .then(function(data) {
+        var el = document.getElementById('creditOpenRouter');
+        if (!el) return;
+        var or = data && data.openrouter;
+        if (or && or.remaining != null) {
+          var rem = parseFloat(or.remaining).toFixed(2);
+          el.textContent = '$' + rem;
+          el.className = 'credit-pill-value ' + (rem < 10 ? 'low' : rem < 30 ? 'med' : 'ok');
+        } else {
+          el.textContent = '—';
+          el.className = 'credit-pill-value';
+        }
+      })
+      .catch(function() {});
+  }
+  updateCredits();
+  setInterval(updateCredits, 5 * 60 * 1000);
 
   /* ===== JOBS ENGINE — Dynamic status from state.json ===== */
   var jobs = [
