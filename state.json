@@ -3,9 +3,14 @@
   "status": "idle",
   "brain": {
     "mode": "working",
-    "focus": "Found issue: no webchat streaming config",
+    "focus": "Checking control UI WebSocket event handling",
     "model": "claude-sonnet-4-6",
     "thoughts": [
+      {
+        "time": "3:57 PM ET",
+        "type": "action",
+        "text": "Looking at how chat events stream to browser"
+      },
       {
         "time": "3:56 PM ET",
         "type": "action",
@@ -21,6 +26,6 @@
     "currentModel": "claude-sonnet-4-6"
   },
   "steps": [],
-  "updated_at": "2026-03-15T19:56:41Z",
+  "updated_at": "2026-03-15T19:57:32Z",
   "_tunnel_url": "https://charged-unique-architects-fusion.trycloudflare.com"
 }
