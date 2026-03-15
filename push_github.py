@@ -13,7 +13,9 @@ the next push_brain call automatically fixes the dashboard.
 import sys, json, base64, urllib.request, re, time
 
 REPO = "jcubell/jains-mind"
-BRANCH = "master"   # default branch — unauthenticated API calls return this
+STATE_BRANCH = "master"   # state.json lives on master — avoids triggering Vercel production builds
+INDEX_BRANCH = "main"     # index.html lives on main — Vercel production branch
+BRANCH = STATE_BRANCH     # legacy compat
 STATE_FILE_PATH = "state.json"
 INDEX_FILE_PATH = "index.html"
 URL_FILE = "/tmp/current-tunnel-url.txt"
@@ -26,10 +28,11 @@ def get_tunnel_url(arg_url=None):
     except Exception:
         return None
 
-def github_get(token, path):
+def github_get(token, path, branch=None):
     """Fetch a file from GitHub, return (content_str, sha)."""
+    ref = branch or STATE_BRANCH
     req = urllib.request.Request(
-        f"https://api.github.com/repos/{REPO}/contents/{path}?ref={BRANCH}",
+        f"https://api.github.com/repos/{REPO}/contents/{path}?ref={ref}",
         headers={"Authorization": f"token {token}", "Accept": "application/vnd.github.v3+json"}
     )
     with urllib.request.urlopen(req) as r:
@@ -80,12 +83,51 @@ def push_to_github(state_file, tunnel_url=None):
         except Exception:
             state_sha = None
 
-        github_put(TOKEN, STATE_FILE_PATH, state_sha, state_content, "brain: state update")
+        # Push state.json to master (no Vercel build triggered)
+        def github_put_branch(token, path, sha, content_str, message, branch):
+            def _put(sha_to_use):
+                payload = {
+                    "message": message,
+                    "branch": branch,
+                    "content": base64.b64encode(content_str.encode("utf-8")).decode("ascii"),
+                    "sha": sha_to_use
+                }
+                req = urllib.request.Request(
+                    f"https://api.github.com/repos/{REPO}/contents/{path}",
+                    data=json.dumps(payload).encode(),
+                    headers={"Authorization": f"token {token}", "Content-Type": "application/json"},
+                    method="PUT"
+                )
+                with urllib.request.urlopen(req) as r:
+                    return json.loads(r.read())
+            try:
+                return _put(sha)
+            except urllib.error.HTTPError as he:
+                if he.code == 409:
+                    time.sleep(1)
+                    req2 = urllib.request.Request(
+                        f"https://api.github.com/repos/{REPO}/contents/{path}?ref={branch}",
+                        headers={"Authorization": f"token {token}", "Accept": "application/vnd.github.v3+json"}
+                    )
+                    with urllib.request.urlopen(req2) as r2:
+                        d2 = json.loads(r2.read())
+                        fresh_sha = d2['sha']
+                    return _put(fresh_sha)
+                raise
 
-        # ── 2. Patch index.html tunnel URL ───────────────────────────────────
+        github_put_branch(TOKEN, STATE_FILE_PATH, state_sha, state_content, "brain: state update", STATE_BRANCH)
+
+        # ── 2. Patch index.html tunnel URL on main (Vercel production branch) ─
         if tunnel:
             try:
-                index_content, index_sha = github_get(TOKEN, INDEX_FILE_PATH)
+                req_idx = urllib.request.Request(
+                    f"https://api.github.com/repos/{REPO}/contents/{INDEX_FILE_PATH}?ref={INDEX_BRANCH}",
+                    headers={"Authorization": f"token {TOKEN}", "Accept": "application/vnd.github.v3+json"}
+                )
+                with urllib.request.urlopen(req_idx) as r:
+                    d = json.loads(r.read())
+                    index_content = base64.b64decode(d['content']).decode('utf-8')
+                    index_sha = d['sha']
                 # Replace hardcoded tunnel URL seed in JS
                 new_index = re.sub(
                     r"tunnelUrl = 'https://[^']*';",
@@ -93,8 +135,8 @@ def push_to_github(state_file, tunnel_url=None):
                     index_content
                 )
                 if new_index != index_content:
-                    github_put(TOKEN, INDEX_FILE_PATH, index_sha, new_index,
-                               f"fix: update tunnel URL -> {tunnel}")
+                    github_put_branch(TOKEN, INDEX_FILE_PATH, index_sha, new_index,
+                               f"fix: update tunnel URL -> {tunnel}", INDEX_BRANCH)
             except Exception as e:
                 # index.html patch failure is non-fatal
                 with open("/tmp/push_github_error.log", "a") as f:
