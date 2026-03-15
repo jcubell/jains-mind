@@ -87,20 +87,26 @@ This will restore cyan for the right panel only, while keeping red for the left 
 - Tunnel URL is hardcoded in index.html and updated automatically on tunnel restart
 - Falls back to GitHub API (`state.json` in repo root) if tunnel goes down 3x
 
-### Branch Strategy
+### Hosting & Branch Strategy
 
-**Vercel watches `main` for production deploys.** This is the single source of truth.
+**GitHub Pages is the primary hosting.** URL: https://jcubell.github.io/jains-mind
 
-- `main` = **Vercel production branch** — always push here for live updates
-- `master` = legacy branch, kept in sync but NOT watched by Vercel
-- **Always push to `main`**: `git push origin main`
-- Never rely on `master` for production deploys
+GitHub Pages serves from the `master` branch, root `/`.
+
+- `master` = **live production** (GitHub Pages serves this) 
+- `main` = working branch — make all edits here first
+- **Workflow:** edit on `main` → push to `main` → then sync to master:
+  ```
+  git push origin main
+  git push origin main:master --force
+  ```
+- `state.json` (brain feed live data) is auto-pushed to `master` by J.AI.N's `push_github.py`
 
 ### For J.AI.N
-- All dashboard edits → push to `main`
-- Keep `master` in sync if needed: `git push origin main:master --force`
-- `state.json` updates (brain feed) → push to `master` only (to avoid Vercel redeploys on every brain state update)
+- UI edits → commit to `main`, then `git push origin main && git push origin main:master --force`
+- Brain state → `push_brain.py` handles automatically (pushes state.json to master)
 
 ### For Perplexity Computer
-- Push all UI changes to `main` → Vercel auto-deploys within ~30s
-- Do NOT push to `master` only — it won't trigger a production deploy
+- Make UI edits on `main`, then push to both branches (see workflow above)
+- GitHub Pages deploys within ~1-2 minutes of a push to `master`
+- Vercel (jains-mind.vercel.app) is deprecated — ignore it

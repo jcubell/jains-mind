@@ -13,8 +13,8 @@ the next push_brain call automatically fixes the dashboard.
 import sys, json, base64, urllib.request, re, time
 
 REPO = "jcubell/jains-mind"
-STATE_BRANCH = "master"   # state.json lives on master — avoids triggering Vercel production builds
-INDEX_BRANCH = "main"     # index.html lives on main — Vercel production branch
+STATE_BRANCH = "master"   # state.json lives on master — GitHub Pages serves from here
+INDEX_BRANCH = "main"     # index.html edits land on main first, then synced to master
 BRANCH = STATE_BRANCH     # legacy compat
 STATE_FILE_PATH = "state.json"
 INDEX_FILE_PATH = "index.html"

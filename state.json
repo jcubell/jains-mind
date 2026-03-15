@@ -3,9 +3,19 @@
   "status": "idle",
   "brain": {
     "mode": "working",
-    "focus": "Redesigning brain feed border \u2014 breathing idle, alive when working",
+    "focus": "Switching primary dashboard to GitHub Pages",
     "model": "grok-4",
     "thoughts": [
+      {
+        "time": "10:40 PM ET",
+        "type": "complete",
+        "text": "Vercel webhook not firing; need GitHub App access to jcubell/jains-mind"
+      },
+      {
+        "time": "10:26 PM ET",
+        "type": "complete",
+        "text": "Removed neural canvas, border now breathes gently at idle and fires up with spinning laser + glow when working"
+      },
       {
         "time": "10:22 PM ET",
         "type": "complete",
@@ -55,16 +65,11 @@
         "time": "8:36 PM ET",
         "type": "complete",
         "text": "Fixed push_github.py branch/filename mismatch"
-      },
-      {
-        "time": "8:31 PM ET",
-        "type": "complete",
-        "text": "Tunnel-first polling deployed; Vercel bootstraps from GitHub then switches to 3s tunnel polling"
       }
     ],
     "subagent": null
   },
   "steps": [],
-  "updated_at": "2026-03-15T02:24:54Z",
+  "updated_at": "2026-03-15T02:56:37Z",
   "_tunnel_url": "https://charged-unique-architects-fusion.trycloudflare.com"
 }
