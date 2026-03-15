@@ -596,107 +596,71 @@
   }
   .footer-attr a:hover { color: var(--text-3); }
 
-  /* ===== MODEL BUBBLES & SUB-AGENTS PANEL ===== */
-  .model-panel {
-    display: flex; flex-direction: column; gap: 16px;
-    padding: 14px 16px;
-    border-bottom: 1px solid var(--border);
-    flex-shrink: 0;
+  /* ===== MODEL CHIPS & SUB-AGENTS (inline in brain hero) ===== */
+  /* Model roster — inline with Brain Feed title */
+  .model-roster {
+    display: flex; align-items: center; gap: 5px;
+    margin-left: 14px; flex-wrap: wrap;
   }
-  .model-panel-label {
-    font-family: var(--font);
-    font-size: 10px; font-weight: 700;
-    letter-spacing: 0.18em; text-transform: uppercase;
-    color: var(--text-muted);
-    margin-bottom: 6px;
+  .model-chip[data-model="whisper"] { display: none; }
+  .model-chip[data-model="whisper"].active { display: inline-block; }
+  .model-chip {
+    font-family: var(--mono);
+    font-size: 9px; font-weight: 500;
+    padding: 2px 7px; border-radius: 20px;
+    letter-spacing: 0.04em;
+    color: rgba(255,255,255,0.25);
+    border: 1px solid rgba(255,255,255,0.07);
+    background: transparent;
+    transition: all 0.3s ease;
+    white-space: nowrap;
   }
-  .model-bubbles {
-    display: flex; flex-direction: row; align-items: center;
-    gap: 10px; flex-wrap: wrap;
+  .model-chip.active {
+    color: var(--m-color, #ff2222);
+    border-color: var(--m-border, rgba(255,34,34,0.4));
+    background: var(--m-glow, rgba(255,34,34,0.2));
+    box-shadow: 0 0 8px var(--m-glow, rgba(255,34,34,0.2));
   }
-  .model-bubble {
-    width: 24px; height: 24px; border-radius: 50%;
-    display: flex; align-items: center; justify-content: center;
-    font-family: var(--mono); font-size: 7px; font-weight: 700;
-    color: #fff; text-align: center; line-height: 1.1;
-    letter-spacing: 0.02em; cursor: default;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-    flex-shrink: 0;
-    border: 1px solid rgba(255,255,255,0.3);
-    position: relative;
-  }
-  .model-bubble:hover { transform: scale(1.05); }
-  .model-bubble.active-model {
-    border: 1px solid rgba(255,255,255,0.8);
-    box-shadow: 0 0 8px 2px rgba(255,255,255,0.2);
-    transform: scale(1.04);
-  }
-  .model-bubble.active-model::after {
-    content: '▸';
-    position: absolute; top: -10px; left: 50%;
-    transform: translateX(-50%);
-    font-size: 7px; color: rgba(255,255,255,0.8);
-  }
-  .model-bubble-grok4    { background: rgba(204,34,34,0.8); }
-  .model-bubble-sonnet   { background: rgba(217,119,6,0.8); }
-  .model-bubble-gemini   { background: rgba(37,99,235,0.8); }
-  .model-bubble-deepseek { background: rgba(124,58,237,0.8); }
-  .model-bubble-gpt4o    { background: rgba(22,163,74,0.8); }
-  .model-bubble-llama3   { background: rgba(22,163,74,0.8); }
-  .model-bubble-mistral  { background: rgba(234,88,12,0.8); }
-  .model-bubble-whisper  { background: rgba(234,179,8,0.8); }
 
-  .subagents-section { }
+  /* Sub-agents panel — bottom of brain hero */
+  .brain-subagents {
+    flex-shrink: 0;
+    border-top: 1px solid var(--m-glow, rgba(255,34,34,0.2));
+    padding: 8px 16px 10px;
+    position: relative; z-index: 2;
+  }
   .subagents-label {
     font-family: var(--font);
-    font-size: 10px; font-weight: 700;
-    letter-spacing: 0.18em; text-transform: uppercase;
-    color: var(--text-muted);
-    margin-bottom: 8px;
+    font-size: 9px; font-weight: 700;
+    letter-spacing: 0.16em; text-transform: uppercase;
+    color: var(--m-border, rgba(255,34,34,0.4));
+    margin-bottom: 6px;
   }
-  .subagents-list { display: flex; flex-direction: column; gap: 6px; }
-  .subagent-card {
-    display: flex; align-items: center; gap: 10px;
-    padding: 7px 10px; border-radius: 6px;
-    border: 1px solid rgba(255,255,255,0.06);
-    background: rgba(255,255,255,0.02);
-    transition: background 0.2s ease;
-  }
-  .subagent-bubble {
-    width: 28px; height: 28px; border-radius: 50%;
-    display: flex; align-items: center; justify-content: center;
-    font-family: var(--mono); font-size: 7px; font-weight: 700;
-    color: #fff; flex-shrink: 0;
-    position: relative;
-  }
-  @keyframes spin-ring {
-    to { transform: rotate(360deg); }
-  }
-  .subagent-bubble::before {
-    content: '';
-    position: absolute; inset: -3px;
-    border-radius: 50%;
-    border: 2px solid transparent;
-    border-top-color: rgba(255,255,255,0.5);
-    animation: spin-ring 1s linear infinite;
-  }
-  .subagent-info { flex: 1; min-width: 0; }
-  .subagent-model-name {
-    font-family: var(--mono); font-size: 10px; font-weight: 600;
-    color: var(--text-2);
-    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-  }
-  .subagent-task {
+  .subagent-row {
+    display: flex; align-items: center; gap: 8px;
+    padding: 4px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
     font-family: var(--mono); font-size: 10px;
-    color: var(--text-muted);
-    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-    margin-top: 1px;
   }
-  .subagents-empty {
-    font-family: var(--mono); font-size: 10px;
-    color: var(--text-muted); opacity: 0.5;
-    font-style: italic;
+  .subagent-row:last-child { border-bottom: none; }
+  .subagent-dot {
+    width: 5px; height: 5px; border-radius: 50%;
+    background: var(--m-color, #ff2222); flex-shrink: 0;
+    animation: laser-pulse 1.2s ease-in-out infinite;
   }
+  .subagent-name { color: rgba(255,255,255,0.7); font-weight: 600; flex-shrink: 0; }
+  .subagent-task { color: rgba(255,255,255,0.35); flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .subagent-model { color: var(--m-color, #ff2222); flex-shrink: 0; font-size: 9px; opacity: 0.5; }
+  .subagents-empty { color: rgba(255,255,255,0.15); font-family: var(--mono); font-size: 10px; font-style: italic; }
+
+  /* Per-model conic-gradient overrides on brain hero */
+  .brain-hero.model-grok { background: linear-gradient(#0a0a0a,#0a0a0a) padding-box, conic-gradient(from var(--laser-angle),#ff2222 0deg,#ff5555 30deg,#cc0000 80deg,#ff2222 160deg,#990000 220deg,#ff2222 360deg) border-box; }
+  .brain-hero.model-sonnet { background: linear-gradient(#0a0a0a,#0a0a0a) padding-box, conic-gradient(from var(--laser-angle),#ff9500 0deg,#ffb347 30deg,#ff6600 80deg,#ff9500 160deg,#cc7700 220deg,#ff9500 360deg) border-box; }
+  .brain-hero.model-gemini { background: linear-gradient(#0a0a0a,#0a0a0a) padding-box, conic-gradient(from var(--laser-angle),#4285f4 0deg,#74a9f7 30deg,#1a6cf5 80deg,#4285f4 160deg,#2456b8 220deg,#4285f4 360deg) border-box; }
+  .brain-hero.model-deepseek { background: linear-gradient(#0a0a0a,#0a0a0a) padding-box, conic-gradient(from var(--laser-angle),#a855f7 0deg,#c084fc 30deg,#9333ea 80deg,#a855f7 160deg,#7c22ce 220deg,#a855f7 360deg) border-box; }
+  .brain-hero.model-llama { background: linear-gradient(#0a0a0a,#0a0a0a) padding-box, conic-gradient(from var(--laser-angle),#22c55e 0deg,#4ade80 30deg,#16a34a 80deg,#22c55e 160deg,#15803d 220deg,#22c55e 360deg) border-box; }
+  .brain-hero.model-whisper { background: linear-gradient(#0a0a0a,#0a0a0a) padding-box, conic-gradient(from var(--laser-angle),#eab308 0deg,#fde047 30deg,#ca8a04 80deg,#eab308 160deg,#a16207 220deg,#eab308 360deg) border-box; }
+  .brain-hero.model-default { background: linear-gradient(#0a0a0a,#0a0a0a) padding-box, conic-gradient(from var(--laser-angle),#ff4444 0deg,#ff6666 30deg,#cc0000 80deg,#ff4444 160deg,#990000 220deg,#ff4444 360deg) border-box; }
 
   @media (max-width: 1024px) {
     .dashboard { grid-template-columns: 1fr; grid-template-rows: auto; overflow-y: auto; height: auto; }
@@ -1258,34 +1222,26 @@
         <div class="brain-hero">
           <div class="brain-hero-header">
             <div class="objective-dot idle" id="objDot"></div>
-            <span class="brain-hero-label"><img src="openclaw-icon.png" alt="OpenClaw">Brain Feed</span>
-            <span class="brain-powered">Powered by <span>OpenClaw</span></span>
-            <span style="font-family:var(--mono);font-size:9px;color:rgba(255,60,60,0.5);margin-left:12px;" id="brainLastUpdated"></span>
-            <span style="font-family:var(--mono);font-size:9px;padding:2px 7px;border-radius:3px;margin-left:8px;letter-spacing:0.04em;transition:background 0.4s,color 0.4s;" id="brainModelBadge">grok-4</span>
+            <span class="brain-hero-label"><img src="openclaw-icon.png" alt="OpenClaw">Brain Feed
+              <div class="model-roster" id="modelRoster">
+                <span class="model-chip active" data-model="grok-4">grok-4</span>
+                <span class="model-chip" data-model="claude-sonnet-4-6">sonnet</span>
+                <span class="model-chip" data-model="gemini-2.0-flash">gemini-flash</span>
+                <span class="model-chip" data-model="deepseek/deepseek-chat-v3-0324">deepseek-v3</span>
+                <span class="model-chip" data-model="meta-llama/llama-4-maverick">llama-4</span>
+                <span class="model-chip" data-model="whisper" style="display:none;">whisper</span>
+              </div>
+            </span>
+            <span class="brain-powered" style="margin-left:auto;">Powered by <span>OpenClaw</span></span>
+            <span style="font-family:var(--mono);font-size:9px;color:rgba(255,60,60,0.4);margin-left:10px;" id="brainLastUpdated"></span>
           </div>
           <div class="brain-hero-focus">
             <div class="brain-focus-text" id="brainFocus">Loading...</div>
           </div>
           <div class="brain-hero-stream" id="brainStream"></div>
-        </div>
-      </div>
-
-      <!-- Model Bubbles + Sub-agents Panel -->
-      <div class="model-panel" id="modelPanel">
-        <div>
-          <div class="model-panel-label">Model Arsenal</div>
-          <div class="model-bubbles" id="modelBubbles">
-            <div class="model-bubble model-bubble-grok4"    data-model="grok"     title="Grok-4">Grok&#8209;4</div>
-            <div class="model-bubble model-bubble-sonnet"   data-model="sonnet"   title="Claude Sonnet">Sonnet</div>
-            <div class="model-bubble model-bubble-gemini"   data-model="gemini"   title="Gemini Flash">Gemini</div>
-            <div class="model-bubble model-bubble-deepseek" data-model="deepseek" title="DeepSeek">DeepSeek</div>
-            <div class="model-bubble model-bubble-llama3"   data-model="llama"    title="Llama">Llama</div>
-          </div>
-        </div>
-        <div class="subagents-section">
-          <div class="subagents-label">Active Sub-Agents</div>
-          <div class="subagents-list" id="subagentsList">
-            <div class="subagents-empty">No active sub-agents</div>
+          <div class="brain-subagents" id="subagentPanel">
+            <div class="subagents-label">Active Sub-Agents</div>
+            <div id="subagentList"><span class="subagents-empty">none running</span></div>
           </div>
         </div>
       </div>
@@ -1507,6 +1463,44 @@
   }
   updateClock(); setInterval(updateClock, 1000);
 
+  function setModelTheme(model) {
+    var themes = {
+      'grok':     { color: '#ff2222', glow: 'rgba(255,34,34,0.2)',   border: 'rgba(255,34,34,0.4)',   cls: 'model-grok' },
+      'sonnet':   { color: '#ff9500', glow: 'rgba(255,149,0,0.2)',   border: 'rgba(255,149,0,0.4)',   cls: 'model-sonnet' },
+      'gemini':   { color: '#4285f4', glow: 'rgba(66,133,244,0.2)',  border: 'rgba(66,133,244,0.4)',  cls: 'model-gemini' },
+      'deepseek': { color: '#a855f7', glow: 'rgba(168,85,247,0.2)',  border: 'rgba(168,85,247,0.4)',  cls: 'model-deepseek' },
+      'llama':    { color: '#22c55e', glow: 'rgba(34,197,94,0.2)',   border: 'rgba(34,197,94,0.4)',   cls: 'model-llama' },
+      'whisper':  { color: '#eab308', glow: 'rgba(234,179,8,0.2)',   border: 'rgba(234,179,8,0.4)',   cls: 'model-whisper' },
+      'default':  { color: '#ff4444', glow: 'rgba(255,68,68,0.2)',   border: 'rgba(255,68,68,0.4)',   cls: 'model-default' }
+    };
+    var m = model ? model.toLowerCase() : '';
+    var key = 'default';
+    if (m.indexOf('grok') > -1) key = 'grok';
+    else if (m.indexOf('sonnet') > -1 || m.indexOf('claude') > -1) key = 'sonnet';
+    else if (m.indexOf('gemini') > -1) key = 'gemini';
+    else if (m.indexOf('deepseek') > -1) key = 'deepseek';
+    else if (m.indexOf('llama') > -1) key = 'llama';
+    else if (m.indexOf('whisper') > -1) key = 'whisper';
+    var t = themes[key];
+    var root = document.documentElement;
+    root.style.setProperty('--m-color',  t.color);
+    root.style.setProperty('--m-glow',   t.glow);
+    root.style.setProperty('--m-border', t.border);
+    // Also update legacy --accent vars
+    root.style.setProperty('--accent',        t.color);
+    root.style.setProperty('--accent-soft',   t.glow);
+    root.style.setProperty('--accent-glow',   t.glow);
+    root.style.setProperty('--accent-border', t.border);
+    root.style.setProperty('--accent-muted',  t.border);
+    var hero = document.querySelector('.brain-hero');
+    if (hero) {
+      hero.className = hero.className.replace(/\bmodel-\w+/g, '').trim() + ' ' + t.cls;
+    }
+    // Whisper chip: show only when active
+    var whisperChip = document.querySelector('.model-chip[data-model="whisper"]');
+    if (whisperChip) whisperChip.style.display = (key === 'whisper') ? '' : 'none';
+  }
+
   function setMode(mode) {
     var dot = document.getElementById('objDot');
     var indicator = document.getElementById('statusIndicator');
@@ -1553,9 +1547,6 @@
       var focusEl = document.getElementById('brainFocus');
       if (focusEl) focusEl.textContent = data.brain.focus || 'Idle — monitoring for tasks';
 
-      var badgeEl = document.getElementById('brainModelBadge');
-      if (badgeEl && data.brain.model) badgeEl.textContent = shortModel(data.brain.model);
-
       var updEl = document.getElementById('brainLastUpdated');
       if (updEl) updEl.textContent = relTime(data.updated_at);
 
@@ -1587,86 +1578,44 @@
       objEl.textContent = (data.brain && data.brain.focus) || data.objective || 'Awaiting directive...';
     }
 
-    // Model bubbles + current model highlight
-    var MODEL_META = {
-      'grok-4':    { cls: 'model-bubble-grok4',    color: '#cc2222', bg: 'rgba(204,34,34,0.12)',   textColor: 'rgba(255,100,100,0.9)',  accent: '#cc2222',  accentSoft: 'rgba(204,34,34,0.08)',  accentGlow: 'rgba(204,34,34,0.15)',  accentBorder: 'rgba(204,34,34,0.25)',  accentMuted: 'rgba(204,34,34,0.5)'  },
-      'grok':      { cls: 'model-bubble-grok4',    color: '#cc2222', bg: 'rgba(204,34,34,0.12)',   textColor: 'rgba(255,100,100,0.9)',  accent: '#cc2222',  accentSoft: 'rgba(204,34,34,0.08)',  accentGlow: 'rgba(204,34,34,0.15)',  accentBorder: 'rgba(204,34,34,0.25)',  accentMuted: 'rgba(204,34,34,0.5)'  },
-      'sonnet':    { cls: 'model-bubble-sonnet',   color: '#d97706', bg: 'rgba(217,119,6,0.12)',   textColor: 'rgba(255,185,80,0.9)',   accent: '#d97706',  accentSoft: 'rgba(217,119,6,0.08)',  accentGlow: 'rgba(217,119,6,0.15)',  accentBorder: 'rgba(217,119,6,0.25)',  accentMuted: 'rgba(217,119,6,0.5)'  },
-      'claude':    { cls: 'model-bubble-sonnet',   color: '#d97706', bg: 'rgba(217,119,6,0.12)',   textColor: 'rgba(255,185,80,0.9)',   accent: '#d97706',  accentSoft: 'rgba(217,119,6,0.08)',  accentGlow: 'rgba(217,119,6,0.15)',  accentBorder: 'rgba(217,119,6,0.25)',  accentMuted: 'rgba(217,119,6,0.5)'  },
-      'gemini':    { cls: 'model-bubble-gemini',   color: '#2563eb', bg: 'rgba(37,99,235,0.12)',   textColor: 'rgba(100,160,255,0.9)',  accent: '#2563eb',  accentSoft: 'rgba(37,99,235,0.08)',  accentGlow: 'rgba(37,99,235,0.15)',  accentBorder: 'rgba(37,99,235,0.25)',  accentMuted: 'rgba(37,99,235,0.5)'  },
-      'deepseek':  { cls: 'model-bubble-deepseek', color: '#7c3aed', bg: 'rgba(124,58,237,0.12)',  textColor: 'rgba(180,130,255,0.9)', accent: '#7c3aed',  accentSoft: 'rgba(124,58,237,0.08)', accentGlow: 'rgba(124,58,237,0.15)', accentBorder: 'rgba(124,58,237,0.25)', accentMuted: 'rgba(124,58,237,0.5)' },
-      'llama':     { cls: 'model-bubble-llama3',   color: '#16a34a', bg: 'rgba(22,163,74,0.12)',   textColor: 'rgba(80,200,100,0.9)',   accent: '#16a34a',  accentSoft: 'rgba(22,163,74,0.08)',  accentGlow: 'rgba(22,163,74,0.15)',  accentBorder: 'rgba(22,163,74,0.25)',  accentMuted: 'rgba(22,163,74,0.5)'  },
-      'gpt-4o':    { cls: 'model-bubble-gpt4o',    color: '#16a34a', bg: 'rgba(22,163,74,0.12)',   textColor: 'rgba(80,200,100,0.9)',   accent: '#16a34a',  accentSoft: 'rgba(22,163,74,0.08)',  accentGlow: 'rgba(22,163,74,0.15)',  accentBorder: 'rgba(22,163,74,0.25)',  accentMuted: 'rgba(22,163,74,0.5)'  },
-      'gpt':       { cls: 'model-bubble-gpt4o',    color: '#16a34a', bg: 'rgba(22,163,74,0.12)',   textColor: 'rgba(80,200,100,0.9)',   accent: '#16a34a',  accentSoft: 'rgba(22,163,74,0.08)',  accentGlow: 'rgba(22,163,74,0.15)',  accentBorder: 'rgba(22,163,74,0.25)',  accentMuted: 'rgba(22,163,74,0.5)'  },
-      'mistral':   { cls: 'model-bubble-mistral',  color: '#ea580c', bg: 'rgba(234,88,12,0.12)',   textColor: 'rgba(255,160,80,0.9)',   accent: '#ea580c',  accentSoft: 'rgba(234,88,12,0.08)',  accentGlow: 'rgba(234,88,12,0.15)',  accentBorder: 'rgba(234,88,12,0.25)',  accentMuted: 'rgba(234,88,12,0.5)'  },
-      'whisper':   { cls: 'model-bubble-whisper',  color: '#eab308', bg: 'rgba(234,179,8,0.12)',   textColor: 'rgba(255,220,60,0.9)',   accent: '#eab308',  accentSoft: 'rgba(234,179,8,0.08)',  accentGlow: 'rgba(234,179,8,0.15)',  accentBorder: 'rgba(234,179,8,0.25)',  accentMuted: 'rgba(234,179,8,0.5)'  },
-    };
-    function matchModelMeta(modelStr) {
-      if (!modelStr) return null;
-      var m = modelStr.toLowerCase();
-      for (var k in MODEL_META) { if (m.indexOf(k) !== -1) return MODEL_META[k]; }
-      return null;
-    }
-    function applyModelTheme(meta) {
-      if (!meta || !meta.accent) return;
-      var r = document.documentElement;
-      r.style.setProperty('--accent',        meta.accent);
-      r.style.setProperty('--accent-soft',   meta.accentSoft);
-      r.style.setProperty('--accent-glow',   meta.accentGlow);
-      r.style.setProperty('--accent-border', meta.accentBorder);
-      r.style.setProperty('--accent-muted',  meta.accentMuted);
-    }
-
+    // Model theming — setModelTheme updates CSS vars + hero class + chip roster
     var currentModel = (data.brain && data.brain.currentModel) || (data.brain && data.brain.model) || null;
-    var modelBubbles = document.querySelectorAll('#modelBubbles .model-bubble');
-    for (var bi = 0; bi < modelBubbles.length; bi++) {
-      modelBubbles[bi].classList.remove('active-model');
-    }
-    if (currentModel) {
-      var cmLower = currentModel.toLowerCase();
-      for (var bi = 0; bi < modelBubbles.length; bi++) {
-        var dmAttr = modelBubbles[bi].getAttribute('data-model');
-        if (cmLower.indexOf(dmAttr) !== -1 || dmAttr.indexOf(cmLower) !== -1) {
-          modelBubbles[bi].classList.add('active-model');
-        }
-      }
-      // Update accent theme + badge
-      var meta = matchModelMeta(currentModel);
-      applyModelTheme(meta);
-      var badgeEl2 = document.getElementById('brainModelBadge');
-      if (badgeEl2 && meta) {
-        badgeEl2.style.background = meta.bg;
-        badgeEl2.style.color = meta.textColor;
-      } else if (badgeEl2) {
-        badgeEl2.style.background = 'rgba(255,0,0,0.08)';
-        badgeEl2.style.color = 'rgba(255,80,80,0.7)';
+    if (currentModel) setModelTheme(currentModel);
+    if (data.brain && data.brain.mode === 'transcribing') setModelTheme('whisper');
+
+    // Model roster — highlight active chip
+    var roster = document.getElementById('modelRoster');
+    if (roster && currentModel) {
+      var chips = roster.querySelectorAll('.model-chip');
+      for (var ci = 0; ci < chips.length; ci++) {
+        var c = chips[ci];
+        var dm = c.getAttribute('data-model') || '';
+        var cm = currentModel.toLowerCase();
+        var match = dm === currentModel || cm.indexOf(dm) > -1 || dm.indexOf(cm) > -1;
+        c.className = 'model-chip' + (match ? ' active' : '');
       }
     }
 
-    // Sub-agents
-    var subagentsList = document.getElementById('subagentsList');
-    var subagents = (data.brain && data.brain.subagents) || null;
-    // Legacy single subagent fallback
-    if (!subagents && data.brain && data.brain.subagent) subagents = [data.brain.subagent];
-    if (subagentsList) {
-      if (!subagents || subagents.length === 0) {
-        subagentsList.innerHTML = '<div class="subagents-empty">No active sub-agents</div>';
+    // Sub-agents — render in subagentList inside brain hero
+    var subList = document.getElementById('subagentList');
+    if (subList) {
+      var agents = [];
+      if (data.brain && data.brain.subagents && data.brain.subagents.length > 0) agents = data.brain.subagents;
+      else if (data.brain && data.brain.subagent) agents = [data.brain.subagent];
+      if (agents.length === 0) {
+        subList.innerHTML = '<span class="subagents-empty">none running</span>';
       } else {
         var saHtml = '';
-        for (var si = 0; si < subagents.length; si++) {
-          var sa = subagents[si];
-          var saModel = sa.model || sa.name || 'unknown';
-          var saTask = sa.task || '';
-          var saMeta = matchModelMeta(saModel);
-          var saBg = saMeta ? saMeta.color : '#444';
-          saHtml += '<div class="subagent-card">'
-            + '<div class="subagent-bubble" style="background:' + saBg + ';">' + escHtml(saModel.slice(0,6)) + '</div>'
-            + '<div class="subagent-info">'
-            + '<div class="subagent-model-name">' + escHtml(saModel) + '</div>'
-            + '<div class="subagent-task">' + escHtml(saTask) + '</div>'
-            + '</div></div>';
+        for (var si = 0; si < agents.length; si++) {
+          var sa = agents[si];
+          saHtml += '<div class="subagent-row">'
+            + '<div class="subagent-dot"></div>'
+            + '<span class="subagent-name">' + escHtml(sa.name || 'Agent') + '</span>'
+            + '<span class="subagent-task">' + escHtml(sa.task || '') + '</span>'
+            + '<span class="subagent-model">' + escHtml(sa.model || '') + '</span>'
+            + '</div>';
         }
-        subagentsList.innerHTML = saHtml;
+        subList.innerHTML = saHtml;
       }
     }
 
