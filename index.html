@@ -196,18 +196,23 @@
     animation: scanline 4s ease-in-out infinite;
   }
   .brain-hero-header {
-    padding: 10px 16px 8px;
+    padding: 16px 20px 14px;
     border-bottom: 1px solid rgba(255,0,0,0.12);
-    display: flex; align-items: center; gap: 10px;
+    display: flex; align-items: center; gap: 14px;
     flex-shrink: 0;
     position: relative; z-index: 2;
   }
   .brain-hero-label {
     font-family: var(--font);
-    font-size: 12px; font-weight: 700;
+    font-size: 20px; font-weight: 700;
     letter-spacing: 0.18em; text-transform: uppercase;
-    color: rgba(255,80,80,0.8);
-    display: flex; align-items: center; gap: 7px;
+    color: rgba(255,80,80,0.9);
+    display: flex; align-items: center; gap: 12px;
+  }
+  .brain-hero-label img {
+    width: 36px; height: 36px;
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: crisp-edges;
   }
 
   .brain-powered {
@@ -608,7 +613,7 @@
         <div class="brain-hero">
           <div class="brain-hero-header">
             <div class="objective-dot idle" id="objDot"></div>
-            <span class="brain-hero-label"><span style="font-size:16px;line-height:1;">🦞</span>Brain Feed</span>
+            <span class="brain-hero-label"><img src="openclaw-icon.png" alt="OpenClaw">Brain Feed</span>
             <span class="brain-powered">Powered by <span>OpenClaw</span></span>
             <span style="font-family:var(--mono);font-size:9px;color:rgba(255,255,255,0.25);margin-left:12px;" id="brainLastUpdated"></span>
             <span style="font-family:var(--mono);font-size:9px;padding:2px 7px;border-radius:3px;background:rgba(255,0,0,0.08);color:rgba(255,80,80,0.7);margin-left:8px;letter-spacing:0.04em;" id="brainModelBadge">grok-4</span>
