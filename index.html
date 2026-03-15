@@ -209,10 +209,7 @@
     color: rgba(255,80,80,0.8);
     display: flex; align-items: center; gap: 7px;
   }
-  .brain-hero-label svg {
-    width: 18px; height: 18px; flex-shrink: 0;
-    filter: drop-shadow(0 0 3px rgba(255,30,30,0.4));
-  }
+
   .brain-powered {
     font-family: var(--mono);
     font-size: 9px;
@@ -611,57 +608,7 @@
         <div class="brain-hero">
           <div class="brain-hero-header">
             <div class="objective-dot idle" id="objDot"></div>
-            <span class="brain-hero-label"><svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <defs>
-    <linearGradient id="brainGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#ff5555"/>
-      <stop offset="50%" stop-color="#ff2222"/>
-      <stop offset="100%" stop-color="#aa0000"/>
-    </linearGradient>
-    <filter id="iglow">
-      <feGaussianBlur stdDeviation="1.8" result="blur"/>
-      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
-    </filter>
-  </defs>
-  <!-- Left hemisphere outline -->
-  <path d="M50 18 C38 18 28 24 23 33 C17 33 12 38 12 44 C10 46 9 50 10 54 C9 58 11 63 15 66 C16 72 21 77 27 78 L27 85 L35 85 L35 78 C40 79 45 79 50 78" stroke="url(#brainGrad)" stroke-width="2.5" fill="none" stroke-linecap="round" filter="url(#iglow)"/>
-  <!-- Right hemisphere outline -->
-  <path d="M50 18 C62 18 72 24 77 33 C83 33 88 38 88 44 C90 46 91 50 90 54 C91 58 89 63 85 66 C84 72 79 77 73 78 L73 85 L65 85 L65 78 C60 79 55 79 50 78" stroke="url(#brainGrad)" stroke-width="2.5" fill="none" stroke-linecap="round" filter="url(#iglow)"/>
-  <!-- Center divide -->
-  <line x1="50" y1="20" x2="50" y2="78" stroke="#ff2222" stroke-width="1" stroke-dasharray="3,3" opacity="0.45"/>
-  <!-- Circuit traces left -->
-  <path d="M30 38 L22 38 M22 38 L22 45 M30 50 L18 50 M18 50 L18 57 M30 62 L24 62 M24 62 L24 68" stroke="#ff3333" stroke-width="1.5" stroke-linecap="round" opacity="0.8" filter="url(#iglow)"/>
-  <!-- Circuit traces right -->
-  <path d="M70 38 L78 38 M78 38 L78 45 M70 50 L82 50 M82 50 L82 57 M70 62 L76 62 M76 62 L76 68" stroke="#ff3333" stroke-width="1.5" stroke-linecap="round" opacity="0.8" filter="url(#iglow)"/>
-  <!-- Internal left traces -->
-  <path d="M36 30 L36 42 M36 42 L44 42 M38 52 L44 52 M36 62 L44 62 M36 62 L36 52" stroke="#ff4444" stroke-width="1.2" stroke-linecap="round" opacity="0.7"/>
-  <!-- Internal right traces -->
-  <path d="M64 30 L64 42 M64 42 L56 42 M62 52 L56 52 M64 62 L56 62 M64 62 L64 52" stroke="#ff4444" stroke-width="1.2" stroke-linecap="round" opacity="0.7"/>
-  <!-- Outer nodes -->
-  <circle cx="22" cy="38" r="2.5" fill="#ff2222" filter="url(#iglow)"/>
-  <circle cx="22" cy="45" r="2" fill="#ff4444" opacity="0.8"/>
-  <circle cx="18" cy="50" r="2.5" fill="#ff2222" filter="url(#iglow)"/>
-  <circle cx="18" cy="57" r="2" fill="#ff4444" opacity="0.8"/>
-  <circle cx="24" cy="68" r="2.5" fill="#ff2222" filter="url(#iglow)"/>
-  <circle cx="78" cy="38" r="2.5" fill="#ff2222" filter="url(#iglow)"/>
-  <circle cx="78" cy="45" r="2" fill="#ff4444" opacity="0.8"/>
-  <circle cx="82" cy="50" r="2.5" fill="#ff2222" filter="url(#iglow)"/>
-  <circle cx="82" cy="57" r="2" fill="#ff4444" opacity="0.8"/>
-  <circle cx="76" cy="68" r="2.5" fill="#ff2222" filter="url(#iglow)"/>
-  <!-- Inner nodes -->
-  <circle cx="36" cy="42" r="2" fill="#ff3333" opacity="0.85"/>
-  <circle cx="44" cy="42" r="2" fill="#ff3333" opacity="0.85"/>
-  <circle cx="44" cy="52" r="2" fill="#ff3333" opacity="0.85"/>
-  <circle cx="44" cy="62" r="2" fill="#ff3333" opacity="0.85"/>
-  <circle cx="36" cy="62" r="2" fill="#ff3333" opacity="0.85"/>
-  <circle cx="64" cy="42" r="2" fill="#ff3333" opacity="0.85"/>
-  <circle cx="56" cy="42" r="2" fill="#ff3333" opacity="0.85"/>
-  <circle cx="56" cy="52" r="2" fill="#ff3333" opacity="0.85"/>
-  <circle cx="56" cy="62" r="2" fill="#ff3333" opacity="0.85"/>
-  <circle cx="64" cy="62" r="2" fill="#ff3333" opacity="0.85"/>
-  <!-- Center core — static -->
-  <circle cx="50" cy="50" r="5" fill="#ff2222" opacity="0.9" filter="url(#iglow)"/>
-</svg>Brain Feed</span>
+            <span class="brain-hero-label"><span style="font-size:16px;line-height:1;">🦞</span>Brain Feed</span>
             <span class="brain-powered">Powered by <span>OpenClaw</span></span>
             <span style="font-family:var(--mono);font-size:9px;color:rgba(255,255,255,0.25);margin-left:12px;" id="brainLastUpdated"></span>
             <span style="font-family:var(--mono);font-size:9px;padding:2px 7px;border-radius:3px;background:rgba(255,0,0,0.08);color:rgba(255,80,80,0.7);margin-left:8px;letter-spacing:0.04em;" id="brainModelBadge">grok-4</span>
