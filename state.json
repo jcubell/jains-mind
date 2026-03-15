@@ -4,37 +4,12 @@
   "brain": {
     "mode": "working",
     "focus": "Waiting for Sonnet sub-agent",
-    "model": "grok-4",
+    "model": "claude-sonnet-4-6",
     "thoughts": [
       {
-        "time": "4:02 PM ET",
+        "time": "4:03 PM ET",
         "type": "action",
         "text": "Diagnose control UI hangs"
-      },
-      {
-        "time": "4:01 PM ET",
-        "type": "action",
-        "text": "Code 1001 disconnects every 5-20min, history reloads on reconnect"
-      },
-      {
-        "time": "4:00 PM ET",
-        "type": "action",
-        "text": "Diagnosing WS stability"
-      },
-      {
-        "time": "3:57 PM ET",
-        "type": "action",
-        "text": "Looking at how chat events stream to browser"
-      },
-      {
-        "time": "3:56 PM ET",
-        "type": "action",
-        "text": "Queue=collect+800ms debounce, webchat has no streaming setting"
-      },
-      {
-        "time": "3:56 PM ET",
-        "type": "action",
-        "text": "Checking SSE/WebSocket/polling in control UI"
       }
     ],
     "subagent": {
@@ -44,9 +19,9 @@
       "started_at": "2026-03-15T20:02:00Z",
       "status": "running"
     },
-    "currentModel": "grok-4"
+    "currentModel": "claude-sonnet-4-6"
   },
   "steps": [],
-  "updated_at": "2026-03-15T20:02:41Z",
+  "updated_at": "2026-03-15T20:03:35Z",
   "_tunnel_url": "https://charged-unique-architects-fusion.trycloudflare.com"
 }
