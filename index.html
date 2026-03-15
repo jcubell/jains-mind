@@ -127,13 +127,20 @@
     inherits: false;
     initial-value: 0deg;
   }
+
+  /* IDLE: slow breathe */
+  @keyframes border-breathe {
+    0%,100% { opacity: 0.35; box-shadow: 0 0 6px 0px rgba(255,0,0,0.15), inset 0 0 8px rgba(255,0,0,0.03); }
+    50%      { opacity: 0.75; box-shadow: 0 0 18px 3px rgba(255,0,0,0.35), inset 0 0 20px rgba(255,0,0,0.07); }
+  }
+  /* WORKING: fast laser spin */
   @keyframes laser-spin {
     0%   { --laser-angle: 0deg; }
     100% { --laser-angle: 360deg; }
   }
-  @keyframes laser-pulse {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.6; }
+  @keyframes border-working-pulse {
+    0%,100% { opacity: 1; box-shadow: 0 0 20px 4px rgba(255,20,20,0.6), 0 0 50px 8px rgba(255,0,0,0.25), inset 0 0 30px rgba(255,0,0,0.1); }
+    50%      { opacity: 0.85; box-shadow: 0 0 30px 8px rgba(255,50,50,0.8), 0 0 70px 16px rgba(255,0,0,0.4), inset 0 0 40px rgba(255,0,0,0.15); }
   }
   @keyframes scanline {
     0% { transform: translateY(-100%); opacity: 0; }
@@ -157,44 +164,51 @@
     display: flex; flex-direction: column;
     overflow: hidden;
     border-radius: 4px;
-    /* Laser conic-gradient border via background trick */
+    /* IDLE: simple dim red border that breathes */
+    border: 1.5px solid rgba(255,30,30,0.45);
+    box-shadow: 0 0 8px 1px rgba(255,0,0,0.15), inset 0 0 10px rgba(255,0,0,0.03);
+    animation: border-breathe 3.5s ease-in-out infinite;
+    transition: border-color 0.6s ease, box-shadow 0.6s ease;
+  }
+  /* WORKING state — laser spin + intense glow */
+  .brain-hero.working {
     background:
       linear-gradient(var(--bg), var(--bg)) padding-box,
       conic-gradient(from var(--laser-angle),
         #ff0000 0deg,
-        #ff4444 20deg,
-        #ff0000 40deg,
-        #cc0000 80deg,
-        #ff6600 100deg,
-        #ff0000 130deg,
-        #aa0000 180deg,
-        #ff2200 220deg,
-        #ff0000 260deg,
-        #ff4444 290deg,
-        #ff0000 320deg,
-        #cc0000 360deg
+        #ff5500 30deg,
+        #ff0000 60deg,
+        #cc0000 100deg,
+        #ff2200 150deg,
+        #ff0000 200deg,
+        #ff4400 250deg,
+        #ff0000 300deg,
+        #cc0000 340deg,
+        #ff0000 360deg
       ) border-box;
-    border: 1.5px solid transparent;
-    animation: laser-spin 3s linear infinite;
+    border: 2px solid transparent;
+    animation: laser-spin 1.2s linear infinite, border-working-pulse 1.8s ease-in-out infinite;
   }
   .brain-hero::before {
     content: '';
     position: absolute; inset: 0;
     border-radius: 4px;
-    box-shadow:
-      0 0 8px 1px rgba(255,0,0,0.25),
-      inset 0 0 20px rgba(255,0,0,0.04);
     pointer-events: none; z-index: 0;
-    animation: laser-pulse 2s ease-in-out infinite;
+    transition: opacity 0.6s ease;
   }
-  /* Scanline effect */
+  /* Scanline — only visible when working */
   .brain-hero::after {
     content: '';
     position: absolute; left: 0; right: 0;
     height: 2px;
-    background: linear-gradient(90deg, transparent, rgba(255,40,40,0.15), rgba(255,60,60,0.3), rgba(255,40,40,0.15), transparent);
+    background: linear-gradient(90deg, transparent, rgba(255,40,40,0.1), rgba(255,80,80,0.35), rgba(255,40,40,0.1), transparent);
     pointer-events: none; z-index: 1;
-    animation: scanline 4s ease-in-out infinite;
+    opacity: 0;
+    transition: opacity 0.6s ease;
+  }
+  .brain-hero.working::after {
+    opacity: 1;
+    animation: scanline 2.5s ease-in-out infinite;
   }
   .brain-hero-header {
     padding: 16px 20px 14px;
@@ -1224,7 +1238,6 @@
       <!-- Brain Feed Hero -->
       <div class="brain-hero-wrap">
         <div class="brain-hero">
-          <canvas id="neuralCanvas" style="position:absolute;inset:0;width:100%;height:100%;border-radius:16px;pointer-events:none;opacity:0;transition:opacity 1.2s ease;z-index:1;"></canvas>
           <div class="brain-hero-header">
             <div class="objective-dot idle" id="objDot"></div>
             <span class="brain-hero-label"><img src="openclaw-icon.png" alt="OpenClaw">Brain Feed</span>
@@ -1460,9 +1473,14 @@
     var dot = document.getElementById('objDot');
     var indicator = document.getElementById('statusIndicator');
     var statusText = document.getElementById('statusText');
+    var hero = document.querySelector('.brain-hero');
     if (dot) dot.className = 'objective-dot ' + mode;
     if (indicator) indicator.className = mode === 'thinking' ? 'status-indicator status-thinking' : 'status-indicator';
     if (statusText) statusText.textContent = mode === 'thinking' ? 'Processing' : 'Online';
+    if (hero) {
+      if (mode === 'thinking') hero.classList.add('working');
+      else hero.classList.remove('working');
+    }
   }
 
   function renderSteps(steps, isNewData) {
@@ -1656,150 +1674,6 @@
     if(dateEl){dateEl.textContent=days[n.getDay()]+', '+months[n.getMonth()]+' '+n.getDate()+', '+n.getFullYear();}
   }
   updateFeedTime(); setInterval(updateFeedTime, 60000);
-
-  // ===== NEURAL NETWORK CANVAS ANIMATION =====
-  (function() {
-    var canvas = document.getElementById('neuralCanvas');
-    if (!canvas) return;
-    var ctx = canvas.getContext('2d');
-    var nodes = [], pulses = [], animId = null, active = false;
-    var NODE_COUNT = 28, MAX_DIST = 120;
-
-    function resize() {
-      var wrap = canvas.parentElement;
-      canvas.width = wrap.offsetWidth;
-      canvas.height = wrap.offsetHeight;
-    }
-
-    function initNodes() {
-      nodes = [];
-      for (var i = 0; i < NODE_COUNT; i++) {
-        nodes.push({
-          x: Math.random() * canvas.width,
-          y: Math.random() * canvas.height,
-          vx: (Math.random() - 0.5) * 0.4,
-          vy: (Math.random() - 0.5) * 0.4,
-          r: Math.random() * 2 + 1.5
-        });
-      }
-    }
-
-    function spawnPulse() {
-      // pick a random edge
-      var i = Math.floor(Math.random() * nodes.length);
-      var j, attempts = 0;
-      do { j = Math.floor(Math.random() * nodes.length); attempts++; } while (j === i && attempts < 10);
-      var dx = nodes[j].x - nodes[i].x, dy = nodes[j].y - nodes[i].y;
-      if (Math.sqrt(dx*dx+dy*dy) < MAX_DIST) {
-        pulses.push({ from: i, to: j, t: 0, speed: 0.012 + Math.random() * 0.018 });
-      }
-    }
-
-    function draw() {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-      // Move nodes
-      for (var i = 0; i < nodes.length; i++) {
-        var n = nodes[i];
-        n.x += n.vx; n.y += n.vy;
-        if (n.x < 0 || n.x > canvas.width)  n.vx *= -1;
-        if (n.y < 0 || n.y > canvas.height) n.vy *= -1;
-      }
-
-      // Draw edges
-      for (var i = 0; i < nodes.length; i++) {
-        for (var j = i+1; j < nodes.length; j++) {
-          var dx = nodes[j].x - nodes[i].x, dy = nodes[j].y - nodes[i].y;
-          var dist = Math.sqrt(dx*dx + dy*dy);
-          if (dist < MAX_DIST) {
-            var alpha = (1 - dist/MAX_DIST) * 0.18;
-            ctx.beginPath();
-            ctx.moveTo(nodes[i].x, nodes[i].y);
-            ctx.lineTo(nodes[j].x, nodes[j].y);
-            ctx.strokeStyle = 'rgba(255,30,30,' + alpha + ')';
-            ctx.lineWidth = 0.8;
-            ctx.stroke();
-          }
-        }
-      }
-
-      // Draw nodes
-      for (var i = 0; i < nodes.length; i++) {
-        var n = nodes[i];
-        ctx.beginPath();
-        ctx.arc(n.x, n.y, n.r, 0, Math.PI*2);
-        ctx.fillStyle = 'rgba(255,40,40,0.55)';
-        ctx.fill();
-      }
-
-      // Draw pulses (travelling dots along edges)
-      pulses = pulses.filter(function(p) {
-        p.t += p.speed;
-        if (p.t > 1) return false;
-        var from = nodes[p.from], to = nodes[p.to];
-        var dx = to.x - from.x, dy = to.y - from.y;
-        var dist = Math.sqrt(dx*dx + dy*dy);
-        if (dist > MAX_DIST) return false;
-        var px = from.x + dx * p.t, py = from.y + dy * p.t;
-        var fade = Math.sin(p.t * Math.PI);
-        ctx.beginPath();
-        ctx.arc(px, py, 2.5, 0, Math.PI*2);
-        ctx.fillStyle = 'rgba(255,80,80,' + (fade * 0.9) + ')';
-        ctx.fill();
-        // glow
-        var grad = ctx.createRadialGradient(px, py, 0, px, py, 8);
-        grad.addColorStop(0, 'rgba(255,60,60,' + (fade * 0.4) + ')');
-        grad.addColorStop(1, 'rgba(255,0,0,0)');
-        ctx.beginPath();
-        ctx.arc(px, py, 8, 0, Math.PI*2);
-        ctx.fillStyle = grad;
-        ctx.fill();
-        return true;
-      });
-
-      // Randomly spawn new pulses
-      if (Math.random() < 0.06) spawnPulse();
-
-      animId = requestAnimationFrame(draw);
-    }
-
-    function startNeural() {
-      if (active) return;
-      active = true;
-      resize();
-      initNodes();
-      canvas.style.opacity = '1';
-      draw();
-    }
-
-    function stopNeural() {
-      if (!active) return;
-      active = false;
-      canvas.style.opacity = '0';
-      if (animId) { cancelAnimationFrame(animId); animId = null; }
-    }
-
-    // Hook into setMode
-    var _origSetMode = window._setModeOrig || null;
-    window._neuralSetMode = function(mode) {
-      if (mode === 'thinking') startNeural();
-      else stopNeural();
-    };
-
-    // Patch the existing setMode by watching objDot class changes
-    var dot = document.getElementById('objDot');
-    if (dot) {
-      var observer = new MutationObserver(function() {
-        if (dot.classList.contains('thinking')) startNeural();
-        else stopNeural();
-      });
-      observer.observe(dot, { attributes: true, attributeFilter: ['class'] });
-    }
-
-    window.addEventListener('resize', function() {
-      if (active) { resize(); initNodes(); }
-    });
-  })();
 
 })();
 </script>
