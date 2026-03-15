@@ -1297,6 +1297,7 @@
           <div class="brain-hero-header">
             <div class="objective-dot idle" id="objDot"></div>
             <span class="brain-hero-label"><img src="openclaw-icon.png" alt="OpenClaw">Brain Feed
+              <span id="modelRouteIndicator" style="display:none;font-family:var(--mono);font-size:9px;padding:2px 6px;border-radius:10px;margin-left:6px;vertical-align:middle;background:rgba(255,255,255,0.07);color:rgba(255,255,255,0.45);border:1px solid rgba(255,255,255,0.12);letter-spacing:0.04em;font-weight:400;"></span>
               <div class="model-roster" id="modelRoster">
                 <span class="model-chip" data-model="grok-4">grok-4</span>
                 <span class="model-chip" data-model="claude-sonnet-4-6">sonnet</span>
@@ -1670,6 +1671,14 @@
                  || cmStripped.indexOf(dm) > -1 || dm.indexOf(cmStripped) > -1;
         c.className = 'model-chip' + (match ? ' active' : '');
       }
+    }
+
+    // Model route indicator — "via OpenRouter" or "direct"
+    var routeIndicator = document.getElementById('modelRouteIndicator');
+    if (routeIndicator && currentModel) {
+      var isOpenRouter = currentModel.toLowerCase().indexOf('openrouter/') === 0;
+      routeIndicator.textContent = isOpenRouter ? 'via OpenRouter' : 'direct';
+      routeIndicator.style.display = 'inline-block';
     }
 
     // Sub-agents — render in subagentList inside brain hero
