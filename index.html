@@ -643,17 +643,19 @@
   }
 
   /* Jobs section — gentle teal breathe */
+  /* Jobs section — inset 14px 16px to match brain-hero-wrap padding */
   .jobs-section {
     position: relative;
     border-radius: 12px;
     border: 1.5px solid rgba(32,178,170,0.2);
     box-shadow: 0 0 5px 0px rgba(32,178,170,0.1);
     animation: pplx-breathe 4s ease-in-out infinite;
+    margin: 14px 16px 14px;
   }
   .jobs-section::before { display: none; }
   .jobs-section::after { display: none; }
 
-  /* Right panel (Intelligence Feed) — gentle teal breathe, offset timing */
+  /* Right panel (Intelligence Feed) — inset padding + gentle breathe, offset timing */
   .right-panel {
     position: relative;
     border-radius: 12px;
@@ -661,6 +663,7 @@
     box-shadow: 0 0 5px 0px rgba(32,178,170,0.1);
     animation: pplx-breathe 4s ease-in-out infinite;
     animation-delay: 2s;
+    margin: 14px 16px;
   }
   .right-panel::before {
     content: '';
