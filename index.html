@@ -204,9 +204,14 @@
   }
   .brain-hero-label {
     font-family: var(--font);
-    font-size: 10px; font-weight: 700;
+    font-size: 12px; font-weight: 700;
     letter-spacing: 0.18em; text-transform: uppercase;
     color: rgba(255,80,80,0.8);
+    display: flex; align-items: center; gap: 7px;
+  }
+  .brain-hero-label svg {
+    width: 18px; height: 18px; flex-shrink: 0;
+    filter: drop-shadow(0 0 4px rgba(255,40,40,0.5));
   }
   .brain-powered {
     font-family: var(--mono);
@@ -225,14 +230,14 @@
   }
   .brain-focus-text {
     font-family: var(--font);
-    font-size: 21px; font-weight: 700;
-    line-height: 1.3;
+    font-size: 28px; font-weight: 700;
+    line-height: 1.25;
     color: var(--text);
-    letter-spacing: -0.01em;
+    letter-spacing: -0.02em;
   }
   .brain-focus-text.working {
     color: #ff6060;
-    text-shadow: 0 0 20px rgba(255,40,40,0.3);
+    text-shadow: 0 0 24px rgba(255,40,40,0.35);
   }
   .brain-hero-stream {
     flex: 1;
@@ -606,7 +611,7 @@
         <div class="brain-hero">
           <div class="brain-hero-header">
             <div class="objective-dot idle" id="objDot"></div>
-            <span class="brain-hero-label">Brain Feed</span>
+            <span class="brain-hero-label"><svg viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="lg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#ff4d4d"/><stop offset="100%" stop-color="#991b1b"/></linearGradient></defs><path d="M60 10 C30 10 15 35 15 55 C15 75 30 95 45 100 L45 110 L55 110 L55 100 C55 100 60 102 65 100 L65 110 L75 110 L75 100 C90 95 105 75 105 55 C105 35 90 10 60 10Z" fill="url(#lg)"/><path d="M20 45 C5 40 0 50 5 60 C10 70 20 65 25 55 C28 48 25 45 20 45Z" fill="url(#lg)"/><path d="M100 45 C115 40 120 50 115 60 C110 70 100 65 95 55 C92 48 95 45 100 45Z" fill="url(#lg)"/><path d="M45 15 Q35 5 30 8" stroke="#ff4d4d" stroke-width="3" stroke-linecap="round"/><path d="M75 15 Q85 5 90 8" stroke="#ff4d4d" stroke-width="3" stroke-linecap="round"/><circle cx="45" cy="35" r="6" fill="#050810"/><circle cx="75" cy="35" r="6" fill="#050810"/><circle cx="46" cy="34" r="2.5" fill="#00e5cc"/><circle cx="76" cy="34" r="2.5" fill="#00e5cc"/></svg>Brain Feed</span>
             <span class="brain-powered">Powered by <span>OpenClaw</span></span>
             <span style="font-family:var(--mono);font-size:9px;color:rgba(255,255,255,0.25);margin-left:12px;" id="brainLastUpdated"></span>
             <span style="font-family:var(--mono);font-size:9px;padding:2px 7px;border-radius:3px;background:rgba(255,0,0,0.08);color:rgba(255,80,80,0.7);margin-left:8px;letter-spacing:0.04em;" id="brainModelBadge">grok-4</span>
