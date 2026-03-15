@@ -815,11 +815,10 @@
       });
   }
 
-  // Tunnel URL hardcoded — updated on each brain push
+  // Seed tunnel URL directly — skip GitHub bootstrap on first load
   tunnelUrl = 'https://charged-unique-architects-fusion.trycloudflare.com';
   pollTunnel();
   pollTimer = setInterval(pollTunnel, POLL_FAST);
-  setInterval(function() { if (!tunnelUrl) bootstrapFromGitHub(); }, 30000);
   // Refresh relative timestamps every 30s
   setInterval(function() { var u = document.getElementById('brainLastUpdated'); if (u && lastKnownState) u.textContent = relTime(lastKnownState.updated_at); }, 30000);
 
