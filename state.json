@@ -4,7 +4,7 @@
   "brain": {
     "mode": "working",
     "focus": "Reading message...",
-    "model": "openrouter/anthropic/claude-sonnet-4-6",
+    "model": "grok-4",
     "thoughts": [
       {
         "time": "2:38 PM ET",
@@ -68,9 +68,9 @@
       }
     ],
     "subagent": null,
-    "currentModel": "openrouter/anthropic/claude-sonnet-4-6"
+    "currentModel": "grok-4"
   },
   "steps": [],
-  "updated_at": "2026-03-15T19:14:20Z",
+  "updated_at": "2026-03-15T19:18:05Z",
   "_tunnel_url": "https://charged-unique-architects-fusion.trycloudflare.com"
 }
