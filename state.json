@@ -1,4 +1,5 @@
 {
+<<<<<<< Updated upstream
   "objective": "Refreshing Live Intelligence Feed with today's breaking news -- real-time signal extraction",
   "status": "idle",
   "steps": [
@@ -9,3 +10,29 @@
   ],
   "updated_at": "2026-03-13T19:44:22Z"
 }
+=======
+  "objective": "",
+  "status": "idle",
+  "brain": {
+    "mode": "working",
+    "focus": "Updating widget.html \u2014 tunnel-first polling for Vercel",
+    "model": "grok-4",
+    "thoughts": [
+      {
+        "time": "6:28 PM ET",
+        "type": "complete",
+        "text": "Updated AGENTS.md with enforced push discipline; voice message flow patched"
+      },
+      {
+        "time": "6:27 PM ET",
+        "type": "action",
+        "text": "Diagnosing stuck voice message state"
+      }
+    ],
+    "subagent": null
+  },
+  "steps": [],
+  "updated_at": "2026-03-15T00:29:17Z",
+  "_tunnel_url": "https://charged-unique-architects-fusion.trycloudflare.com"
+}
+>>>>>>> Stashed changes

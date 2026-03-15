@@ -455,21 +455,25 @@
 
   <div class="dashboard">
 
-    <!-- LEFT: OBJECTIVE + JOBS -->
+    <!-- LEFT: BRAIN FEED + JOBS -->
     <div class="left-panel" id="leftPanel">
+
+      <!-- Brain Feed header -->
       <div class="objective-section">
         <div class="objective-label">
           <div class="objective-dot idle" id="objDot"></div>
-          Current Objective
+          Brain Feed
+          <span style="margin-left:auto;font-family:var(--mono);font-size:10px;color:var(--text-muted);font-weight:400;letter-spacing:0;" id="brainLastUpdated"></span>
+          <span style="font-family:var(--mono);font-size:10px;padding:2px 7px;border-radius:3px;background:var(--accent-soft);color:var(--accent);letter-spacing:0.04em;" id="brainModelBadge">grok-4</span>
         </div>
-        <div class="objective-text idle" id="objText">Loading...</div>
+        <div class="objective-text idle" id="brainFocus">Loading...</div>
       </div>
-      <div class="latest-step" id="latestStep">
-        <div class="latest-step-dot"></div>
-        <span class="latest-step-time" id="latestStepTime"></span>
-        <span class="latest-step-text" id="latestStepText">Awaiting...</span>
-        <span class="blink-cursor-inline idle" id="blinkCursor">_</span>
+
+      <!-- Thought stream -->
+      <div class="latest-step" id="latestStep" style="display:block;padding:8px 24px 10px;min-height:80px;max-height:160px;overflow-y:auto;">
+        <div id="brainStream" style="font-family:var(--mono);font-size:11px;color:var(--text-3);"></div>
       </div>
+
       <div class="panel-header">
         <h2>Today's Jobs</h2>
         <span class="panel-meta" id="jobCount">6 Jobs</span>
@@ -632,8 +636,16 @@
 
 <script>
 (function() {
-  var STATE_URL = 'https://api.github.com/repos/jcubell/jains-mind/contents/state.json';
-  var POLL_INTERVAL = 10000;
+  // Tunnel-first polling:
+  // Bootstrap from GitHub API → get _tunnel_url → poll tunnel at 3s
+  // If tunnel fails 3x → re-bootstrap from GitHub
+  var GITHUB_STATE_URL = 'https://api.github.com/repos/jcubell/jains-mind/contents/state.json';
+  var tunnelUrl = null;
+  var tunnelFailCount = 0;
+  var TUNNEL_FAIL_LIMIT = 3;
+  var POLL_FAST = 3000;
+  var POLL_SLOW = 15000;
+  var pollTimer = null;
   var lastKnownState = null;
   var knownStepCount = 0;
 
@@ -700,19 +712,108 @@
   }
   function escapeHtml(str) { var d = document.createElement('div'); d.textContent = str; return d.innerHTML; }
 
-  function pollState() {
-    fetch(STATE_URL + '?t=' + Date.now(), { headers: { 'Accept': 'application/vnd.github.v3+json' } })
-      .then(function(r) { return r.json(); })
-      .then(function(api) {
-        var data = api.content ? JSON.parse(atob(api.content.replace(/\n/g, ''))) : api;
-        var isNew = !lastKnownState || data.updated_at !== lastKnownState.updated_at;
-        document.getElementById('objText').textContent = data.objective || 'Awaiting directive...';
-        setMode(data.status === 'thinking' ? 'thinking' : 'idle');
-        if (data.steps && data.steps.length > 0) renderSteps(data.steps, isNew);
-        lastKnownState = data;
-      }).catch(function() {});
+  var thoughtIcons = { action: '▸', thought: '◦', complete: '✓', observation: '·' };
+  function escHtml(s) { var d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
+  function shortModel(m) {
+    if (!m) return '—';
+    var i = m.lastIndexOf('/'); if (i >= 0) m = m.slice(i + 1);
+    return m;
   }
-  pollState(); setInterval(pollState, POLL_INTERVAL);
+  function relTime(iso) {
+    if (!iso) return 'just now';
+    var diff = Math.floor((Date.now() - new Date(iso)) / 1000);
+    if (isNaN(diff) || diff < 60) return diff + 's ago';
+    if (diff < 3600) return Math.floor(diff/60) + 'm ago';
+    if (diff < 86400) return Math.floor(diff/3600) + 'h ago';
+    return Math.floor(diff/86400) + 'd ago';
+  }
+
+  function applyState(data) {
+    // Mode
+    var isWorking = data.brain && (data.brain.mode === 'working' || data.brain.mode === 'thinking');
+    setMode(isWorking ? 'thinking' : 'idle');
+
+    // Brain feed
+    if (data.brain) {
+      var focusEl = document.getElementById('brainFocus');
+      if (focusEl) focusEl.textContent = data.brain.focus || 'Idle — monitoring for tasks';
+
+      var badgeEl = document.getElementById('brainModelBadge');
+      if (badgeEl && data.brain.model) badgeEl.textContent = shortModel(data.brain.model);
+
+      var updEl = document.getElementById('brainLastUpdated');
+      if (updEl) updEl.textContent = relTime(data.updated_at);
+
+      var dot = document.getElementById('objDot');
+      if (dot) { dot.className = 'objective-dot ' + (isWorking ? 'thinking' : 'idle'); }
+
+      var stream = document.getElementById('brainStream');
+      if (stream && data.brain.thoughts) {
+        var html = '';
+        for (var i = 0; i < data.brain.thoughts.length; i++) {
+          var t = data.brain.thoughts[i];
+          var icon = thoughtIcons[t.type] || '·';
+          html += '<div style="padding:2px 0;border-bottom:1px solid var(--border-light);line-height:1.5;">'
+            + '<span style="color:var(--text-muted);margin-right:6px;">' + escHtml(t.time || '') + '</span>'
+            + '<span style="color:var(--accent);margin-right:5px;">' + icon + '</span>'
+            + '<span>' + escHtml(t.text || '') + '</span>'
+            + '</div>';
+        }
+        stream.innerHTML = html || '<div style="color:var(--text-muted);">No recent activity</div>';
+      }
+    }
+
+    // Legacy objective fallback
+    var objEl = document.getElementById('objText');
+    if (objEl && !document.getElementById('brainFocus')) {
+      objEl.textContent = (data.brain && data.brain.focus) || data.objective || 'Awaiting directive...';
+    }
+
+    if (data.steps && data.steps.length > 0) renderSteps(data.steps, true);
+    lastKnownState = data;
+  }
+
+  function pollTunnel() {
+    if (!tunnelUrl) { bootstrapFromGitHub(); return; }
+    fetch(tunnelUrl + '/state.json?t=' + Date.now())
+      .then(function(r) { if (!r.ok) throw new Error('tunnel ' + r.status); return r.json(); })
+      .then(function(data) {
+        tunnelFailCount = 0;
+        if (data._tunnel_url && data._tunnel_url !== tunnelUrl) tunnelUrl = data._tunnel_url;
+        applyState(data);
+      })
+      .catch(function() {
+        tunnelFailCount++;
+        if (tunnelFailCount >= TUNNEL_FAIL_LIMIT) {
+          tunnelUrl = null; tunnelFailCount = 0;
+          if (pollTimer) { clearInterval(pollTimer); pollTimer = null; }
+          bootstrapFromGitHub();
+        }
+      });
+  }
+
+  function bootstrapFromGitHub() {
+    fetch(GITHUB_STATE_URL + '?t=' + Date.now(), { headers: { 'Accept': 'application/vnd.github.v3+json' } })
+      .then(function(r) { if (!r.ok) throw new Error('gh ' + r.status); return r.json(); })
+      .then(function(ghData) {
+        var raw = JSON.parse(atob(ghData.content.replace(/\n/g, '')));
+        applyState(raw);
+        if (raw._tunnel_url) {
+          tunnelUrl = raw._tunnel_url; tunnelFailCount = 0;
+          if (pollTimer) clearInterval(pollTimer);
+          pollTimer = setInterval(pollTunnel, POLL_FAST);
+        } else {
+          if (!pollTimer) pollTimer = setInterval(bootstrapFromGitHub, POLL_SLOW);
+        }
+      })
+      .catch(function() {
+        if (!pollTimer) pollTimer = setInterval(bootstrapFromGitHub, POLL_SLOW);
+      });
+  }
+
+  bootstrapFromGitHub();
+  // Refresh relative timestamps every 30s
+  setInterval(function() { var u = document.getElementById('brainLastUpdated'); if (u && lastKnownState) u.textContent = relTime(lastKnownState.updated_at); }, 30000);
 
   var jobs = [
     { name: 'Morning Brief', time: '7:00 AM ET', scheduleHour: 7, scheduleMinute: 0, status: 'scheduled', desc: 'AI news digest, market movers, SEC filing scan', recurring: false, prevHour: 0, prevMinute: 0 },
