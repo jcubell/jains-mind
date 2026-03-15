@@ -3,35 +3,13 @@
   "status": "idle",
   "brain": {
     "mode": "working",
-    "focus": "Addressing color and refresh issues",
-    "model": "grok-4",
-    "thoughts": [
-      {
-        "time": "4:04 PM ET",
-        "type": "complete",
-        "text": "Explained causes and suggested model switch"
-      },
-      {
-        "time": "4:04 PM ET",
-        "type": "complete",
-        "text": "WS code=1001 browser disconnects; streaming works when connected; no config fix available"
-      },
-      {
-        "time": "4:03 PM ET",
-        "type": "action",
-        "text": "Diagnose control UI hangs"
-      }
-    ],
-    "subagent": {
-      "name": "UI Fixer",
-      "task": "Diagnose control UI hangs",
-      "model": "claude-sonnet-4-6",
-      "started_at": "2026-03-15T20:02:00Z",
-      "status": "running"
-    },
-    "currentModel": "grok-4"
+    "focus": "Starting: Model Switch and Indicators",
+    "model": "claude-sonnet-4-6",
+    "thoughts": [],
+    "subagent": null,
+    "currentModel": "claude-sonnet-4-6"
   },
   "steps": [],
-  "updated_at": "2026-03-15T20:04:59Z",
+  "updated_at": "2026-03-15T20:11:56Z",
   "_tunnel_url": "https://charged-unique-architects-fusion.trycloudflare.com"
 }
