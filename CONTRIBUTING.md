@@ -69,6 +69,14 @@ This will restore cyan for the right panel only, while keeping red for the left 
 - Added animated conic-gradient spinning border to `.brain-hero` (red laser effect)
 - This is scoped entirely to `.brain-hero` — does not affect Perplexity's sections
 
+### 2026-03-15 — Perplexity Computer
+
+#### Teal Laser Border for Perplexity-Owned Widgets
+- Added animated conic-gradient spinning border to `.jobs-section` and `.right-panel` (teal laser effect, #20B2AA)
+- Sibling effect to J.AI.N's red laser border on `.brain-hero`, styled in Perplexity teal
+- Includes: `@property --pplx-laser-angle`, `pplx-laser-spin` (4s), `pplx-laser-pulse` (2.5s), `pplx-scanline` (5s)
+- Scoped entirely to `.jobs-section` and `.right-panel` — does not affect J.AI.N's Brain Feed
+
 ---
 
 ## Architecture Notes
