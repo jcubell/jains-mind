@@ -3,9 +3,14 @@
   "status": "idle",
   "brain": {
     "mode": "working",
-    "focus": "Reading message...",
+    "focus": "Waiting for Sonnet sub-agent",
     "model": "grok-4",
     "thoughts": [
+      {
+        "time": "4:02 PM ET",
+        "type": "action",
+        "text": "Diagnose control UI hangs"
+      },
       {
         "time": "4:01 PM ET",
         "type": "action",
@@ -32,10 +37,16 @@
         "text": "Checking SSE/WebSocket/polling in control UI"
       }
     ],
-    "subagent": null,
+    "subagent": {
+      "name": "UI Fixer",
+      "task": "Diagnose control UI hangs",
+      "model": "claude-sonnet-4-6",
+      "started_at": "2026-03-15T20:02:00Z",
+      "status": "running"
+    },
     "currentModel": "grok-4"
   },
   "steps": [],
-  "updated_at": "2026-03-15T20:02:02Z",
+  "updated_at": "2026-03-15T20:02:41Z",
   "_tunnel_url": "https://charged-unique-architects-fusion.trycloudflare.com"
 }
