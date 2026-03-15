@@ -2,8 +2,8 @@
   "objective": "",
   "status": "idle",
   "brain": {
-    "mode": "idle",
-    "focus": "Done \u2014 dashboard live on Vercel, all branches correct",
+    "mode": "working",
+    "focus": "Voice message \u2014 transcribing...",
     "model": "grok-4",
     "thoughts": [
       {
@@ -65,6 +65,6 @@
     "subagent": null
   },
   "steps": [],
-  "updated_at": "2026-03-15T02:22:29Z",
+  "updated_at": "2026-03-15T02:22:59Z",
   "_tunnel_url": "https://charged-unique-architects-fusion.trycloudflare.com"
 }
