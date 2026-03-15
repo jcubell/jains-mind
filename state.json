@@ -3,7 +3,7 @@
   "status": "idle",
   "brain": {
     "mode": "working",
-    "focus": "Reading message...",
+    "focus": "Testing OpenRouter \u2014 firing a real request",
     "model": "claude-sonnet-4-6",
     "thoughts": [
       {
@@ -71,6 +71,6 @@
     "currentModel": "claude-sonnet-4-6"
   },
   "steps": [],
-  "updated_at": "2026-03-15T19:09:12Z",
+  "updated_at": "2026-03-15T19:09:15Z",
   "_tunnel_url": "https://charged-unique-architects-fusion.trycloudflare.com"
 }
