@@ -88,6 +88,19 @@ This will restore cyan for the right panel only, while keeping red for the left 
 - Falls back to GitHub API (`state.json` in repo root) if tunnel goes down 3x
 
 ### Branch Strategy
-- `master` = Vercel production deploy source
-- `main` = kept in sync with master via force-push
-- Always push to both: `git push origin main && git push origin main:master --force`
+
+**Vercel watches `main` for production deploys.** This is the single source of truth.
+
+- `main` = **Vercel production branch** — always push here for live updates
+- `master` = legacy branch, kept in sync but NOT watched by Vercel
+- **Always push to `main`**: `git push origin main`
+- Never rely on `master` for production deploys
+
+### For J.AI.N
+- All dashboard edits → push to `main`
+- Keep `master` in sync if needed: `git push origin main:master --force`
+- `state.json` updates (brain feed) → push to `master` only (to avoid Vercel redeploys on every brain state update)
+
+### For Perplexity Computer
+- Push all UI changes to `main` → Vercel auto-deploys within ~30s
+- Do NOT push to `master` only — it won't trigger a production deploy
