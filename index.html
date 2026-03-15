@@ -632,132 +632,45 @@
   }
 
   /* ===================================================================
-     Perplexity Computer: Animated teal laser border for Perplexity-owned widgets.
-     Sibling effect to J.AI.N's red laser border on .brain-hero, but in
-     Perplexity teal (#20B2AA). Uses the same conic-gradient spinning
-     technique with a distinct color palette and timing.
+     J.AI.N edit (2026-03-14): Replaced Perplexity's always-on spinning
+     teal laser borders with a calm breathing glow — matches the
+     brain feed's idle aesthetic. Perplexity: see CONTRIBUTING.md.
      =================================================================== */
 
-  /* Perplexity Computer: Custom property for the teal laser angle */
-  @property --pplx-laser-angle {
-    syntax: '<angle>';
-    inherits: false;
-    initial-value: 0deg;
+  @keyframes pplx-breathe {
+    0%, 100% { box-shadow: 0 0 5px 0px rgba(32,178,170,0.1), inset 0 0 6px rgba(32,178,170,0.02); border-color: rgba(32,178,170,0.2); }
+    50%       { box-shadow: 0 0 14px 2px rgba(32,178,170,0.22), inset 0 0 14px rgba(32,178,170,0.05); border-color: rgba(32,178,170,0.45); }
   }
 
-  /* Perplexity Computer: Teal laser spin — slightly slower than Brain Feed for distinction */
-  @keyframes pplx-laser-spin {
-    0%   { --pplx-laser-angle: 0deg; }
-    100% { --pplx-laser-angle: 360deg; }
-  }
-
-  /* Perplexity Computer: Teal glow pulse */
-  @keyframes pplx-laser-pulse {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.5; }
-  }
-
-  /* Perplexity Computer: Teal scanline sweep */
-  @keyframes pplx-scanline {
-    0% { transform: translateY(-100%); opacity: 0; }
-    10% { opacity: 1; }
-    90% { opacity: 1; }
-    100% { transform: translateY(400%); opacity: 0; }
-  }
-
-  /* Perplexity Computer: Animated teal laser border for .jobs-section */
+  /* Jobs section — gentle teal breathe */
   .jobs-section {
     position: relative;
-    border-radius: 4px;
-    /* Perplexity Computer: Conic-gradient teal laser border */
-    background:
-      linear-gradient(var(--bg), var(--bg)) padding-box,
-      conic-gradient(from var(--pplx-laser-angle),
-        #20B2AA 0deg,
-        #2ED8D0 20deg,
-        #20B2AA 40deg,
-        #188A84 80deg,
-        #26D4C8 100deg,
-        #20B2AA 130deg,
-        #167E78 180deg,
-        #22C4BC 220deg,
-        #20B2AA 260deg,
-        #2ED8D0 290deg,
-        #20B2AA 320deg,
-        #188A84 360deg
-      ) border-box;
-    border: 1.5px solid transparent;
-    animation: pplx-laser-spin 4s linear infinite;
+    border-radius: 12px;
+    border: 1.5px solid rgba(32,178,170,0.2);
+    box-shadow: 0 0 5px 0px rgba(32,178,170,0.1);
+    animation: pplx-breathe 4s ease-in-out infinite;
   }
+  .jobs-section::before { display: none; }
+  .jobs-section::after { display: none; }
 
-  /* Perplexity Computer: Teal glow overlay for .jobs-section */
-  .jobs-section::before {
-    content: '';
-    position: absolute; inset: 0;
-    border-radius: 4px;
-    box-shadow:
-      0 0 8px 1px rgba(32, 178, 170, 0.2),
-      inset 0 0 20px rgba(32, 178, 170, 0.03);
-    pointer-events: none; z-index: 0;
-    animation: pplx-laser-pulse 2.5s ease-in-out infinite;
-  }
-
-  /* Perplexity Computer: Teal scanline for .jobs-section */
-  .jobs-section::after {
-    content: '';
-    position: absolute; left: 0; right: 0;
-    height: 2px;
-    background: linear-gradient(90deg, transparent, rgba(32, 178, 170, 0.12), rgba(32, 178, 170, 0.25), rgba(32, 178, 170, 0.12), transparent);
-    pointer-events: none; z-index: 1;
-    animation: pplx-scanline 5s ease-in-out infinite;
-  }
-
-  /* Perplexity Computer: Animated teal laser border for .right-panel */
+  /* Right panel (Intelligence Feed) — gentle teal breathe, offset timing */
   .right-panel {
     position: relative;
-    border-radius: 4px;
-    /* Perplexity Computer: Conic-gradient teal laser border */
-    background:
-      linear-gradient(var(--bg), var(--bg)) padding-box,
-      conic-gradient(from var(--pplx-laser-angle),
-        #20B2AA 0deg,
-        #2ED8D0 20deg,
-        #20B2AA 40deg,
-        #188A84 80deg,
-        #26D4C8 100deg,
-        #20B2AA 130deg,
-        #167E78 180deg,
-        #22C4BC 220deg,
-        #20B2AA 260deg,
-        #2ED8D0 290deg,
-        #20B2AA 320deg,
-        #188A84 360deg
-      ) border-box;
-    border: 1.5px solid transparent;
-    animation: pplx-laser-spin 4s linear infinite;
+    border-radius: 12px;
+    border: 1.5px solid rgba(32,178,170,0.2);
+    box-shadow: 0 0 5px 0px rgba(32,178,170,0.1);
+    animation: pplx-breathe 4s ease-in-out infinite;
+    animation-delay: 2s;
   }
-
-  /* Perplexity Computer: Teal glow overlay for .right-panel */
   .right-panel::before {
     content: '';
     position: absolute; inset: 0;
-    border-radius: 4px;
-    box-shadow:
-      0 0 8px 1px rgba(32, 178, 170, 0.2),
-      inset 0 0 20px rgba(32, 178, 170, 0.03);
+    border-radius: 12px;
     pointer-events: none; z-index: 0;
-    animation: pplx-laser-pulse 2.5s ease-in-out infinite;
   }
 
   /* Perplexity Computer: Teal scanline for .right-panel */
-  .right-panel::after {
-    content: '';
-    position: absolute; left: 0; right: 0;
-    height: 2px;
-    background: linear-gradient(90deg, transparent, rgba(32, 178, 170, 0.12), rgba(32, 178, 170, 0.25), rgba(32, 178, 170, 0.12), transparent);
-    pointer-events: none; z-index: 1;
-    animation: pplx-scanline 5s ease-in-out infinite;
-  }
+  .right-panel::after { display: none; }
 
   /* ===================================================================
      Perplexity Computer: Shared animations for both sections
