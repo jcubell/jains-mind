@@ -1298,11 +1298,11 @@
             <div class="objective-dot idle" id="objDot"></div>
             <span class="brain-hero-label"><img src="openclaw-icon.png" alt="OpenClaw">Brain Feed
               <div class="model-roster" id="modelRoster">
-                <span class="model-chip active" data-model="grok-4">grok-4</span>
+                <span class="model-chip" data-model="grok-4">grok-4</span>
                 <span class="model-chip" data-model="claude-sonnet-4-6">sonnet</span>
                 <span class="model-chip" data-model="gemini-2.0-flash">gemini-flash</span>
-                <span class="model-chip" data-model="deepseek/deepseek-chat-v3-0324">deepseek-v3</span>
-                <span class="model-chip" data-model="meta-llama/llama-4-maverick">llama-4</span>
+                <span class="model-chip" data-model="gemini-2.5-pro">gemini-pro</span>
+                <span class="model-chip" data-model="deepseek-chat">deepseek</span>
                 <span class="model-chip" data-model="whisper" style="display:none;">whisper</span>
               </div>
             </span>
@@ -1659,11 +1659,15 @@
     var roster = document.getElementById('modelRoster');
     if (roster && currentModel) {
       var chips = roster.querySelectorAll('.model-chip');
+      var cm = currentModel.toLowerCase();
       for (var ci = 0; ci < chips.length; ci++) {
         var c = chips[ci];
-        var dm = c.getAttribute('data-model') || '';
-        var cm = currentModel.toLowerCase();
-        var match = dm === currentModel || cm.indexOf(dm) > -1 || dm.indexOf(cm) > -1;
+        var dm = (c.getAttribute('data-model') || '').toLowerCase();
+        // Match if: exact, chip key appears in model string, or model string contains chip key
+        // Strip openrouter/ prefix for matching
+        var cmStripped = cm.replace(/^openrouter\/[^/]+\//, '').replace(/^openrouter\//, '');
+        var match = cm === dm || cm.indexOf(dm) > -1 || dm.indexOf(cm) > -1
+                 || cmStripped.indexOf(dm) > -1 || dm.indexOf(cmStripped) > -1;
         c.className = 'model-chip' + (match ? ' active' : '');
       }
     }
