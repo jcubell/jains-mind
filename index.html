@@ -686,28 +686,15 @@
 
   function setMode(mode) {
     var dot = document.getElementById('objDot');
-    var objText = document.getElementById('objText');
-    var cursor = document.getElementById('blinkCursor');
     var indicator = document.getElementById('statusIndicator');
     var statusText = document.getElementById('statusText');
-    dot.className = 'objective-dot ' + mode;
-    objText.className = 'objective-text ' + mode;
-    cursor.className = 'blink-cursor-inline ' + mode;
-    if (mode === 'thinking') {
-      indicator.className = 'status-indicator status-thinking';
-      statusText.textContent = 'Processing';
-    } else {
-      indicator.className = 'status-indicator';
-      statusText.textContent = 'Online';
-    }
+    if (dot) dot.className = 'objective-dot ' + mode;
+    if (indicator) indicator.className = mode === 'thinking' ? 'status-indicator status-thinking' : 'status-indicator';
+    if (statusText) statusText.textContent = mode === 'thinking' ? 'Processing' : 'Online';
   }
 
   function renderSteps(steps, isNewData) {
-    if (steps && steps.length > 0) {
-      var latest = steps[0];
-      document.getElementById('latestStepTime').textContent = latest.time;
-      document.getElementById('latestStepText').textContent = latest.text;
-    }
+    if (!steps || !steps.length) return;
     knownStepCount = steps.length;
   }
   function escapeHtml(str) { var d = document.createElement('div'); d.textContent = str; return d.innerHTML; }
@@ -787,11 +774,7 @@
         if (tunnelFailCount >= TUNNEL_FAIL_LIMIT) {
           tunnelUrl = null; tunnelFailCount = 0;
           if (pollTimer) { clearInterval(pollTimer); pollTimer = null; }
-          // Tunnel URL hardcoded — updated on each brain push
-  tunnelUrl = 'https://charged-unique-architects-fusion.trycloudflare.com';
-  pollTunnel();
-  pollTimer = setInterval(pollTunnel, POLL_FAST);
-  setInterval(function() { if (!tunnelUrl) bootstrapFromGitHub(); }, 30000);
+          bootstrapFromGitHub();
         }
       });
   }
