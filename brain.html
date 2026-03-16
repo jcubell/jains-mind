@@ -361,58 +361,30 @@ html, body {
 }
 
 /* Stat grid */
-.stat-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1px;
-  background: rgba(255,50,50,0.05);
+/* Compact cost row */
+.cost-row {
+  display: flex; align-items: baseline; gap: 16px;
+  padding: 10px 16px;
 }
-.stat-item {
-  background: var(--bg);
-  padding: 14px 16px;
+.cost-item {
+  display: flex; align-items: baseline; gap: 5px;
 }
-.stat-label {
+.cost-label {
   font-family: var(--mono);
-  font-size: 9px; letter-spacing: 0.1em; text-transform: uppercase;
+  font-size: 9px; letter-spacing: 0.12em; text-transform: uppercase;
   color: var(--text-muted);
-  margin-bottom: 4px;
 }
-.stat-value {
+.cost-value {
   font-family: var(--mono);
-  font-size: 20px; font-weight: 600;
+  font-size: 15px; font-weight: 600;
   color: var(--m-color);
   line-height: 1;
 }
-.stat-sub {
-  font-family: var(--mono);
-  font-size: 10px;
-  color: var(--text-3);
-  margin-top: 2px;
+.cost-divider {
+  width: 1px; height: 14px;
+  background: rgba(255,50,50,0.12);
+  align-self: center;
 }
-
-/* Model breakdown rows */
-.model-rows { padding: 8px 16px 12px; }
-.model-row {
-  display: flex; align-items: center; gap: 8px;
-  padding: 5px 0;
-  font-family: var(--mono); font-size: 11px;
-}
-.model-dot {
-  width: 6px; height: 6px; border-radius: 50%;
-  flex-shrink: 0;
-}
-.model-name { flex: 1; color: var(--text-2); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.model-bar-wrap {
-  width: 80px; height: 3px;
-  background: rgba(255,255,255,0.06);
-  border-radius: 2px; overflow: hidden;
-  flex-shrink: 0;
-}
-.model-bar-fill {
-  height: 100%; border-radius: 2px;
-  transition: width 0.5s ease;
-}
-.model-cost { width: 40px; text-align: right; color: var(--text-3); font-size: 10px; flex-shrink: 0; }
 
 /* Ticker strip */
 .ticker-strip {
@@ -577,20 +549,16 @@ html, body {
   <!-- Usage Stats -->
   <div class="section-card">
     <div class="section-header">Usage &amp; Cost</div>
-    <div class="stat-grid">
-      <div class="stat-item">
-        <div class="stat-label">Session</div>
-        <div class="stat-value" id="sessVal">—</div>
-        <div class="stat-sub" id="sessSub"></div>
+    <div class="cost-row">
+      <div class="cost-item">
+        <span class="cost-label">Session</span>
+        <span class="cost-value" id="sessVal">—</span>
       </div>
-      <div class="stat-item">
-        <div class="stat-label">Today</div>
-        <div class="stat-value" id="dayVal">—</div>
-        <div class="stat-sub">est</div>
+      <div class="cost-divider"></div>
+      <div class="cost-item">
+        <span class="cost-label">Today</span>
+        <span class="cost-value" id="dayVal">—</span>
       </div>
-    </div>
-    <div class="model-rows" id="modelRows">
-      <div class="model-row"><span class="model-name" style="opacity:0.3;font-style:italic;">loading...</span></div>
     </div>
   </div>
 
@@ -939,34 +907,14 @@ html, body {
 
     function renderUsage(data) {
       var sv = document.getElementById('sessVal');
-      var ss = document.getElementById('sessSub');
-      if (sv && data.session) {
-        sv.textContent = fmtCost(data.session.est_cost);
-        if (ss) ss.textContent = (data.session.pushes || 0) + ' pushes';
-      }
+      if (sv && data.session) sv.textContent = fmtCost(data.session.est_cost);
       var dv = document.getElementById('dayVal');
       if (dv && data.daily) {
-        dv.textContent = fmtCost(data.daily.actual_or != null ? data.daily.actual_or : data.daily.est_cost);
+        var daily = data.daily.actual_or != null ? data.daily.actual_or : data.daily.est_cost;
+        // Include BYOK if available
+        if (data.daily.byok != null) daily += data.daily.byok;
+        dv.textContent = fmtCost(daily);
       }
-      var mr = document.getElementById('modelRows');
-      if (!mr || !data.models) return;
-      var models = data.models.slice(0, 5);
-      var maxCost = 0;
-      for (var i = 0; i < models.length; i++) if (models[i].cost > maxCost) maxCost = models[i].cost;
-      var html = '';
-      for (var i = 0; i < models.length; i++) {
-        var m = models[i];
-        var c = umColor(m.model);
-        var pct = maxCost > 0 ? Math.round((m.cost / maxCost) * 100) : 5;
-        var name = m.model.replace(/^openrouter\/[^/]+\//, '').replace('deepseek-chat-v3-0324','deepseek-v3').replace('claude-sonnet-4-6','claude-sonnet');
-        html += '<div class="model-row">'
-          + '<div class="model-dot" style="background:' + c + ';box-shadow:0 0 4px ' + c + '88;"></div>'
-          + '<span class="model-name">' + name + '</span>'
-          + '<div class="model-bar-wrap"><div class="model-bar-fill" style="width:' + pct + '%;background:' + c + ';box-shadow:0 0 3px ' + c + '66;"></div></div>'
-          + '<span class="model-cost">' + (m.cost > 0 ? fmtCost(m.cost) : '—') + '</span>'
-          + '</div>';
-      }
-      mr.innerHTML = html;
     }
 
     function fetchUsage() {
