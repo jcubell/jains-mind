@@ -2,8 +2,8 @@
   "objective": "",
   "status": "idle",
   "brain": {
-    "mode": "idle",
-    "focus": "Done \u2014 heartbeat OK",
+    "mode": "working",
+    "focus": "Researching OpenClaw skills + Mac access options",
     "model": "claude-sonnet-4-6",
     "thoughts": [
       {
@@ -89,7 +89,7 @@
     "subagents": []
   },
   "steps": [],
-  "updated_at": "2026-03-16T21:33:06Z",
+  "updated_at": "2026-03-16T21:46:31Z",
   "_tunnel_url": "https://charged-unique-architects-fusion.trycloudflare.com",
   "jobs": {
     "strategy_audit": {
@@ -109,22 +109,8 @@
       "scheduledAt": "11:00 AM"
     },
     "sorare_evening": {
-      "status": "completed",
-      "completedAt": "5:45 PM",
-      "subtasks": {
-        "injury_check": "done",
-        "lineup_swaps": "skipped -- no injuries found in active lineups",
-        "hot_streak_guard": "done -- lineups intact, no projected drop",
-        "quick_play": "done -- Keldon Johnson (SAS) LVL 1",
-        "wheel": "skipped -- 0 tickets",
-        "wntr_pack": "skipped -- no free pack available",
-        "missions": "skipped -- timeout, low priority",
-        "arena": "skipped -- essence too low (26 LE)"
-      }
-    },
-    "feed_refresh_run4": {
-      "status": "completed",
-      "completedAt": "4:28 PM EDT"
+      "status": "scheduled",
+      "scheduledAt": "5:00 PM"
     }
   }
 }
