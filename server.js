@@ -289,6 +289,27 @@ const server = http.createServer(async (req, res) => {
     return;
   }
 
+  // /refresh — signal desktop to reload (POST)
+  if (req.method === 'POST' && urlPath === '/refresh') {
+    global.refreshPending = true;
+    global.refreshAt = Date.now();
+    const headers = { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' };
+    res.writeHead(200, headers);
+    res.end(JSON.stringify({ ok: true }));
+    return;
+  }
+
+  // /refresh-state — consume-on-read refresh signal (GET)
+  if (urlPath === '/refresh-state') {
+    const headers = { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*', 'Cache-Control': 'no-store' };
+    const pending = global.refreshPending === true;
+    const at = global.refreshAt || 0;
+    global.refreshPending = false; // consume-on-read
+    res.writeHead(200, headers);
+    res.end(JSON.stringify({ pending, at }));
+    return;
+  }
+
   // /sleep — set sleep mode (POST)
   if (req.method === 'POST' && urlPath === '/sleep') {
     global.sleepMode = true;

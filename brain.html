@@ -1,0 +1,1067 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="J.AI.N Brain">
+<meta name="theme-color" content="#0a0000">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<title>J.AI.N Brain Feed</title>
+<link href="https://api.fontshare.com/v2/css?f[]=satoshi@300,400,500,700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600&display=swap" rel="stylesheet">
+<!-- PWA Manifest inline -->
+<link rel="manifest" href="https://jcubell.github.io/jains-mind/manifest.json">
+<!-- iPhone icons -->
+<link rel="apple-touch-icon" href="https://jcubell.github.io/jains-mind/openclaw-icon.png">
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --bg: #0a0000;
+  --bg-alt: #130000;
+  --border: #1e0808;
+  --text: #e8d8d8;
+  --text-2: #b89898;
+  --text-3: #886868;
+  --text-muted: #664848;
+  --accent: #ff2222;
+  --m-color: #ff4444;
+  --m-glow: rgba(255,68,68,0.2);
+  --m-border: rgba(255,68,68,0.4);
+  --font: 'Satoshi', -apple-system, BlinkMacSystemFont, sans-serif;
+  --mono: 'JetBrains Mono', 'SF Mono', monospace;
+  /* Dynamic Island / safe area */
+  --safe-top: env(safe-area-inset-top, 54px);
+  --safe-bottom: env(safe-area-inset-bottom, 34px);
+  --safe-left: env(safe-area-inset-left, 0px);
+  --safe-right: env(safe-area-inset-right, 0px);
+}
+
+html, body {
+  width: 100%; height: 100%;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font);
+  font-size: 14px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+/* Dynamic Island aware top bar */
+.top-bar {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  padding-top: var(--safe-top);
+  padding-left: calc(16px + var(--safe-left));
+  padding-right: calc(16px + var(--safe-right));
+  padding-bottom: 10px;
+  background: rgba(10,0,0,0.92);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border);
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.top-bar-title {
+  font-family: var(--font);
+  font-size: 11px; font-weight: 700;
+  letter-spacing: 0.2em; text-transform: uppercase;
+  color: rgba(255,100,100,0.7);
+  white-space: nowrap;
+}
+.top-bar-title .ai { color: var(--accent); }
+
+.top-bar-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.action-btn {
+  font-family: var(--mono);
+  font-size: 10px; font-weight: 500;
+  letter-spacing: 0.08em; text-transform: uppercase;
+  color: rgba(255,255,255,0.4);
+  background: transparent;
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 6px;
+  padding: 6px 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  min-height: 36px;
+  display: flex;
+  align-items: center;
+}
+.action-btn:active {
+  opacity: 0.6;
+  transform: scale(0.96);
+}
+.sleep-btn:hover, .sleep-btn:active {
+  color: rgba(255,80,80,0.8);
+  border-color: rgba(255,60,60,0.3);
+}
+.refresh-btn:hover, .refresh-btn:active {
+  color: rgba(100,200,255,0.8);
+  border-color: rgba(100,200,255,0.3);
+}
+.refresh-btn.spinning .refresh-icon {
+  display: inline-block;
+  animation: refreshSpin 0.6s ease forwards;
+}
+@keyframes refreshSpin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+.status-dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--m-color);
+  flex-shrink: 0;
+  animation: pulse-idle 2.5s ease-in-out infinite;
+}
+.status-dot.working {
+  background: var(--accent);
+  animation: pulse-think 1.2s ease-in-out infinite;
+}
+
+@keyframes pulse-idle { 0%,100%{opacity:1} 50%{opacity:0.35} }
+@keyframes pulse-think { 0%,100%{opacity:1} 50%{opacity:0.4} }
+
+/* Main content — offset for fixed top bar */
+.main {
+  padding-top: calc(var(--safe-top) + 64px);
+  padding-bottom: calc(var(--safe-bottom) + 20px);
+  padding-left: calc(16px + var(--safe-left));
+  padding-right: calc(16px + var(--safe-right));
+}
+
+/* ===== LASER BORDER ANIMATION ===== */
+@property --laser-angle {
+  syntax: '<angle>';
+  inherits: false;
+  initial-value: 0deg;
+}
+
+@keyframes border-breathe {
+  0%,100% { opacity: 0.35; box-shadow: 0 0 6px 0px rgba(255,0,0,0.15), inset 0 0 8px rgba(255,0,0,0.03); }
+  50%      { opacity: 0.75; box-shadow: 0 0 18px 3px rgba(255,0,0,0.35), inset 0 0 20px rgba(255,0,0,0.07); }
+}
+@keyframes laser-spin {
+  0%   { --laser-angle: 0deg; }
+  100% { --laser-angle: 360deg; }
+}
+@keyframes border-working-pulse {
+  0%,100% { opacity: 1; box-shadow: 0 0 20px 4px rgba(255,20,20,0.6), 0 0 50px 8px rgba(255,0,0,0.25); }
+  50%      { opacity: 0.85; box-shadow: 0 0 30px 8px rgba(255,50,50,0.8), 0 0 70px 16px rgba(255,0,0,0.4); }
+}
+@keyframes scanline {
+  0% { transform: translateY(-100%); opacity: 0; }
+  10% { opacity: 1; }
+  90% { opacity: 1; }
+  100% { transform: translateY(600%); opacity: 0; }
+}
+
+/* ===== BRAIN HERO CARD ===== */
+.brain-card {
+  position: relative;
+  border-radius: 18px;
+  border: 1.5px solid var(--m-border);
+  box-shadow: 0 0 8px 1px var(--m-glow), inset 0 0 10px var(--m-glow);
+  animation: border-breathe 3.5s ease-in-out infinite;
+  overflow: hidden;
+  margin-bottom: 16px;
+  transition: border-color 0.6s ease, box-shadow 0.6s ease;
+}
+
+.brain-card.working {
+  background:
+    linear-gradient(var(--bg), var(--bg)) padding-box,
+    conic-gradient(from var(--laser-angle),
+      #ff4444 0deg, #ff6666 30deg, #cc0000 80deg,
+      #ff4444 160deg, #990000 220deg, #ff4444 360deg
+    ) border-box;
+  border: 2px solid transparent;
+  animation: laser-spin 1.2s linear infinite, border-working-pulse 1.8s ease-in-out infinite;
+}
+
+/* Scanline */
+.brain-card::after {
+  content: '';
+  position: absolute; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--m-glow), var(--m-border), var(--m-glow), transparent);
+  pointer-events: none; z-index: 1;
+  opacity: 0;
+  transition: opacity 0.6s ease;
+}
+.brain-card.working::after {
+  opacity: 1;
+  animation: scanline 2.5s ease-in-out infinite;
+}
+
+/* Model-class overrides */
+.brain-card.model-grok { background: linear-gradient(var(--bg),var(--bg)) padding-box, conic-gradient(from var(--laser-angle),#ff2222 0deg,#ff5555 30deg,#cc0000 80deg,#ff2222 160deg,#990000 220deg,#ff2222 360deg) border-box; }
+.brain-card.model-sonnet { background: linear-gradient(var(--bg),var(--bg)) padding-box, conic-gradient(from var(--laser-angle),#ff9500 0deg,#ffb347 30deg,#ff6600 80deg,#ff9500 160deg,#cc7700 220deg,#ff9500 360deg) border-box; }
+.brain-card.model-gemini { background: linear-gradient(var(--bg),var(--bg)) padding-box, conic-gradient(from var(--laser-angle),#4285f4 0deg,#74a9f7 30deg,#1a6cf5 80deg,#4285f4 160deg,#2456b8 220deg,#4285f4 360deg) border-box; }
+.brain-card.model-deepseek { background: linear-gradient(var(--bg),var(--bg)) padding-box, conic-gradient(from var(--laser-angle),#a855f7 0deg,#c084fc 30deg,#9333ea 80deg,#a855f7 160deg,#7c22ce 220deg,#a855f7 360deg) border-box; }
+.brain-card.model-openai { background: linear-gradient(var(--bg),var(--bg)) padding-box, conic-gradient(from var(--laser-angle),#00A3FF 0deg,#33b8ff 30deg,#0080cc 80deg,#00A3FF 160deg,#005fa3 220deg,#00A3FF 360deg) border-box; }
+.brain-card.model-whisper { background: linear-gradient(var(--bg),var(--bg)) padding-box, conic-gradient(from var(--laser-angle),#e2e8f0 0deg,#f8fafc 30deg,#cbd5e1 80deg,#e2e8f0 160deg,#94a3b8 220deg,#e2e8f0 360deg) border-box; }
+
+.brain-header {
+  padding: 16px 16px 12px;
+  border-bottom: 1px solid var(--m-glow);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.brain-icon {
+  width: 32px; height: 32px;
+  flex-shrink: 0;
+  filter: drop-shadow(0 0 6px rgba(255,40,40,0.6));
+}
+
+.brain-label {
+  font-family: var(--font);
+  font-size: 12px; font-weight: 700;
+  letter-spacing: 0.14em; text-transform: uppercase;
+  color: var(--m-color);
+  flex: 1;
+}
+
+.model-badge {
+  font-family: var(--mono);
+  font-size: 9px; font-weight: 600;
+  padding: 2px 8px; border-radius: 20px;
+  letter-spacing: 0.04em;
+  color: var(--m-color);
+  border: 1px solid var(--m-border);
+  background: var(--m-glow);
+  box-shadow: 0 0 8px var(--m-glow);
+  white-space: nowrap;
+  transition: all 0.4s ease;
+}
+
+.brain-focus-section {
+  padding: 20px 16px 16px;
+}
+
+.brain-focus-text {
+  font-family: var(--font);
+  font-size: 24px; font-weight: 700;
+  line-height: 1.3;
+  color: var(--text);
+  letter-spacing: -0.02em;
+  transition: color 0.4s ease;
+}
+.brain-focus-text.working {
+  color: var(--m-color);
+  text-shadow: 0 0 24px var(--m-glow);
+}
+
+.brain-detail {
+  margin-top: 8px;
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--text-2);
+  line-height: 1.5;
+}
+
+/* Thought stream */
+.brain-stream {
+  padding: 0 16px 12px;
+  max-height: 200px;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+.brain-stream::-webkit-scrollbar { width: 2px; }
+.brain-stream::-webkit-scrollbar-thumb { background: var(--m-glow); }
+
+.thought-row {
+  display: flex; align-items: baseline; gap: 8px;
+  padding: 5px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+  font-family: var(--mono);
+  font-size: 11px; line-height: 1.5;
+}
+.thought-row:last-child { border-bottom: none; }
+.thought-row .t-time { color: var(--m-border); white-space: nowrap; flex-shrink: 0; min-width: 55px; }
+.thought-row .t-icon { color: var(--m-color); flex-shrink: 0; }
+.thought-row .t-text { color: var(--text-2); }
+.thought-row.new .t-text { color: var(--text); }
+
+/* Sub-agents */
+.subagents-section {
+  border-top: 1px solid var(--m-glow);
+  padding: 10px 16px 14px;
+}
+.subagents-label {
+  font-family: var(--font);
+  font-size: 9px; font-weight: 700;
+  letter-spacing: 0.16em; text-transform: uppercase;
+  color: var(--m-border);
+  margin-bottom: 8px;
+}
+.subagent-row {
+  display: flex; align-items: center; gap: 8px;
+  padding: 5px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+  font-family: var(--mono); font-size: 11px;
+}
+.subagent-row:last-child { border-bottom: none; }
+.subagent-dot {
+  width: 5px; height: 5px; border-radius: 50%;
+  background: var(--m-color); flex-shrink: 0;
+  animation: pulse-think 1.2s ease-in-out infinite;
+}
+.subagent-name { color: rgba(255,255,255,0.75); font-weight: 600; flex-shrink: 0; }
+.subagent-task { color: rgba(255,255,255,0.35); flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.subagent-model { color: var(--m-color); flex-shrink: 0; font-size: 9px; opacity: 0.5; }
+.subagents-empty { color: rgba(255,255,255,0.15); font-family: var(--mono); font-size: 11px; font-style: italic; }
+
+/* Last updated */
+.last-updated {
+  font-family: var(--mono);
+  font-size: 9px;
+  color: rgba(255,100,100,0.3);
+  text-align: center;
+  padding: 6px;
+}
+
+/* ===== SECTION CARDS ===== */
+.section-card {
+  background: rgba(20,5,5,0.7);
+  border: 1px solid rgba(255,50,50,0.1);
+  border-radius: 14px;
+  margin-bottom: 12px;
+  overflow: hidden;
+}
+.section-header {
+  font-family: var(--font);
+  font-size: 10px; font-weight: 700;
+  letter-spacing: 0.18em; text-transform: uppercase;
+  color: rgba(255,100,100,0.6);
+  padding: 12px 16px 8px;
+  border-bottom: 1px solid rgba(255,50,50,0.08);
+}
+
+/* Stat grid */
+.stat-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1px;
+  background: rgba(255,50,50,0.05);
+}
+.stat-item {
+  background: var(--bg);
+  padding: 14px 16px;
+}
+.stat-label {
+  font-family: var(--mono);
+  font-size: 9px; letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 4px;
+}
+.stat-value {
+  font-family: var(--mono);
+  font-size: 20px; font-weight: 600;
+  color: var(--m-color);
+  line-height: 1;
+}
+.stat-sub {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--text-3);
+  margin-top: 2px;
+}
+
+/* Model breakdown rows */
+.model-rows { padding: 8px 16px 12px; }
+.model-row {
+  display: flex; align-items: center; gap: 8px;
+  padding: 5px 0;
+  font-family: var(--mono); font-size: 11px;
+}
+.model-dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  flex-shrink: 0;
+}
+.model-name { flex: 1; color: var(--text-2); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.model-bar-wrap {
+  width: 80px; height: 3px;
+  background: rgba(255,255,255,0.06);
+  border-radius: 2px; overflow: hidden;
+  flex-shrink: 0;
+}
+.model-bar-fill {
+  height: 100%; border-radius: 2px;
+  transition: width 0.5s ease;
+}
+.model-cost { width: 40px; text-align: right; color: var(--text-3); font-size: 10px; flex-shrink: 0; }
+
+/* Ticker strip */
+.ticker-strip {
+  overflow-x: auto;
+  white-space: nowrap;
+  padding: 8px 16px 12px;
+  -webkit-overflow-scrolling: touch;
+}
+.ticker-strip::-webkit-scrollbar { height: 0; }
+.ticker-item {
+  display: inline-flex; align-items: center; gap: 4px;
+  margin-right: 16px;
+  font-family: var(--mono); font-size: 11px;
+}
+.ticker-symbol { color: #cccccc; font-weight: 600; }
+.ticker-price { color: #999999; }
+.ticker-up { color: #4caf50; font-weight: 500; }
+.ticker-down { color: #ef5350; font-weight: 500; }
+
+/* Feed items */
+.feed-items { padding: 4px 16px 12px; }
+.feed-item {
+  padding: 8px 0 8px 12px;
+  border-left: 2px solid rgba(255,50,50,0.15);
+  margin-bottom: 8px;
+  font-family: var(--mono); font-size: 12px;
+  color: var(--text-2); line-height: 1.6;
+}
+.feed-item.signal-fire {
+  color: var(--text);
+  border-left-color: rgba(255,34,34,0.6);
+  background: rgba(255,20,20,0.04);
+  border-radius: 0 6px 6px 0;
+  padding: 10px 10px 10px 12px;
+}
+.feed-item.signal-watch {
+  border-left-color: rgba(255,100,100,0.25);
+}
+.signal-tag {
+  font-size: 9px; font-weight: 600;
+  letter-spacing: 0.12em; text-transform: uppercase;
+  margin-right: 6px;
+}
+.signal-tag.fire { color: #ff4444; }
+.signal-tag.watch { color: #888888; }
+
+/* Clock display */
+.clock-display {
+  text-align: center;
+  padding: 12px 16px;
+}
+.clock-time {
+  font-family: var(--font);
+  font-size: 48px; font-weight: 900;
+  color: var(--m-color);
+  letter-spacing: -0.04em;
+  line-height: 1;
+  text-shadow: 0 0 30px var(--m-glow);
+}
+.clock-date {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--text-3);
+  letter-spacing: 0.2em; text-transform: uppercase;
+  margin-top: 6px;
+}
+
+/* ===== NIGHT MODE OVERLAY ===== */
+#nightMode {
+  display: none;
+  position: fixed; inset: 0;
+  background: #0a0000;
+  z-index: 99999;
+  align-items: center; justify-content: center;
+  flex-direction: column;
+}
+#nightMode.active { display: flex; }
+#nightClock {
+  font-family: var(--font);
+  font-size: 28vw; font-weight: 900;
+  color: #cc0000;
+  letter-spacing: -0.04em;
+  line-height: 1;
+  text-align: center;
+  animation: nightPulse 4s ease-in-out infinite;
+  font-variant-numeric: tabular-nums;
+}
+#nightAmpm {
+  font-family: var(--font);
+  font-size: 4.5vw; font-weight: 200;
+  color: rgba(180,0,0,0.5);
+  letter-spacing: 0.4em;
+  text-align: center;
+  margin-top: 1vw;
+}
+#nightDate {
+  font-family: var(--mono);
+  font-size: 3vw;
+  color: rgba(140,0,0,0.4);
+  letter-spacing: 0.3em; text-transform: uppercase;
+  margin-top: 4vw;
+}
+.night-tap-hint {
+  position: absolute;
+  bottom: calc(var(--safe-bottom) + 20px);
+  font-family: var(--mono);
+  font-size: 10px;
+  color: rgba(100,0,0,0.3);
+  letter-spacing: 0.3em; text-transform: uppercase;
+}
+@keyframes nightPulse {
+  0%,100%{opacity:1;text-shadow:0 0 80px rgba(200,0,0,0.3)}
+  50%{opacity:0.8;text-shadow:0 0 140px rgba(200,0,0,0.5)}
+}
+
+/* Toast notification */
+.toast {
+  position: fixed;
+  top: calc(var(--safe-top) + 70px);
+  left: 50%; transform: translateX(-50%) translateY(-8px);
+  z-index: 200;
+  font-family: var(--mono);
+  font-size: 11px; font-weight: 500;
+  letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--accent);
+  background: rgba(255,20,20,0.1);
+  border: 1px solid rgba(255,40,40,0.25);
+  padding: 6px 16px; border-radius: 6px;
+  opacity: 0;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  pointer-events: none;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+.toast.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+/* Section label for desktop link */
+.desktop-link-row {
+  display: flex;
+  justify-content: center;
+  padding: 0 16px 20px;
+}
+.desktop-link {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: rgba(255,100,100,0.4);
+  text-decoration: none;
+  letter-spacing: 0.08em;
+  border: 1px solid rgba(255,50,50,0.12);
+  padding: 8px 20px; border-radius: 8px;
+  transition: all 0.2s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+.desktop-link:active { opacity: 0.6; }
+</style>
+</head>
+<body>
+
+<!-- Top Bar -->
+<div class="top-bar">
+  <div class="top-bar-title">J<span class="ai">AI</span>N Brain</div>
+  <div class="top-bar-actions">
+    <div class="status-dot" id="statusDot"></div>
+    <button class="action-btn refresh-btn" id="refreshBtn" title="Hard refresh desktop"><span class="refresh-icon">&#8635;</span> Refresh</button>
+    <button class="action-btn sleep-btn" id="sleepBtn" title="Sleep / Night mode">&#9790; Sleep</button>
+  </div>
+</div>
+
+<!-- Night Mode Overlay -->
+<div id="nightMode">
+  <div id="nightClock">00:00</div>
+  <div id="nightAmpm">AM</div>
+  <div id="nightDate"></div>
+  <div class="night-tap-hint">tap to wake</div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<!-- Main Content -->
+<div class="main">
+
+  <!-- Clock -->
+  <div class="clock-display">
+    <div class="clock-time" id="liveClock">--:--</div>
+    <div class="clock-date" id="liveDate">---</div>
+  </div>
+
+  <!-- Brain Feed Card -->
+  <div class="brain-card" id="brainCard">
+    <div class="brain-header">
+      <svg class="brain-icon" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <defs><linearGradient id="lg2" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#ff4d4d"/><stop offset="100%" stop-color="#991b1b"/></linearGradient></defs>
+        <path d="M60 10 C30 10 15 35 15 55 C15 75 30 95 45 100 L45 110 L55 110 L55 100 C55 100 60 102 65 100 L65 110 L75 110 L75 100 C90 95 105 75 105 55 C105 35 90 10 60 10Z" fill="url(#lg2)"/>
+        <path d="M20 45 C5 40 0 50 5 60 C10 70 20 65 25 55 C28 48 25 45 20 45Z" fill="url(#lg2)"/>
+        <path d="M100 45 C115 40 120 50 115 60 C110 70 100 65 95 55 C92 48 95 45 100 45Z" fill="url(#lg2)"/>
+        <circle cx="45" cy="35" r="6" fill="#050810"/><circle cx="75" cy="35" r="6" fill="#050810"/>
+        <circle cx="46" cy="34" r="2.5" fill="#00e5cc"/><circle cx="76" cy="34" r="2.5" fill="#00e5cc"/>
+      </svg>
+      <span class="brain-label">Brain Feed</span>
+      <span class="model-badge" id="modelBadge">grok-4</span>
+    </div>
+    <div class="brain-focus-section">
+      <div class="brain-focus-text" id="brainFocus">Loading...</div>
+      <div class="brain-detail" id="brainDetail"></div>
+    </div>
+    <div class="brain-stream" id="brainStream"></div>
+    <div class="subagents-section" id="subagentSection">
+      <div class="subagents-label">Active Sub-Agents</div>
+      <div id="subagentList"><span class="subagents-empty">none running</span></div>
+    </div>
+    <div class="last-updated" id="lastUpdated"></div>
+  </div>
+
+  <!-- Usage Stats -->
+  <div class="section-card">
+    <div class="section-header">Usage &amp; Cost</div>
+    <div class="stat-grid">
+      <div class="stat-item">
+        <div class="stat-label">Session</div>
+        <div class="stat-value" id="sessVal">—</div>
+        <div class="stat-sub" id="sessSub"></div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-label">Today</div>
+        <div class="stat-value" id="dayVal">—</div>
+        <div class="stat-sub">est</div>
+      </div>
+    </div>
+    <div class="model-rows" id="modelRows">
+      <div class="model-row"><span class="model-name" style="opacity:0.3;font-style:italic;">loading...</span></div>
+    </div>
+  </div>
+
+  <!-- Market Ticker -->
+  <div class="section-card">
+    <div class="section-header">Markets</div>
+    <div class="ticker-strip" id="tickerStrip">
+      <div class="ticker-item"><span class="ticker-symbol">$SPY</span>&nbsp;<span class="ticker-price">6,696</span>&nbsp;<span class="ticker-up">+0.34%</span></div>
+      <div class="ticker-item"><span class="ticker-symbol">BTC</span>&nbsp;<span class="ticker-price">$72.6K</span>&nbsp;<span class="ticker-up">+3.0%</span></div>
+      <div class="ticker-item"><span class="ticker-symbol">ETH</span>&nbsp;<span class="ticker-price">$2,074</span>&nbsp;<span class="ticker-up">+0.6%</span></div>
+      <div class="ticker-item"><span class="ticker-symbol">GOLD</span>&nbsp;<span class="ticker-price">$5,120</span>&nbsp;<span class="ticker-up">+0.05%</span></div>
+      <div class="ticker-item"><span class="ticker-symbol">BRENT</span>&nbsp;<span class="ticker-price">$101</span>&nbsp;<span class="ticker-down">Hormuz</span></div>
+    </div>
+  </div>
+
+  <!-- Key Signals -->
+  <div class="section-card">
+    <div class="section-header">Key Signals</div>
+    <div class="feed-items">
+      <div class="feed-item signal-fire"><span class="signal-tag fire">Signal</span>Anthropic vs Pentagon — DOD labeled supplier "supply-chain risk" after refusing weapons terms.</div>
+      <div class="feed-item signal-fire"><span class="signal-tag fire">Signal</span>Hormuz blockade — Brent above $101. 16 vessels targeted since Feb 28.</div>
+      <div class="feed-item signal-fire"><span class="signal-tag fire">Signal</span>DeepSeek V4 release imminent — 1T param multimodal, Apache 2.0. On Huawei chips.</div>
+      <div class="feed-item signal-watch"><span class="signal-tag watch">Watch</span>NVIDIA GTC 2026 kicks off Monday. Jensen keynote + NemoClaw agent platform.</div>
+      <div class="feed-item signal-watch"><span class="signal-tag watch">Watch</span>Adobe CEO stepping down. $ADBE -8% pre-market, -60% from 2021 peak.</div>
+    </div>
+  </div>
+
+  <!-- Link to Desktop -->
+  <div class="desktop-link-row">
+    <a class="desktop-link" href="https://jcubell.github.io/jains-mind/" target="_blank">Open Desktop Dashboard &#8599;</a>
+  </div>
+
+</div>
+
+<script>
+(function() {
+  var GITHUB_STATE_URL = 'https://api.github.com/repos/jcubell/jains-mind/contents/state.json';
+  var tunnelUrl = 'https://charged-unique-architects-fusion.trycloudflare.com';
+  var tunnelFailCount = 0;
+  var TUNNEL_FAIL_LIMIT = 3;
+  var POLL_FAST = 2000;
+  var POLL_SLOW = 15000;
+  var pollTimer = null;
+  var lastKnownState = null;
+
+  // ── MODEL THEMES ───────────────────────────────────────────────────────────
+  function setModelTheme(model) {
+    var themes = {
+      'grok':     { color: '#ff2222', glow: 'rgba(255,34,34,0.2)',   border: 'rgba(255,34,34,0.4)',   cls: 'model-grok' },
+      'sonnet':   { color: '#ff9500', glow: 'rgba(255,149,0,0.2)',   border: 'rgba(255,149,0,0.4)',   cls: 'model-sonnet' },
+      'gemini':   { color: '#4285f4', glow: 'rgba(66,133,244,0.2)', border: 'rgba(66,133,244,0.4)', cls: 'model-gemini' },
+      'deepseek': { color: '#a855f7', glow: 'rgba(168,85,247,0.2)', border: 'rgba(168,85,247,0.4)', cls: 'model-deepseek' },
+      'openai':   { color: '#00A3FF', glow: 'rgba(0,163,255,0.2)',  border: 'rgba(0,163,255,0.4)',  cls: 'model-openai' },
+      'whisper':  { color: '#e2e8f0', glow: 'rgba(226,232,240,0.15)', border: 'rgba(226,232,240,0.3)', cls: 'model-whisper' },
+      'default':  { color: '#ff4444', glow: 'rgba(255,68,68,0.2)',  border: 'rgba(255,68,68,0.4)',  cls: 'model-default' }
+    };
+    var m = model ? model.toLowerCase() : '';
+    var key = 'default';
+    if (m.includes('grok')) key = 'grok';
+    else if (m.includes('sonnet') || m.includes('claude')) key = 'sonnet';
+    else if (m.includes('gemini')) key = 'gemini';
+    else if (m.includes('deepseek')) key = 'deepseek';
+    else if (m.includes('gpt') || m.includes('openai')) key = 'openai';
+    else if (m.includes('whisper')) key = 'whisper';
+    var t = themes[key];
+    var root = document.documentElement;
+    root.style.setProperty('--m-color', t.color);
+    root.style.setProperty('--m-glow', t.glow);
+    root.style.setProperty('--m-border', t.border);
+    var card = document.getElementById('brainCard');
+    if (card) card.className = card.className.replace(/\bmodel-\w+/g, '').trim() + ' ' + t.cls;
+    // Update theme-color meta
+    var tc = document.querySelector('meta[name="theme-color"]');
+    if (tc) tc.setAttribute('content', t.color.replace(')', ', 0.15)').replace('rgb', 'rgba').replace('#', 'rgba('));
+  }
+
+  function shortModel(m) {
+    if (!m) return '';
+    var i = m.lastIndexOf('/'); if (i >= 0) m = m.slice(i + 1);
+    return m;
+  }
+
+  function escHtml(s) { var d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
+  var thoughtIcons = { action: '▸', thought: '◦', complete: '✓', observation: '·' };
+
+  function relTime(iso) {
+    if (!iso) return 'just now';
+    var diff = Math.floor((Date.now() - new Date(iso)) / 1000);
+    if (isNaN(diff) || diff < 60) return diff + 's ago';
+    if (diff < 3600) return Math.floor(diff/60) + 'm ago';
+    if (diff < 86400) return Math.floor(diff/3600) + 'h ago';
+    return Math.floor(diff/86400) + 'd ago';
+  }
+
+  function applyState(data) {
+    if (!data) return;
+    var isWorking = data.brain && (data.brain.mode === 'working' || data.brain.mode === 'thinking');
+
+    // Status dot
+    var dot = document.getElementById('statusDot');
+    if (dot) dot.className = 'status-dot' + (isWorking ? ' working' : '');
+
+    if (data.brain) {
+      var focusEl = document.getElementById('brainFocus');
+      if (focusEl) {
+        focusEl.textContent = data.brain.focus || 'Idle';
+        focusEl.className = 'brain-focus-text' + (isWorking ? ' working' : '');
+      }
+
+      var detailEl = document.getElementById('brainDetail');
+      if (detailEl) detailEl.textContent = data.brain.detail || '';
+
+      var card = document.getElementById('brainCard');
+      if (card) {
+        if (isWorking) card.classList.add('working');
+        else card.classList.remove('working');
+      }
+
+      if (data.brain.model) {
+        setModelTheme(data.brain.model);
+        var badge = document.getElementById('modelBadge');
+        if (badge) badge.textContent = shortModel(data.brain.model);
+      }
+      if (data.brain.mode === 'transcribing') setModelTheme('whisper');
+
+      // Last updated
+      var lu = document.getElementById('lastUpdated');
+      if (lu) lu.textContent = relTime(data.updated_at);
+
+      // Sub-agents
+      var subList = document.getElementById('subagentList');
+      if (subList) {
+        var agents = (data.brain.subagents && data.brain.subagents.length > 0)
+          ? data.brain.subagents
+          : (data.brain.subagent ? [data.brain.subagent] : []);
+        if (agents.length === 0) {
+          subList.innerHTML = '<span class="subagents-empty">none running</span>';
+        } else {
+          var sh = '';
+          agents.forEach(function(a) {
+            sh += '<div class="subagent-row">'
+              + '<div class="subagent-dot"></div>'
+              + '<span class="subagent-name">' + escHtml(a.name || 'Agent') + '</span>'
+              + '<span class="subagent-task">' + escHtml(a.task || '') + '</span>'
+              + '<span class="subagent-model">' + escHtml(shortModel(a.model || '')) + '</span>'
+              + '</div>';
+          });
+          subList.innerHTML = sh;
+        }
+      }
+
+      // Thought stream
+      var stream = document.getElementById('brainStream');
+      if (stream && data.brain.thoughts && data.brain.thoughts.length > 0) {
+        var html = '';
+        for (var i = 0; i < Math.min(data.brain.thoughts.length, 8); i++) {
+          var t = data.brain.thoughts[i];
+          var icon = thoughtIcons[t.type] || '·';
+          html += '<div class="thought-row' + (i === 0 ? ' new' : '') + '">'
+            + '<span class="t-time">' + escHtml(t.time || '') + '</span>'
+            + '<span class="t-icon">' + icon + '</span>'
+            + '<span class="t-text">' + escHtml(t.text || '') + '</span>'
+            + '</div>';
+        }
+        stream.innerHTML = html;
+      }
+    }
+
+    lastKnownState = data;
+  }
+
+  // ── POLLING ─────────────────────────────────────────────────────────────────
+  function pollTunnel() {
+    if (!tunnelUrl) { bootstrapFromGitHub(); return; }
+    fetch(tunnelUrl + '/state.json?t=' + Date.now())
+      .then(function(r) { if (!r.ok) throw new Error(r.status); return r.json(); })
+      .then(function(data) {
+        tunnelFailCount = 0;
+        if (data._tunnel_url && data._tunnel_url !== tunnelUrl) tunnelUrl = data._tunnel_url;
+        applyState(data);
+      })
+      .catch(function() {
+        tunnelFailCount++;
+        if (tunnelFailCount >= TUNNEL_FAIL_LIMIT) {
+          tunnelUrl = null; tunnelFailCount = 0;
+          if (pollTimer) { clearInterval(pollTimer); pollTimer = null; }
+          bootstrapFromGitHub();
+        }
+      });
+  }
+
+  function bootstrapFromGitHub() {
+    fetch(GITHUB_STATE_URL + '?t=' + Date.now(), {
+      headers: { 'Accept': 'application/vnd.github.v3+json' }
+    })
+      .then(function(r) { if (!r.ok) throw new Error(r.status); return r.json(); })
+      .then(function(ghData) {
+        var raw = JSON.parse(atob(ghData.content.replace(/\n/g, '')));
+        applyState(raw);
+        if (raw._tunnel_url) {
+          tunnelUrl = raw._tunnel_url; tunnelFailCount = 0;
+          if (pollTimer) clearInterval(pollTimer);
+          pollTimer = setInterval(pollTunnel, POLL_FAST);
+        } else {
+          if (!pollTimer) pollTimer = setInterval(bootstrapFromGitHub, POLL_SLOW);
+        }
+      })
+      .catch(function() {
+        if (!pollTimer) pollTimer = setInterval(bootstrapFromGitHub, POLL_SLOW);
+      });
+  }
+
+  pollTunnel();
+  pollTimer = setInterval(pollTunnel, POLL_FAST);
+
+  // Keep relative timestamps fresh
+  setInterval(function() {
+    var lu = document.getElementById('lastUpdated');
+    if (lu && lastKnownState) lu.textContent = relTime(lastKnownState.updated_at);
+  }, 30000);
+
+  // ── CLOCK ───────────────────────────────────────────────────────────────────
+  function updateClock() {
+    var now = new Date();
+    var opts12 = { timeZone: 'America/New_York', hour: '2-digit', minute: '2-digit', hour12: true };
+    var optsDate = { timeZone: 'America/New_York', weekday: 'short', month: 'short', day: 'numeric' };
+    var clk = document.getElementById('liveClock');
+    var dt = document.getElementById('liveDate');
+    if (clk) clk.textContent = now.toLocaleTimeString('en-US', opts12).replace(':00 ', ' ').replace(':00AM','AM').replace(':00PM','PM');
+    if (dt) dt.textContent = now.toLocaleDateString('en-US', optsDate).toUpperCase();
+  }
+  updateClock();
+  setInterval(updateClock, 1000);
+
+  // ── NIGHT MODE ──────────────────────────────────────────────────────────────
+  var nm = document.getElementById('nightMode');
+  var nc = document.getElementById('nightClock');
+  var nightTimer = null;
+  var wasSleeping = false;
+
+  function updateNightClock() {
+    var d = new Date();
+    var h = d.getHours() % 12 || 12;
+    var m = ('0' + d.getMinutes()).slice(-2);
+    if (nc) nc.textContent = h + ':' + m;
+    var na = document.getElementById('nightAmpm');
+    if (na) na.textContent = d.getHours() >= 12 ? 'PM' : 'AM';
+    var nd = document.getElementById('nightDate');
+    if (nd) {
+      var days = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+      var months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+      nd.textContent = days[d.getDay()] + ' · ' + months[d.getMonth()] + ' ' + d.getDate();
+    }
+  }
+
+  function enterSleep() {
+    if (nm.classList.contains('active')) return;
+    nm.classList.add('active');
+    updateNightClock();
+    nightTimer = setInterval(updateNightClock, 1000);
+  }
+
+  function exitSleep() {
+    nm.classList.remove('active');
+    if (nightTimer) { clearInterval(nightTimer); nightTimer = null; }
+    if (tunnelUrl) fetch(tunnelUrl + '/wake', { method: 'POST' }).catch(function(){});
+  }
+
+  // Sleep button — POST to tunnel + enter local night mode
+  var sleepBtn = document.getElementById('sleepBtn');
+  if (sleepBtn) {
+    sleepBtn.addEventListener('click', function(e) {
+      e.preventDefault();
+      if (tunnelUrl) fetch(tunnelUrl + '/sleep', { method: 'POST' }).catch(function(){});
+      enterSleep();
+      showToast('Night mode active');
+    });
+    sleepBtn.addEventListener('touchend', function(e) {
+      e.preventDefault();
+      if (tunnelUrl) fetch(tunnelUrl + '/sleep', { method: 'POST' }).catch(function(){});
+      enterSleep();
+      showToast('Night mode active');
+    }, { passive: false });
+  }
+
+  // Dismiss night mode on tap
+  nm.addEventListener('click', exitSleep);
+  nm.addEventListener('touchend', function(e) { e.preventDefault(); exitSleep(); }, { passive: false });
+
+  // Poll tunnel for sleep state sync
+  setInterval(function() {
+    if (!tunnelUrl) return;
+    fetch(tunnelUrl + '/sleep-state?t=' + Date.now())
+      .then(function(r) { return r.json(); })
+      .then(function(d) {
+        if (d.sleep && !wasSleeping) { wasSleeping = true; enterSleep(); }
+        else if (!d.sleep && wasSleeping) { wasSleeping = false; exitSleep(); }
+      }).catch(function(){});
+  }, 2000);
+
+  // ── REFRESH BUTTON ──────────────────────────────────────────────────────────
+  // Refreshes the desktop dashboard (index.html) by POST to /refresh or
+  // triggering a hard reload in a new background fetch + notifying user.
+  var refreshBtn = document.getElementById('refreshBtn');
+  if (refreshBtn) {
+    refreshBtn.addEventListener('click', function(e) {
+      e.preventDefault();
+      // Spin the icon
+      refreshBtn.classList.add('spinning');
+      setTimeout(function() { refreshBtn.classList.remove('spinning'); }, 700);
+      if (tunnelUrl) {
+        fetch(tunnelUrl + '/refresh', { method: 'POST' })
+          .then(function(r) {
+            if (r.ok) {
+              showToast('Desktop reloading! ✨');
+            } else {
+              showToast('Refresh failed — tunnel may be offline');
+            }
+          })
+          .catch(function() {
+            showToast('Refresh failed — tunnel may be offline');
+          });
+      } else {
+        showToast('Refresh failed — tunnel may be offline');
+        bootstrapFromGitHub();
+      }
+    });
+  }
+
+  // ── TOAST ───────────────────────────────────────────────────────────────────
+  var toastTimer = null;
+  function showToast(msg) {
+    var t = document.getElementById('toast');
+    if (!t) return;
+    t.textContent = msg;
+    t.classList.add('show');
+    if (toastTimer) clearTimeout(toastTimer);
+    toastTimer = setTimeout(function() { t.classList.remove('show'); }, 2500);
+  }
+
+  // ── USAGE METRICS ──────────────────────────────────────────────────────────
+  (function() {
+    var UM_COLORS = {
+      'grok': '#ff2222', 'grok-4': '#ff2222',
+      'sonnet': '#ff9500', 'claude': '#ff9500', 'claude-sonnet-4-6': '#ff9500',
+      'gemini': '#4285f4',
+      'deepseek': '#a855f7', 'deepseek-chat-v3-0324': '#a855f7',
+      'gpt': '#00A3FF', 'gpt-4o': '#00A3FF'
+    };
+    function umColor(model) {
+      if (!model) return '#888';
+      var k = model.toLowerCase().replace(/^openrouter\/[^/]+\//, '');
+      for (var key in UM_COLORS) { if (k.includes(key)) return UM_COLORS[key]; }
+      return '#888';
+    }
+    function fmtCost(v) {
+      if (v == null || isNaN(v)) return '—';
+      if (v < 0.01) return '$' + v.toFixed(4);
+      if (v < 1) return '$' + v.toFixed(3);
+      return '$' + v.toFixed(2);
+    }
+
+    function renderUsage(data) {
+      var sv = document.getElementById('sessVal');
+      var ss = document.getElementById('sessSub');
+      if (sv && data.session) {
+        sv.textContent = fmtCost(data.session.est_cost);
+        if (ss) ss.textContent = (data.session.pushes || 0) + ' pushes';
+      }
+      var dv = document.getElementById('dayVal');
+      if (dv && data.daily) {
+        dv.textContent = fmtCost(data.daily.actual_or != null ? data.daily.actual_or : data.daily.est_cost);
+      }
+      var mr = document.getElementById('modelRows');
+      if (!mr || !data.models) return;
+      var models = data.models.slice(0, 5);
+      var maxCost = 0;
+      for (var i = 0; i < models.length; i++) if (models[i].cost > maxCost) maxCost = models[i].cost;
+      var html = '';
+      for (var i = 0; i < models.length; i++) {
+        var m = models[i];
+        var c = umColor(m.model);
+        var pct = maxCost > 0 ? Math.round((m.cost / maxCost) * 100) : 5;
+        var name = m.model.replace(/^openrouter\/[^/]+\//, '').replace('deepseek-chat-v3-0324','deepseek-v3').replace('claude-sonnet-4-6','claude-sonnet');
+        html += '<div class="model-row">'
+          + '<div class="model-dot" style="background:' + c + ';box-shadow:0 0 4px ' + c + '88;"></div>'
+          + '<span class="model-name">' + name + '</span>'
+          + '<div class="model-bar-wrap"><div class="model-bar-fill" style="width:' + pct + '%;background:' + c + ';box-shadow:0 0 3px ' + c + '66;"></div></div>'
+          + '<span class="model-cost">' + (m.cost > 0 ? fmtCost(m.cost) : '—') + '</span>'
+          + '</div>';
+      }
+      mr.innerHTML = html;
+    }
+
+    function fetchUsage() {
+      if (!tunnelUrl) return;
+      fetch(tunnelUrl + '/or-cost-summary?t=' + Date.now())
+        .then(function(r) { if (!r.ok) throw new Error(r.status); return r.json(); })
+        .then(function(data) { renderUsage(data); })
+        .catch(function() {});
+    }
+    setTimeout(fetchUsage, 3000);
+    setInterval(fetchUsage, 90000);
+  })();
+
+  // ── STALE WATCHDOG ──────────────────────────────────────────────────────────
+  setInterval(function() {
+    if (!lastKnownState || !lastKnownState.brain) return;
+    var mode = lastKnownState.brain.mode;
+    if (mode !== 'working' && mode !== 'thinking') return;
+    var age = Date.now() - new Date(lastKnownState.updated_at || 0).getTime();
+    if (age > 5 * 60 * 1000) {
+      lastKnownState.brain.mode = 'idle';
+      lastKnownState.brain.focus = 'No recent activity';
+      applyState(lastKnownState);
+    }
+  }, 10000);
+
+})();
+</script>
+</body>
+</html>

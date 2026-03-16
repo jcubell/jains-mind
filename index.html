@@ -904,6 +904,33 @@
     transition: opacity 0.2s ease, transform 0.2s ease;
   }
 
+  /* Reload overlay — PWA refresh scan-line animation */
+  #reloadOverlay {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    pointer-events: none; z-index: 9999; opacity: 0; transition: opacity 0.2s;
+  }
+  #reloadOverlay.active { opacity: 1; }
+  .reload-scanline {
+    position: absolute; left: 0; width: 100%; height: 3px;
+    background: linear-gradient(90deg, transparent, #00d4ff, #fff, #00d4ff, transparent);
+    box-shadow: 0 0 18px 4px #00d4ff88;
+    animation: scanSweep 0.45s ease-in-out forwards;
+  }
+  @keyframes scanSweep {
+    from { top: 0; opacity: 1; }
+    to   { top: 100%; opacity: 0.4; }
+  }
+  .reload-bg {
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.15);
+    animation: bgFade 0.7s ease forwards;
+  }
+  @keyframes bgFade {
+    0%   { opacity: 0; }
+    40%  { opacity: 1; }
+    100% { opacity: 0; }
+  }
+
   /* Footer */
   .footer-attr {
     position: fixed; bottom: 8px; left: 50%;
@@ -1523,6 +1550,7 @@
 
 <div class="refresh-flash" id="refreshFlash"></div>
 <div class="refresh-toast" id="refreshToast">Synced</div>
+<div id="reloadOverlay"></div>
 
 <!-- Perplexity Computer: Footer attribution with teal hover accent -->
 <div class="footer-attr">
@@ -2282,6 +2310,41 @@
   }
   updateFeedTime(); setInterval(updateFeedTime, 60000);
 
+  // ── PWA REFRESH ANIMATION ──────────────────────────────────────────────────
+  function triggerReloadAnimation() {
+    var overlay = document.getElementById('reloadOverlay');
+    if (!overlay) { location.reload(); return; }
+    overlay.innerHTML = '<div class="reload-bg"></div><div class="reload-scanline"></div>';
+    overlay.classList.add('active');
+    // Stagger bar pulse
+    var bars = document.querySelectorAll('.bar');
+    bars.forEach(function(bar, i) {
+      setTimeout(function() {
+        bar.style.transition = 'transform 0.15s ease';
+        bar.style.transform = 'scaleY(0.3)';
+        setTimeout(function() { bar.style.transform = ''; }, 150);
+      }, i * 20);
+    });
+    setTimeout(function() {
+      overlay.style.opacity = '0';
+      setTimeout(function() { location.reload(); }, 250);
+    }, 550);
+  }
+
+  // PWA refresh poller — check every 2s
+  var lastRefreshAt = 0;
+  setInterval(function() {
+    if (!tunnelUrl) return;
+    fetch(tunnelUrl + '/refresh-state', { cache: 'no-store' })
+      .then(function(r) { return r.json(); })
+      .then(function(d) {
+        if (d.pending && d.at !== lastRefreshAt) {
+          lastRefreshAt = d.at;
+          triggerReloadAnimation();
+        }
+      })
+      .catch(function() {});
+  }, 2000);
 
 })();
 </script>
