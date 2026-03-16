@@ -363,29 +363,30 @@ html, body {
 }
 
 /* Stat grid */
-/* Compact cost row */
-.cost-row {
-  display: flex; align-items: baseline; gap: 16px;
-  padding: 10px 16px;
+/* Slim cost strip */
+.cost-strip {
+  position: sticky;
+  top: calc(var(--safe-top) + 48px);
+  z-index: 90;
+  display: flex; align-items: center; gap: 0;
+  padding: 5px 16px;
+  background: rgba(10,0,0,0.85);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(255,30,30,0.08);
 }
-.cost-item {
-  display: flex; align-items: baseline; gap: 5px;
+.cost-strip-item { display: flex; align-items: baseline; gap: 5px; }
+.cost-strip-label {
+  font-family: var(--mono); font-size: 8px; letter-spacing: 0.12em;
+  text-transform: uppercase; color: var(--text-muted);
 }
-.cost-label {
-  font-family: var(--mono);
-  font-size: 9px; letter-spacing: 0.12em; text-transform: uppercase;
-  color: var(--text-muted);
-}
-.cost-value {
-  font-family: var(--mono);
-  font-size: 15px; font-weight: 600;
+.cost-strip-val {
+  font-family: var(--mono); font-size: 12px; font-weight: 600;
   color: var(--m-color);
-  line-height: 1;
 }
-.cost-divider {
-  width: 1px; height: 14px;
-  background: rgba(255,50,50,0.12);
-  align-self: center;
+.cost-strip-sep {
+  width: 1px; height: 10px; background: rgba(255,30,30,0.15);
+  margin: 0 12px; align-self: center; flex-shrink: 0;
 }
 
 /* Ticker strip */
@@ -552,6 +553,13 @@ html, body {
 <!-- Toast -->
 <div class="toast" id="toast"></div>
 
+<!-- Slim Cost Strip -->
+<div class="cost-strip">
+  <span class="cost-strip-item"><span class="cost-strip-label">Session</span><span class="cost-strip-val" id="sessVal">—</span></span>
+  <span class="cost-strip-sep"></span>
+  <span class="cost-strip-item"><span class="cost-strip-label">Today</span><span class="cost-strip-val" id="dayVal">—</span></span>
+</div>
+
 <!-- Main Content -->
 <div class="main">
 
@@ -581,23 +589,7 @@ html, body {
     <div class="last-updated" id="lastUpdated"></div>
   </div>
 
-  <!-- Usage Stats -->
-  <div class="section-card">
-    <div class="section-header">Usage &amp; Cost</div>
-    <div class="cost-row">
-      <div class="cost-item">
-        <span class="cost-label">Session</span>
-        <span class="cost-value" id="sessVal">—</span>
-      </div>
-      <div class="cost-divider"></div>
-      <div class="cost-item">
-        <span class="cost-label">Today</span>
-        <span class="cost-value" id="dayVal">—</span>
-      </div>
-    </div>
-  </div>
-
-  <!-- Markets removed -->
+    <!-- Markets removed -->
 
   <!-- Key Signals -->
   <div class="section-card">
