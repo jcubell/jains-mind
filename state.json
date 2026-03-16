@@ -2,9 +2,9 @@
   "objective": "",
   "status": "idle",
   "brain": {
-    "mode": "idle",
-    "focus": "Done \u2014 pull indicator now notch-aware",
-    "model": "grok-4",
+    "mode": "working",
+    "focus": "\ud83c\udfa4 Voice message received",
+    "model": "whisper",
     "thoughts": [
       {
         "time": "2:16 AM ET",
@@ -85,11 +85,11 @@
       "model": "claude-sonnet-4-6",
       "status": "running"
     },
-    "currentModel": "grok-4",
+    "currentModel": "whisper",
     "subagents": []
   },
   "steps": [],
-  "updated_at": "2026-03-16T06:19:05Z",
+  "updated_at": "2026-03-16T06:59:41Z",
   "_tunnel_url": "https://charged-unique-architects-fusion.trycloudflare.com",
   "jobs": {
     "strategy_audit": {
