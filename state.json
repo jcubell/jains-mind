@@ -2,8 +2,8 @@
   "objective": "",
   "status": "idle",
   "brain": {
-    "mode": "idle",
-    "focus": "Done \u2014 brain.html tunnel fix pushed, iPhone should work now",
+    "mode": "working",
+    "focus": "Fixing cron-status endpoint \u2014 also needs tunnel URL not localhost",
     "model": "claude-sonnet-4-6",
     "thoughts": [
       {
@@ -84,6 +84,6 @@
     "subagents": []
   },
   "steps": [],
-  "updated_at": "2026-03-16T04:13:59Z",
+  "updated_at": "2026-03-16T04:15:27Z",
   "_tunnel_url": "https://charged-unique-architects-fusion.trycloudflare.com"
 }
