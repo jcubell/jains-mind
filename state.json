@@ -2,9 +2,9 @@
   "objective": "",
   "status": "idle",
   "brain": {
-    "mode": "idle",
-    "focus": "Done \u2014 voice audition complete",
-    "model": "claude-sonnet-4-6",
+    "mode": "working",
+    "focus": "\ud83c\udfa4 Voice message received",
+    "model": "whisper",
     "thoughts": [
       {
         "time": "6:10 PM ET",
@@ -85,11 +85,11 @@
       "model": "claude-sonnet-4-6",
       "status": "running"
     },
-    "currentModel": "claude-sonnet-4-6",
+    "currentModel": "whisper",
     "subagents": []
   },
   "steps": [],
-  "updated_at": "2026-03-16T22:14:34Z",
+  "updated_at": "2026-03-16T22:15:17Z",
   "_tunnel_url": "https://charged-unique-architects-fusion.trycloudflare.com",
   "jobs": {
     "strategy_audit": {
