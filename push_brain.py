@@ -76,6 +76,13 @@ def push(focus, thought_text=None, thought_type="action", mode="working",
     if model:
         state["brain"]["model"] = model
         state["brain"]["currentModel"] = model
+    elif mode not in ("working", "thinking"):
+        # When transitioning to idle without specifying a model,
+        # clear whisper model so it doesn't persist as the active theme.
+        current = state["brain"].get("model", "")
+        if current and "whisper" in current.lower():
+            state["brain"]["model"] = "grok-4"
+            state["brain"]["currentModel"] = "grok-4"
 
     # Handle subagent (legacy single) and subagents (array)
     if subagent == "clear":

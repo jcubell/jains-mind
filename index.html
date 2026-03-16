@@ -1680,7 +1680,13 @@
     if (statusText) statusText.textContent = mode === 'thinking' ? 'Processing' : 'Online';
     if (hero) {
       if (mode === 'thinking') hero.classList.add('working');
-      else hero.classList.remove('working');
+      else {
+        hero.classList.remove('working');
+        // If going idle and whisper theme is active, reset to default so white theme doesn't linger
+        if (hero.classList.contains('model-whisper')) {
+          setModelTheme('default');
+        }
+      }
     }
   }
 
@@ -1719,7 +1725,16 @@
       var badgeEl = document.getElementById('brainModelBadge');
       if (badgeEl && data.brain.model) badgeEl.textContent = shortModel(data.brain.model);
 
-      if (data.brain.model) setModelTheme(data.brain.model);
+      // When idle, never keep Whisper's white theme — fall back to default
+      if (data.brain.model) {
+        var activeMode = data.brain.mode;
+        var activeModel = data.brain.model;
+        if (activeMode === 'idle' && activeModel && activeModel.toLowerCase().includes('whisper')) {
+          setModelTheme('default');
+        } else {
+          setModelTheme(activeModel);
+        }
+      }
       if (data.brain.mode === 'transcribing') setModelTheme('whisper');
 
       var updEl = document.getElementById('brainLastUpdated');
