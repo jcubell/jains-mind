@@ -59,7 +59,9 @@ const server = http.createServer((req, res) => {
   // Normalize model names to canonical keys (dedupes variant suffixes like -4-5 vs -4-6)
   function normalizeModelName(name) {
     if (!name) return name;
-    const n = name.toLowerCase().trim();
+    // Strip openrouter/ prefix (e.g. openrouter/anthropic/claude-sonnet-4-6 → claude-sonnet-4-6)
+    let n = name.toLowerCase().trim();
+    n = n.replace(/^openrouter\/[^/]+\//, '').replace(/^openrouter\//, '');
     // Claude Sonnet variants → canonical claude-sonnet-4-6
     if (n.includes('claude') && n.includes('sonnet')) return 'claude-sonnet-4-6';
     // Claude Opus variants → canonical claude-opus
@@ -68,17 +70,21 @@ const server = http.createServer((req, res) => {
     if (n.includes('claude') && n.includes('haiku')) return 'claude-haiku';
     // Grok variants → canonical grok-4
     if (n.includes('grok')) return 'grok-4';
+    // GPT-4o-mini → canonical gpt-4o-mini (check before gpt-4o)
+    if (n.startsWith('gpt-4o-mini') || n.includes('gpt-4o-mini')) return 'gpt-4o-mini';
     // GPT-4o variants → canonical gpt-4o
-    if (n.startsWith('gpt-4o')) return 'gpt-4o';
-    // GPT-5 variants → canonical gpt-5
-    if (n.startsWith('gpt-5')) return 'gpt-5';
+    if (n.startsWith('gpt-4o') || n.includes('gpt-4o')) return 'gpt-4o';
+    // GPT-5 variants (gpt-5, gpt-5.2, gpt-5-preview, etc.) → canonical gpt-5
+    if (n.startsWith('gpt-5') || n.includes('gpt-5')) return 'gpt-5';
     // Gemini flash variants → canonical gemini-2.0-flash
     if (n.includes('gemini') && n.includes('flash')) return 'gemini-2.0-flash';
     // Gemini pro variants → canonical gemini-2.5-pro
     if (n.includes('gemini') && (n.includes('pro') || n.includes('2.5'))) return 'gemini-2.5-pro';
     // DeepSeek variants → canonical deepseek-chat-v3-0324
     if (n.includes('deepseek')) return 'deepseek-chat-v3-0324';
-    return name; // fallback: keep as-is
+    // Llama variants → canonical llama
+    if (n.includes('llama')) return 'llama';
+    return n; // fallback: return lowercased/stripped name
   }
 
   // /or-model-usage — per-model usage counts from codexbar (for model rotation widget)
@@ -118,9 +124,12 @@ const server = http.createServer((req, res) => {
   if (urlPath === '/or-cost-summary') {
     try {
       const allModels = {};
-      let sessionCost = 0;
-      let dailyCost = 0;
+      let sessionCost = 0;  // today's cost only
+      let dailyCost = 0;    // last30Days aggregate (all sessions)
       let totalTokens = 0;
+
+      // Today's date in YYYY-MM-DD (local time)
+      const todayStr = new Date().toISOString().slice(0, 10);
 
       const codexbarBin = '/opt/homebrew/bin/codexbar';
       for (const provider of ['codex', 'claude']) {
@@ -134,31 +143,50 @@ const server = http.createServer((req, res) => {
         try { parsed = JSON.parse(raw); } catch(e) { continue; }
         const entries = Array.isArray(parsed) ? parsed : [parsed];
         for (const entry of entries) {
-          // Session cost (most recent session)
-          if (entry.sessionCostUSD) sessionCost += entry.sessionCostUSD;
-          // last30Days as daily proxy (it's actually all-time / last 30 days)
+          // Daily (aggregate) cost = last30DaysCostUSD — the full OR spend across all sessions
           if (entry.last30DaysCostUSD) dailyCost += entry.last30DaysCostUSD;
-          if (entry.sessionTokens) totalTokens += entry.sessionTokens;
-          // Per-model breakdown from daily entries
+
           const daily = entry.daily || [];
+
+          // Session cost = sum of today's daily entries only
+          // (distinct from daily aggregate which includes all historical sessions)
+          for (const day of daily) {
+            if (day.date === todayStr) {
+              sessionCost += day.totalCost || 0;
+              totalTokens += day.totalTokens || 0;
+            }
+          }
+
+          // Per-model breakdown from all daily entries (for model breakdown widget)
           for (const day of daily) {
             const breakdowns = day.modelBreakdowns || [];
+            const dayTokens = day.totalTokens || 0;
+            const numModels = breakdowns.length || 1;
             for (const mb of breakdowns) {
               const name = normalizeModelName((mb.modelName || '').trim());
               if (!name) continue;
-              if (!allModels[name]) allModels[name] = { model: name, cost: 0, count: 0 };
+              if (!allModels[name]) allModels[name] = { model: name, cost: 0, tokens: 0, days: 0 };
               allModels[name].cost += mb.cost || 0;
-              allModels[name].count += 1;
+              // Distribute day tokens proportionally by cost (or equally if no cost data)
+              const dayCost = day.totalCost || 0;
+              if (dayCost > 0 && mb.cost > 0) {
+                allModels[name].tokens += Math.round(dayTokens * (mb.cost / dayCost));
+              } else {
+                allModels[name].tokens += Math.round(dayTokens / numModels);
+              }
+              allModels[name].days += 1;
             }
           }
         }
       }
 
-      // Compute total cost and pct
+      // Compute total cost and pct; rename days→count for backward compat
       const modelList = Object.values(allModels);
       const totalCost = modelList.reduce((s, m) => s + m.cost, 0);
       for (const m of modelList) {
         m.pct = totalCost > 0 ? Math.round((m.cost / totalCost) * 100) : 0;
+        m.count = m.days; // backward compat alias
+        delete m.days;
       }
       modelList.sort((a, b) => b.cost - a.cost);
 
