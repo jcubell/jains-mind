@@ -90,5 +90,27 @@
   },
   "steps": [],
   "updated_at": "2026-03-16T05:58:07Z",
-  "_tunnel_url": "https://charged-unique-architects-fusion.trycloudflare.com"
+  "_tunnel_url": "https://charged-unique-architects-fusion.trycloudflare.com",
+  "jobs": {
+    "strategy_audit": {
+      "status": "completed",
+      "completedAt": "1:43 AM",
+      "subtasks": {
+        "research": "done",
+        "cron_refresh": "done",
+        "skill_update": "done",
+        "account_audit": "done",
+        "rare_card_research": "done",
+        "wntr_check": "done"
+      }
+    },
+    "sorare_morning": {
+      "status": "scheduled",
+      "scheduledAt": "11:00 AM"
+    },
+    "sorare_evening": {
+      "status": "scheduled",
+      "scheduledAt": "5:00 PM"
+    }
+  }
 }
