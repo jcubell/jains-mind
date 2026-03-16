@@ -277,76 +277,56 @@
       flex-shrink: 0;
     }
 
-    /* ─── BOTTOM HALF — Jobs ─── */
-    .jobs-section {
-      flex: 1;
-      min-height: 0;
-      display: flex;
-      flex-direction: column;
-      padding: 0 16px 12px;
-      overflow: hidden;
-    }
-
-    .jobs-scroll {
-      flex: 1;
-      min-height: 0;
+    /* ─── BOTTOM HALF — TLDR Feed ─── */
+    .tldr-section {
+      padding: 16px;
       overflow-y: auto;
-      -webkit-overflow-scrolling: touch;
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-    }
-    .jobs-scroll::-webkit-scrollbar { display: none; }
-
-    .job-item {
-      display: flex;
-      align-items: flex-start;
-      gap: 10px;
-      padding: 10px 12px;
-      border-radius: 10px;
-      background: rgba(255,255,255,0.03);
-      border: 1px solid rgba(255,255,255,0.06);
-      transition: background 0.2s ease;
-    }
-    .job-status-icon {
-      font-size: 14px;
-      flex-shrink: 0;
-      margin-top: 1px;
-    }
-    .job-info {
       flex: 1;
-      min-width: 0;
     }
-    .job-name {
+    .tldr-header {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #888;
+      margin-bottom: 12px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+    }
+    .tldr-item {
+      padding: 10px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
       font-size: 13px;
-      font-weight: 600;
-      color: var(--text);
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
+      line-height: 1.5;
+      color: #d0d0d0;
     }
-    .job-meta {
-      font-family: var(--mono);
-      font-size: 10px;
-      color: var(--text-muted);
-      margin-top: 2px;
+    .tldr-item:last-child { border-bottom: none; }
+    .tldr-tag {
+      display: inline-block;
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 2px 6px;
+      border-radius: 3px;
+      margin-right: 7px;
+      vertical-align: middle;
     }
-    .job-schedule {
-      font-size: 10px;
-      color: var(--text-2);
-      margin-top: 1px;
-    }
+    .tag-ai       { background: rgba(32,178,170,0.2);  color: #20B2AA; }
+    .tag-macro    { background: rgba(255,152,0,0.2);   color: #FF9800; }
+    .tag-infra    { background: rgba(0,188,212,0.2);   color: #00BCD4; }
+    .tag-enterprise { background: rgba(74,158,255,0.2); color: #4A9EFF; }
+    .tag-finserv  { background: rgba(124,77,255,0.2);  color: #7C4DFF; }
+    .tag-vc       { background: rgba(179,136,255,0.2); color: #B388FF; }
+    .tag-regulation { background: rgba(255,112,67,0.2); color: #FF7043; }
 
-    .jobs-empty {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex: 1;
+    .tldr-loading, .tldr-offline {
+      font-size: 12px;
       color: var(--text-muted);
-      font-size: 13px;
       text-align: center;
-      padding: 20px;
+      padding: 20px 0;
     }
+    .tldr-offline { color: rgba(239,83,80,0.6); }
 
     /* Error / offline states */
     .error-state {
@@ -396,14 +376,11 @@
     <!-- DIVIDER -->
     <div class="divider"></div>
 
-    <!-- BOTTOM: Jobs -->
-    <div class="jobs-section">
-      <div class="section-label">
-        <span class="dot" style="background:#888; box-shadow:none; animation:none;"></span>
-        Today's Jobs
-      </div>
-      <div class="jobs-scroll" id="jobsList">
-        <div class="jobs-empty">Loading jobs…</div>
+    <!-- BOTTOM: TLDR Intelligence Feed -->
+    <div class="tldr-section">
+      <div class="tldr-header">⚡ TLDR — Signal Only</div>
+      <div class="tldr-items" id="tldrItems">
+        <div class="tldr-loading">Loading intelligence feed…</div>
       </div>
     </div>
   </div>
@@ -528,14 +505,37 @@
       pollTimer = setInterval(fetchState, 5000);
     }
 
-    function manualRefresh() {
-      var btn = document.getElementById('refreshBtn');
-      btn.classList.add('spinning');
-      fetchState().then(function() {
-        setTimeout(function() { btn.classList.remove('spinning'); }, 400);
-      }).catch(function() {
-        btn.classList.remove('spinning');
-      });
+    // ── TLDR Feed ──
+    var tldrLastFetch = 0;
+    var TLDR_INTERVAL = 3 * 60 * 60 * 1000; // 3 hours
+
+    function fetchTldr(force) {
+      var now = Date.now();
+      if (!force && tldrLastFetch && (now - tldrLastFetch) < TLDR_INTERVAL) return;
+      tldrLastFetch = now;
+      fetch(baseUrl() + '/tldr', { cache: 'no-store' })
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
+          renderTldr(data.items || []);
+        })
+        .catch(function() {
+          var el = document.getElementById('tldrItems');
+          if (el) el.innerHTML = '<div class="tldr-offline">⚡ Intelligence feed unavailable — server offline</div>';
+        });
+    }
+
+    function renderTldr(items) {
+      var el = document.getElementById('tldrItems');
+      if (!el) return;
+      if (!items || items.length === 0) {
+        el.innerHTML = '<div class="tldr-offline">No signals found</div>';
+        return;
+      }
+      var html = '';
+      for (var i = 0; i < items.length; i++) {
+        html += '<div class="tldr-item">' + items[i].html + '</div>';
+      }
+      el.innerHTML = html;
     }
 
     // ── Sleep/Wake ──
@@ -543,14 +543,15 @@
       fetch(baseUrl() + '/sleep-state', { cache: 'no-store' })
         .then(function(r) { return r.json(); })
         .then(function(d) {
-          isSleeping = d.sleeping === true || d.state === 'sleep';
+          isSleeping = d.sleeping === true || d.sleep === true;
           updateSleepBtn();
         })
-        .catch(function() { /* endpoint might not exist yet */ });
+        .catch(function() { /* endpoint might not exist */ });
     }
 
     function updateSleepBtn() {
       var btn = document.getElementById('sleepBtn');
+      if (!btn) return;
       if (isSleeping) {
         btn.textContent = '☀️ Wake';
         btn.classList.add('sleeping');
@@ -562,101 +563,39 @@
 
     function toggleSleep() {
       var endpoint = isSleeping ? '/wake' : '/sleep';
-      fetch(baseUrl() + endpoint, { method: 'POST' })
-        .then(function() {
-          isSleeping = !isSleeping;
+      fetch(baseUrl() + endpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' }
+      })
+        .then(function(r) { return r.json(); })
+        .then(function(d) {
+          isSleeping = d.sleep === true;
           updateSleepBtn();
         })
         .catch(function(err) {
-          // Try combined /sleep toggle
-          fetch(baseUrl() + '/sleep', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ toggle: true })
-          }).then(function() {
-            isSleeping = !isSleeping;
-            updateSleepBtn();
-          }).catch(function() {
-            alert('Sleep endpoint unreachable. Is server.js running?');
-          });
+          console.warn('Sleep toggle failed:', err);
         });
     }
 
-    // ── Jobs ──
-    function fetchJobs() {
-      fetch(baseUrl() + '/cron-status', { cache: 'no-store' })
-        .then(function(r) { return r.json(); })
-        .then(function(data) {
-          renderJobs(data.jobs || []);
-        })
-        .catch(function() {
-          renderJobsError('Jobs unavailable — server offline');
-        });
-    }
-
-    function renderJobs(jobs) {
-      var list = document.getElementById('jobsList');
-      if (!jobs || jobs.length === 0) {
-        list.innerHTML = '<div class="jobs-empty">No scheduled jobs found</div>';
-        return;
-      }
-
-      var html = '';
-      for (var i = 0; i < jobs.length; i++) {
-        var job = jobs[i];
-        var icon = getJobIcon(job);
-        var name = escHtml(job.name || job.id || 'Job ' + (i + 1));
-        var schedule = escHtml(job.schedule || job.cron || '');
-        var nextRun = job.nextRun ? 'Next: ' + formatTime(job.nextRun) : '';
-        var lastStatus = job.lastStatus || job.status || '';
-        var meta = [nextRun, lastStatus ? 'Last: ' + lastStatus : ''].filter(Boolean).join(' · ');
-
-        html += '<div class="job-item">';
-        html += '<span class="job-status-icon">' + icon + '</span>';
-        html += '<div class="job-info">';
-        html += '<div class="job-name">' + name + '</div>';
-        if (schedule) html += '<div class="job-schedule">' + schedule + '</div>';
-        if (meta) html += '<div class="job-meta">' + escHtml(meta) + '</div>';
-        html += '</div></div>';
-      }
-      list.innerHTML = html;
-    }
-
-    function renderJobsError(msg) {
-      document.getElementById('jobsList').innerHTML =
-        '<div class="jobs-empty" style="color:rgba(239,83,80,0.6);">⚠️ ' + escHtml(msg) + '</div>';
-    }
-
-    function getJobIcon(job) {
-      var status = (job.lastStatus || job.status || '').toLowerCase();
-      if (status === 'success' || status === 'complete' || status === 'done') return '✅';
-      if (status === 'failed' || status === 'error') return '❌';
-      if (status === 'running') return '⚙️';
-      return '🕐';
-    }
-
-    function formatTime(val) {
-      if (!val) return '';
-      try {
-        var d = new Date(val);
-        if (isNaN(d)) return val;
-        return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-      } catch(e) { return val; }
-    }
-
-    function escHtml(str) {
-      var d = document.createElement('div');
-      d.textContent = String(str);
-      return d.innerHTML;
+    function manualRefresh() {
+      // Reload this mobile PWA page and force-refresh TLDR
+      var btn = document.getElementById('refreshBtn');
+      if (btn) btn.classList.add('spinning');
+      fetchState().then(function() {
+        fetchTldr(true); // force TLDR re-fetch on manual refresh
+        if (btn) setTimeout(function() { btn.classList.remove('spinning'); }, 400);
+      }).catch(function() {
+        if (btn) btn.classList.remove('spinning');
+      });
     }
 
     // ── Init ──
     document.addEventListener('DOMContentLoaded', function() {
       startPolling();
       checkSleepState();
-      fetchJobs();
-      // Refresh jobs every 60s
-      setInterval(fetchJobs, 60000);
+      fetchTldr(true);
+      // Re-fetch TLDR every 3 hours
+      setInterval(function() { fetchTldr(false); }, TLDR_INTERVAL);
     });
   </script>
 </body>

@@ -271,17 +271,67 @@ const server = http.createServer(async (req, res) => {
   if (urlPath === '/cron-status') {
     const { exec } = require('child_process');
     exec('openclaw cron list --json', (err, stdout, stderr) => {
-      res.setHeader('Access-Control-Allow-Origin', '*');
-      if (err) return res.end(JSON.stringify({ error: 'unavailable', jobs: [] }));
+      const headers = { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' };
+      if (err) { res.writeHead(200, headers); return res.end(JSON.stringify({ error: 'unavailable', jobs: [] })); }
       try {
-        const jobs = JSON.parse(stdout);
-        res.writeHead(200, { 'Content-Type': 'application/json' });
+        const parsed = JSON.parse(stdout);
+        const jobs = Array.isArray(parsed) ? parsed : (parsed.jobs || []);
+        res.writeHead(200, headers);
         res.end(JSON.stringify({ jobs }));
       } catch(e) {
-        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.writeHead(200, headers);
         res.end(JSON.stringify({ error: 'parse_error', jobs: [], raw: stdout.slice(0, 500) }));
       }
     });
+    return;
+  }
+
+  // /tldr — extract live TLDR items from index.html (updated every ~3h by Perplexity agent)
+  if (urlPath === '/tldr') {
+    const headers = { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*', 'Cache-Control': 'no-store' };
+    try {
+      const html = fs.readFileSync(path.join(__dirname, 'index.html'), 'utf8');
+      // Extract the tldrSection block
+      const sectionMatch = html.match(/id="tldrSection"([\s\S]*?)(<\/div>\s*){2}/);
+      const sectionHtml = sectionMatch ? sectionMatch[0] : html;
+      const items = [];
+      const itemRegex = /<div class="tldr-item"[^>]*data-cat="([^"]*)"[^>]*>([\s\S]*?)<\/div>/g;
+      let m;
+      while ((m = itemRegex.exec(sectionHtml)) !== null) {
+        items.push({ cat: m[1], html: m[2].trim() });
+      }
+      res.writeHead(200, headers);
+      res.end(JSON.stringify({ items, ts: Date.now() }));
+    } catch(e) {
+      res.writeHead(500, headers);
+      res.end(JSON.stringify({ error: e.message, items: [] }));
+    }
+    return;
+  }
+
+  // /sleep — toggle or set sleep mode (POST)
+  if (req.method === 'POST' && urlPath === '/sleep') {
+    global.sleepMode = true;
+    const headers = { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' };
+    res.writeHead(200, headers);
+    res.end(JSON.stringify({ ok: true, sleep: true }));
+    return;
+  }
+
+  // /wake — clear sleep mode (POST)
+  if (req.method === 'POST' && urlPath === '/wake') {
+    global.sleepMode = false;
+    const headers = { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' };
+    res.writeHead(200, headers);
+    res.end(JSON.stringify({ ok: true, sleep: false }));
+    return;
+  }
+
+  // /sleep-state — GET current sleep state
+  if (urlPath === '/sleep-state') {
+    const headers = { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*', 'Cache-Control': 'no-store' };
+    res.writeHead(200, headers);
+    res.end(JSON.stringify({ sleep: global.sleepMode === true, sleeping: global.sleepMode === true }));
     return;
   }
 
