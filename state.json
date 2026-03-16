@@ -2,9 +2,9 @@
   "objective": "",
   "status": "idle",
   "brain": {
-    "mode": "idle",
-    "focus": "Done: TLDR read aloud",
-    "model": "openrouter/deepseek/deepseek-chat-v3-0324",
+    "mode": "working",
+    "focus": "Reading message...",
+    "model": "claude-sonnet-4-6",
     "thoughts": [
       {
         "time": "6:35 PM ET",
@@ -85,11 +85,11 @@
       "model": "claude-sonnet-4-6",
       "status": "running"
     },
-    "currentModel": "openrouter/deepseek/deepseek-chat-v3-0324",
+    "currentModel": "claude-sonnet-4-6",
     "subagents": []
   },
   "steps": [],
-  "updated_at": "2026-03-16T22:35:07Z",
+  "updated_at": "2026-03-16T22:35:22Z",
   "_tunnel_url": "https://charged-unique-architects-fusion.trycloudflare.com",
   "jobs": {
     "strategy_audit": {
