@@ -2,8 +2,8 @@
   "objective": "",
   "status": "idle",
   "brain": {
-    "mode": "idle",
-    "focus": "Done \u2014 FantasyBaseballAgent still running (10m)",
+    "mode": "working",
+    "focus": "Reading heartbeat...",
     "model": "claude-sonnet-4-6",
     "thoughts": [
       {
@@ -90,7 +90,7 @@
     "subagents": []
   },
   "steps": [],
-  "updated_at": "2026-03-16T23:06:30Z",
+  "updated_at": "2026-03-16T23:12:28Z",
   "_tunnel_url": "https://charged-unique-architects-fusion.trycloudflare.com",
   "jobs": {
     "strategy_audit": {
