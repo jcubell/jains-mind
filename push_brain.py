@@ -93,7 +93,11 @@ def push(focus, thought_text=None, thought_type="action", mode="working",
 
     if thought_text:
         thoughts = state["brain"].get("thoughts", [])
-        thoughts.insert(0, {"time": now_et(), "type": thought_type, "text": thought_text})
+        entry = {"time": now_et(), "type": thought_type, "text": thought_text}
+        # Store focus as title so dashboard can render step headline + detail
+        if focus:
+            entry["title"] = focus
+        thoughts.insert(0, entry)
         state["brain"]["thoughts"] = thoughts[:12]
 
     state["updated_at"] = datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
@@ -218,7 +222,11 @@ if __name__ == "__main__":
             et = timezone(timedelta(hours=-4))
             t_str = datetime.datetime.now(et).strftime("%-I:%M %p ET")
             thoughts = state["brain"].get("thoughts", [])
-            thoughts.insert(0, {"time": t_str, "type": thought_type, "text": thought})
+            entry = {"time": t_str, "type": thought_type, "text": thought}
+            # Store focus as title so dashboard can render step headline + detail
+            if focus:
+                entry["title"] = focus
+            thoughts.insert(0, entry)
             state["brain"]["thoughts"] = thoughts[:12]
 
         state["updated_at"] = datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")

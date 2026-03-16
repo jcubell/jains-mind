@@ -315,17 +315,39 @@
   .brain-hero-stream::-webkit-scrollbar { width: 2px; }
   .brain-hero-stream::-webkit-scrollbar-thumb { background: var(--m-glow); }
   .thought-row {
-    display: flex; align-items: baseline; gap: 8px;
-    padding: 5px 0;
+    display: flex; align-items: flex-start; gap: 8px;
+    padding: 6px 0;
     border-bottom: 1px solid rgba(255,255,255,0.04);
     font-family: var(--mono);
     font-size: 11px; line-height: 1.5;
   }
   .thought-row:last-child { border-bottom: none; }
-  .thought-row .t-time { color: var(--m-border); white-space: nowrap; flex-shrink: 0; min-width: 60px; }
-  .thought-row .t-icon { color: var(--m-color); flex-shrink: 0; }
+  .thought-row .t-time { color: var(--m-border); white-space: nowrap; flex-shrink: 0; min-width: 60px; margin-top: 1px; }
+  .thought-row .t-icon { color: var(--m-color); flex-shrink: 0; margin-top: 1px; }
+  .thought-row .t-body { display: flex; flex-direction: column; gap: 2px; flex: 1; min-width: 0; }
   .thought-row .t-text { color: var(--text-2); }
   .thought-row.new .t-text { color: var(--text); }
+  /* Title (focus headline) shown above detail */
+  .thought-row .t-title {
+    font-family: var(--font);
+    font-size: 11px; font-weight: 600;
+    color: var(--m-color);
+    opacity: 0.85;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .thought-row.new .t-title { opacity: 1; }
+  /* Detail text — slightly muted, can wrap */
+  .thought-row .t-detail {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: rgba(255,255,255,0.35);
+    line-height: 1.4;
+    padding-left: 4px;
+    border-left: 1px solid var(--m-glow);
+    margin-top: 1px;
+    word-break: break-word;
+  }
+  .thought-row.new .t-detail { color: rgba(255,255,255,0.55); }
 
   /* Model roster — inline with Brain Feed title, single line */
   .model-roster {
@@ -1787,10 +1809,21 @@
         for (var i = 0; i < data.brain.thoughts.length; i++) {
           var t = data.brain.thoughts[i];
           var icon = thoughtIcons[t.type] || '·';
+          var bodyHtml = '';
+          if (t.title && t.text) {
+            // Expanded view: title (focus) as headline + detail as sub-text
+            bodyHtml = '<div class="t-body">'
+              + '<span class="t-title">' + escHtml(t.title) + '</span>'
+              + '<span class="t-detail">' + escHtml(t.text) + '</span>'
+              + '</div>';
+          } else {
+            // Legacy: single-line text
+            bodyHtml = '<div class="t-body"><span class="t-text">' + escHtml(t.text || t.title || '') + '</span></div>';
+          }
           html += '<div class="thought-row' + (i === 0 ? ' new' : '') + '">'
             + '<span class="t-time">' + escHtml(t.time || '') + '</span>'
             + '<span class="t-icon">' + icon + '</span>'
-            + '<span class="t-text">' + escHtml(t.text || '') + '</span>'
+            + bodyHtml
             + '</div>';
         }
         stream.innerHTML = html || '<div style="color:var(--text-muted);font-family:var(--mono);font-size:11px;padding:8px 0;">No recent activity</div>';
