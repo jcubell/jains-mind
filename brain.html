@@ -943,5 +943,19 @@ html, body {
 
 })();
 </script>
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function() {
+    navigator.serviceWorker.register('/jains-mind/sw.js', { scope: '/jains-mind/' })
+      .then(function(reg) {
+        // Check for updates every time the page loads
+        reg.update();
+      })
+      .catch(function(err) {
+        console.warn('SW registration failed:', err);
+      });
+  });
+}
+</script>
 </body>
 </html>

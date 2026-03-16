@@ -10,7 +10,7 @@ On every brain push:
 This means tunnel URL in GitHub Pages stays current. If tunnel restarts,
 the next push_brain call automatically fixes the dashboard.
 """
-import sys, json, base64, urllib.request, re, time
+import sys, json, base64, urllib.request, re, time, os, datetime
 
 REPO = "jcubell/jains-mind"
 STATE_BRANCH = "master"   # state.json lives on master — GitHub Pages serves from here
@@ -116,6 +116,41 @@ def push_to_github(state_file, tunnel_url=None):
                 raise
 
         github_put_branch(TOKEN, STATE_FILE_PATH, state_sha, state_content, "brain: state update", STATE_BRANCH)
+
+        # ── 1b. Bump sw.js cache version ────────────────────────────────────
+        # Read local sw.js, replace __BUILDTIME__ placeholder, push to GitHub,
+        # then restore the placeholder so the next push can bump it again.
+        sw_versioned = None
+        buildtime = None
+        DASHBOARD_DIR = os.path.dirname(os.path.abspath(__file__))
+        sw_template_path = os.path.join(DASHBOARD_DIR, 'sw.js')
+        if os.path.exists(sw_template_path):
+            try:
+                with open(sw_template_path, 'r') as f:
+                    sw_content = f.read()
+                if '__BUILDTIME__' in sw_content:
+                    buildtime = datetime.datetime.utcnow().strftime('%Y%m%d%H%M%S')
+                    sw_versioned = sw_content.replace('__BUILDTIME__', buildtime)
+                    # Write versioned sw.js locally (will be pushed below)
+                    with open(sw_template_path, 'w') as f:
+                        f.write(sw_versioned)
+                    # Push sw.js to master
+                    try:
+                        _, sw_sha = github_get(TOKEN, 'sw.js', branch=STATE_BRANCH)
+                    except Exception:
+                        sw_sha = None
+                    github_put_branch(TOKEN, 'sw.js', sw_sha, sw_versioned,
+                                      f"chore: bump SW cache version {buildtime}", STATE_BRANCH)
+                    # Restore placeholder in local file so next push can bump again
+                    sw_restored = sw_versioned.replace(buildtime, '__BUILDTIME__')
+                    with open(sw_template_path, 'w') as f:
+                        f.write(sw_restored)
+            except Exception as e:
+                try:
+                    with open("/tmp/push_github_error.log", "a") as f:
+                        f.write(f"sw.js bump failed: {e}\n")
+                except Exception:
+                    pass
 
         # ── 2. Patch index.html tunnel URL on main (Vercel production branch) ─
         if tunnel:
