@@ -3,9 +3,15 @@
   "status": "idle",
   "brain": {
     "mode": "working",
-    "focus": "Starting: ESPN mock draft automation",
+    "focus": "Waiting for sub-agent: ESPN mock draft running",
     "model": "claude-sonnet-4-6",
     "thoughts": [
+      {
+        "time": "2:54 PM ET",
+        "type": "action",
+        "text": "Sonnet agent drafting all 26 rounds autonomously",
+        "title": "Waiting for sub-agent: ESPN mock draft running"
+      },
       {
         "time": "1:53 PM ET",
         "type": "complete",
@@ -71,17 +77,11 @@
         "type": "complete",
         "text": "API live, content extraction working, Wingman connected, screenshot captured",
         "title": "Done \u2014 Tandem Browser fully explored + working"
-      },
-      {
-        "time": "12:17 PM ET",
-        "type": "complete",
-        "text": "Cost check <4h ago, quiet",
-        "title": "Done \u2014 heartbeat OK"
       }
     ],
     "subagent": {
-      "name": "sw-cache-bust",
-      "task": "Service worker PWA cache bust",
+      "name": "ESPN Draft Runner",
+      "task": "Run all 26 rounds of practice draft",
       "model": "claude-sonnet-4-6",
       "status": "running"
     },
@@ -89,7 +89,7 @@
     "subagents": []
   },
   "steps": [],
-  "updated_at": "2026-03-16T18:54:00Z",
+  "updated_at": "2026-03-16T18:54:03Z",
   "_tunnel_url": "https://charged-unique-architects-fusion.trycloudflare.com",
   "jobs": {
     "strategy_audit": {
