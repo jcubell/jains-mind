@@ -3,9 +3,15 @@
   "status": "idle",
   "brain": {
     "mode": "working",
-    "focus": "Fantasy baseball draft prep \u2014 research + Tandem",
+    "focus": "Waiting for ESPN league ID from Josh",
     "model": "claude-sonnet-4-6",
     "thoughts": [
+      {
+        "time": "3:15 PM ET",
+        "type": "action",
+        "text": "Need league ID to pull scoring settings",
+        "title": "Waiting for ESPN league ID from Josh"
+      },
       {
         "time": "3:15 PM ET",
         "type": "action",
@@ -71,12 +77,6 @@
         "type": "complete",
         "text": "Gmail/sidebar partitions need fresh login; X already loaded; ESPN/GitHub need direct login",
         "title": "Done \u2014 Tandem account audit complete"
-      },
-      {
-        "time": "12:30 PM ET",
-        "type": "complete",
-        "text": "hooks/wake working, Tandem config updated with secret",
-        "title": "Done \u2014 Tandem webhook wired up to OpenClaw"
       }
     ],
     "subagent": {
@@ -89,7 +89,7 @@
     "subagents": []
   },
   "steps": [],
-  "updated_at": "2026-03-16T19:15:12Z",
+  "updated_at": "2026-03-16T19:15:21Z",
   "_tunnel_url": "https://charged-unique-architects-fusion.trycloudflare.com",
   "jobs": {
     "strategy_audit": {
