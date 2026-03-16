@@ -7,7 +7,7 @@ const PORT = 3000;
 const HTML_FILE = path.join(__dirname, 'widget.html');
 const STATE_FILE = path.join(__dirname, 'state.json');
 
-const server = http.createServer((req, res) => {
+const server = http.createServer(async (req, res) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
@@ -120,49 +120,89 @@ const server = http.createServer((req, res) => {
     return;
   }
 
-  // /or-cost-summary — aggregates codexbar cost data from codex + claude providers
+  // /or-cost-summary — primary: OpenRouter API key stats; fallback: codexbar
   if (urlPath === '/or-cost-summary') {
     try {
       const allModels = {};
-      let sessionCost = 0;  // today's cost only
-      let dailyCost = 0;    // last30Days aggregate (all sessions)
+      let sessionCost = 0;
+      let dailyCost = 0;
+      let weeklyCost = 0;
+      let monthlyCost = 0;
       let totalTokens = 0;
+      let orSource = 'codexbar';
 
+      // === PRIMARY: OpenRouter /auth/key endpoint ===
+      // Returns usage (total), usage_daily, usage_weekly, usage_monthly
+      // Also byok_usage* for BYOK (bring-your-own-key) spend routed through OR
+      let orKeyData = null;
+      try {
+        const fs2 = require('fs');
+        const orKey = fs2.readFileSync('/Users/jc_agent/.secrets/openrouter_api_key.txt', 'utf8').trim();
+        const https = require('https');
+        orKeyData = await new Promise((resolve, reject) => {
+          const options = {
+            hostname: 'openrouter.ai',
+            path: '/api/v1/auth/key',
+            method: 'GET',
+            headers: { 'Authorization': 'Bearer ' + orKey }
+          };
+          const req2 = https.request(options, (r) => {
+            let body = '';
+            r.on('data', d => body += d);
+            r.on('end', () => {
+              try { resolve(JSON.parse(body)); } catch(e) { reject(e); }
+            });
+          });
+          req2.on('error', reject);
+          req2.setTimeout(5000, () => { req2.destroy(); reject(new Error('timeout')); });
+          req2.end();
+        });
+      } catch(e) {
+        orKeyData = null; // fall through to codexbar
+      }
+
+      if (orKeyData && orKeyData.data) {
+        const d = orKeyData.data;
+        // OR credits usage (billed to OR account)
+        const orDaily   = d.usage_daily   || 0;
+        const orWeekly  = d.usage_weekly  || 0;
+        const orMonthly = d.usage_monthly || 0;
+        // BYOK usage (billed to user's own API keys, routed via OR)
+        const byokDaily   = d.byok_usage_daily   || 0;
+        const byokWeekly  = d.byok_usage_weekly  || 0;
+        const byokMonthly = d.byok_usage_monthly || 0;
+        // Total = OR credits + BYOK
+        dailyCost   = orDaily   + byokDaily;
+        weeklyCost  = orWeekly  + byokWeekly;
+        monthlyCost = orMonthly + byokMonthly;
+        // Session cost: use daily total (best proxy for "today's session")
+        sessionCost = dailyCost;
+        orSource = 'openrouter';
+      }
+
+      // === FALLBACK / MODEL BREAKDOWN: codexbar ===
       const codexbarBin = '/opt/homebrew/bin/codexbar';
       for (const provider of ['codex', 'claude']) {
         let raw;
         try {
           raw = execSync(`${codexbarBin} cost --format json --provider ${provider}`, { timeout: 8000 }).toString();
-        } catch (e) {
-          continue; // provider not available, skip
-        }
+        } catch (e) { continue; }
         let parsed;
         try { parsed = JSON.parse(raw); } catch(e) { continue; }
         const entries = Array.isArray(parsed) ? parsed : [parsed];
         for (const entry of entries) {
-          // Daily (aggregate) cost = last30DaysCostUSD — the full spend across all sessions
-          if (entry.last30DaysCostUSD) dailyCost += entry.last30DaysCostUSD;
-
-          const daily = entry.daily || [];
-
-          // Session cost = today's daily entries only (distinct from all-time aggregate)
-          // Fallback: if no today entry found, use sessionCostUSD from codexbar (current session)
-          const todayStr = new Date().toLocaleDateString('en-CA'); // YYYY-MM-DD in local time
-          let foundToday = false;
-          for (const day of daily) {
-            if (day.date === todayStr) {
-              sessionCost += day.totalCost || 0;
-              totalTokens += day.totalTokens || 0;
-              foundToday = true;
+          // If OR API failed, fall back to codexbar for cost totals
+          if (orSource === 'codexbar') {
+            if (entry.last30DaysCostUSD) dailyCost += entry.last30DaysCostUSD;
+            const todayStr = new Date().toLocaleDateString('en-CA');
+            let foundToday = false;
+            for (const day of (entry.daily || [])) {
+              if (day.date === todayStr) { sessionCost += day.totalCost || 0; totalTokens += day.totalTokens || 0; foundToday = true; }
             }
+            if (!foundToday && entry.sessionCostUSD) sessionCost += entry.sessionCostUSD;
           }
-          // Fallback: codexbar's sessionCostUSD tracks the running session cost directly
-          if (!foundToday && entry.sessionCostUSD) {
-            sessionCost += entry.sessionCostUSD;
-          }
-
-          // Per-model breakdown from all daily entries (for model breakdown widget)
-          for (const day of daily) {
+          // Always use codexbar for per-model breakdown
+          for (const day of (entry.daily || [])) {
             const breakdowns = day.modelBreakdowns || [];
             const dayTokens = day.totalTokens || 0;
             const numModels = breakdowns.length || 1;
@@ -171,7 +211,6 @@ const server = http.createServer((req, res) => {
               if (!name) continue;
               if (!allModels[name]) allModels[name] = { model: name, cost: 0, tokens: 0, days: 0 };
               allModels[name].cost += mb.cost || 0;
-              // Distribute day tokens proportionally by cost (or equally if no cost data)
               const dayCost = day.totalCost || 0;
               if (dayCost > 0 && mb.cost > 0) {
                 allModels[name].tokens += Math.round(dayTokens * (mb.cost / dayCost));
@@ -184,20 +223,21 @@ const server = http.createServer((req, res) => {
         }
       }
 
-      // Compute total cost and pct; rename days→count for backward compat
+      // Compute total cost and pct for model breakdown
       const modelList = Object.values(allModels);
       const totalCost = modelList.reduce((s, m) => s + m.cost, 0);
       for (const m of modelList) {
         m.pct = totalCost > 0 ? Math.round((m.cost / totalCost) * 100) : 0;
-        m.count = m.days; // backward compat alias
+        m.count = m.days;
         delete m.days;
       }
       modelList.sort((a, b) => b.cost - a.cost);
 
       const result = {
         session: { est_cost: sessionCost, pushes: 0 },
-        daily: { est_cost: dailyCost, actual_or: null, source: 'codexbar' },
-        monthly: { actual_or: null },
+        daily:   { est_cost: dailyCost,   actual_or: orSource === 'openrouter' ? dailyCost   : null, source: orSource },
+        monthly: { actual_or: orSource === 'openrouter' ? monthlyCost : null },
+        weekly:  { actual_or: orSource === 'openrouter' ? weeklyCost  : null },
         models: modelList,
         tokens: totalTokens
       };
