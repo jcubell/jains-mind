@@ -56,6 +56,31 @@ const server = http.createServer((req, res) => {
     return;
   }
 
+  // Normalize model names to canonical keys (dedupes variant suffixes like -4-5 vs -4-6)
+  function normalizeModelName(name) {
+    if (!name) return name;
+    const n = name.toLowerCase().trim();
+    // Claude Sonnet variants → canonical claude-sonnet-4-6
+    if (n.includes('claude') && n.includes('sonnet')) return 'claude-sonnet-4-6';
+    // Claude Opus variants → canonical claude-opus
+    if (n.includes('claude') && n.includes('opus')) return 'claude-opus';
+    // Claude Haiku variants → canonical claude-haiku
+    if (n.includes('claude') && n.includes('haiku')) return 'claude-haiku';
+    // Grok variants → canonical grok-4
+    if (n.includes('grok')) return 'grok-4';
+    // GPT-4o variants → canonical gpt-4o
+    if (n.startsWith('gpt-4o')) return 'gpt-4o';
+    // GPT-5 variants → canonical gpt-5
+    if (n.startsWith('gpt-5')) return 'gpt-5';
+    // Gemini flash variants → canonical gemini-2.0-flash
+    if (n.includes('gemini') && n.includes('flash')) return 'gemini-2.0-flash';
+    // Gemini pro variants → canonical gemini-2.5-pro
+    if (n.includes('gemini') && (n.includes('pro') || n.includes('2.5'))) return 'gemini-2.5-pro';
+    // DeepSeek variants → canonical deepseek-chat-v3-0324
+    if (n.includes('deepseek')) return 'deepseek-chat-v3-0324';
+    return name; // fallback: keep as-is
+  }
+
   // /or-model-usage — per-model usage counts from codexbar (for model rotation widget)
   if (urlPath === '/or-model-usage') {
     try {
@@ -69,7 +94,7 @@ const server = http.createServer((req, res) => {
         for (const entry of entries) {
           for (const day of (entry.daily || [])) {
             for (const mb of (day.modelBreakdowns || [])) {
-              const name = (mb.modelName || '').trim();
+              const name = normalizeModelName((mb.modelName || '').trim());
               if (!name) continue;
               if (!allModels[name]) allModels[name] = { model: name, count: 0 };
               allModels[name].count += 1;
@@ -119,7 +144,7 @@ const server = http.createServer((req, res) => {
           for (const day of daily) {
             const breakdowns = day.modelBreakdowns || [];
             for (const mb of breakdowns) {
-              const name = (mb.modelName || '').trim();
+              const name = normalizeModelName((mb.modelName || '').trim());
               if (!name) continue;
               if (!allModels[name]) allModels[name] = { model: name, cost: 0, count: 0 };
               allModels[name].cost += mb.cost || 0;
