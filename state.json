@@ -111,6 +111,16 @@
     "sorare_evening": {
       "status": "scheduled",
       "scheduledAt": "5:00 PM"
+    },
+    "intelligence_feed": {
+      "status": "completed",
+      "completedAt": "6:33 PM",
+      "run": 5,
+      "commit": "f73acf5",
+      "categories_updated": 7,
+      "tldr_items": 7,
+      "markets_refreshed": true,
+      "fear_greed": 23
     }
   }
 }
