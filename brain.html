@@ -584,7 +584,7 @@
 
     // ── Jobs ──
     function fetchJobs() {
-      fetch(LOCAL + '/cron-status', { cache: 'no-store' })
+      fetch(baseUrl() + '/cron-status', { cache: 'no-store' })
         .then(function(r) { return r.json(); })
         .then(function(data) {
           renderJobs(data.jobs || []);
