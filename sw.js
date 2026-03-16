@@ -1,6 +1,6 @@
 // J.AI.N Brain PWA — Service Worker
 // Version is auto-bumped by push_github.py on every deploy
-var CACHE_VERSION = 'jain-brain-v__BUILDTIME__';
+var CACHE_VERSION = 'jain-brain-v20260316053915';
 var CACHE_NAME = CACHE_VERSION;
 
 var PRECACHE_URLS = [
