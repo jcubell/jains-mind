@@ -2,8 +2,8 @@
   "objective": "",
   "status": "idle",
   "brain": {
-    "mode": "idle",
-    "focus": "Done \u2014 heartbeat OK",
+    "mode": "working",
+    "focus": "Reading heartbeat...",
     "model": "claude-sonnet-4-6",
     "thoughts": [
       {
@@ -89,7 +89,7 @@
     "subagents": []
   },
   "steps": [],
-  "updated_at": "2026-03-16T20:33:03Z",
+  "updated_at": "2026-03-16T21:03:02Z",
   "_tunnel_url": "https://charged-unique-architects-fusion.trycloudflare.com",
   "jobs": {
     "strategy_audit": {
@@ -111,20 +111,6 @@
     "sorare_evening": {
       "status": "scheduled",
       "scheduledAt": "5:00 PM"
-    },
-    "feed_refresh_run4": {
-      "status": "completed",
-      "completedAt": "4:28 PM EDT",
-      "commit": "9bdddee",
-      "subtasks": {
-        "research": "done",
-        "market_data": "done",
-        "fear_greed": "done",
-        "ticker_bar": "done",
-        "tldr_section": "done",
-        "feed_sections": "done",
-        "git_push": "done"
-      }
     }
   }
 }
