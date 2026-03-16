@@ -409,7 +409,12 @@
   </div>
 
   <script>
+    // Tunnel URL — updated dynamically from state._tunnel_url each poll
+    // Falls back to localhost:3000 when accessed on the same machine
+    var TUNNEL = 'https://charged-unique-architects-fusion.trycloudflare.com';
     var LOCAL = 'http://localhost:3000';
+    // Use tunnel as primary; fetchState will update TUNNEL from state._tunnel_url
+    function baseUrl() { return TUNNEL; }
     var isSleeping = false;
     var lastState = null;
     var pollTimer = null;
@@ -475,17 +480,21 @@
 
     // ── State polling ──
     function fetchState() {
-      return fetch(LOCAL + '/state.json', { cache: 'no-store' })
+      return fetch(baseUrl() + '/state.json', { cache: 'no-store' })
         .then(function(r) { return r.json(); })
         .then(function(data) {
+          // Self-update tunnel URL if state provides a newer one
+          if (data._tunnel_url && data._tunnel_url !== TUNNEL) {
+            TUNNEL = data._tunnel_url;
+          }
           renderState(data);
           return data;
         })
         .catch(function(err) {
           var focus = document.getElementById('brainFocus');
-          if (focus) focus.textContent = 'Offline — server unreachable';
+          if (focus) focus.textContent = 'Offline — tunnel unreachable';
           var detail = document.getElementById('brainDetail');
-          if (detail) detail.textContent = 'Check that server.js is running on port 3000';
+          if (detail) detail.textContent = 'Check that the Cloudflare tunnel is running';
         });
     }
 
@@ -531,7 +540,7 @@
 
     // ── Sleep/Wake ──
     function checkSleepState() {
-      fetch(LOCAL + '/sleep-state', { cache: 'no-store' })
+      fetch(baseUrl() + '/sleep-state', { cache: 'no-store' })
         .then(function(r) { return r.json(); })
         .then(function(d) {
           isSleeping = d.sleeping === true || d.state === 'sleep';
@@ -553,14 +562,14 @@
 
     function toggleSleep() {
       var endpoint = isSleeping ? '/wake' : '/sleep';
-      fetch(LOCAL + endpoint, { method: 'POST' })
+      fetch(baseUrl() + endpoint, { method: 'POST' })
         .then(function() {
           isSleeping = !isSleeping;
           updateSleepBtn();
         })
         .catch(function(err) {
           // Try combined /sleep toggle
-          fetch(LOCAL + '/sleep', {
+          fetch(baseUrl() + '/sleep', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ toggle: true })
