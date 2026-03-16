@@ -2570,15 +2570,12 @@
     {
       label: 'INTELLIGENCE FEED',
       jobs: [
-        { name: 'Morning Brief', time: '7:00 AM', scheduleHour: 7, scheduleMinute: 0, desc: 'AI news digest, market movers, overnight developments' },
-        { name: 'Afternoon Brief', time: '1:00 PM', scheduleHour: 13, scheduleMinute: 0, desc: 'Midday market update, breaking AI announcements' },
-        { name: 'Evening Brief', time: '8:00 PM', scheduleHour: 20, scheduleMinute: 0, desc: 'EOD wrap, after-hours moves, overnight preview' }
-      ]
-    },
-    {
-      label: 'MONITORING',
-      jobs: [
-        { name: 'Market Intel Scan', time: 'Every 3h', scheduleHour: -1, recurring: true, desc: 'Full feed refresh: TLDR + 7 sections (AI, Infra, Enterprise, FinServ, VC, Regulation, Macro)' }
+        { name: 'Feed Refresh', time: '6:30 AM', scheduleHour: 6, scheduleMinute: 30, desc: 'TLDR + 7 sections: AI, Infra, Enterprise, FinServ, VC, Regulation, Macro' },
+        { name: 'Feed Refresh', time: '9:30 AM', scheduleHour: 9, scheduleMinute: 30, desc: 'TLDR + 7 sections — pre-market update' },
+        { name: 'Feed Refresh', time: '12:30 PM', scheduleHour: 12, scheduleMinute: 30, desc: 'TLDR + 7 sections — midday update' },
+        { name: 'Feed Refresh', time: '3:30 PM', scheduleHour: 15, scheduleMinute: 30, desc: 'TLDR + 7 sections — afternoon update' },
+        { name: 'Feed Refresh', time: '6:30 PM', scheduleHour: 18, scheduleMinute: 30, desc: 'TLDR + 7 sections — post-market update' },
+        { name: 'Feed Refresh', time: '9:30 PM', scheduleHour: 21, scheduleMinute: 30, desc: 'TLDR + 7 sections — overnight prep' }
       ]
     }
   ];
