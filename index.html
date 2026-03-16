@@ -921,6 +921,57 @@
     border-bottom: 1px solid var(--border-light);
   }
 
+  /* ── TLDR Section ── */
+  .tldr-section {
+    margin-bottom: 20px;
+    padding: 12px 14px;
+    background: rgba(32,178,170,0.04);
+    border: 1px solid rgba(32,178,170,0.12);
+    border-radius: 4px;
+  }
+  .tldr-header {
+    font-family: var(--font);
+    font-size: 10px; font-weight: 700;
+    letter-spacing: 0.18em; text-transform: uppercase;
+    color: #20B2AA;
+    margin-bottom: 10px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid rgba(32,178,170,0.15);
+    display: flex; align-items: center; gap: 6px;
+  }
+  .tldr-header::before {
+    content: '◆';
+    font-size: 7px;
+    color: #20B2AA;
+  }
+  .tldr-item {
+    font-family: var(--mono);
+    font-size: 11.5px; line-height: 1.6;
+    color: #e0e0e0;
+    padding: 4px 0 4px 10px;
+    border-left: 2px solid transparent;
+    margin-bottom: 2px;
+  }
+  .tldr-item:last-child { margin-bottom: 0; }
+  .tldr-tag {
+    display: inline-block;
+    font-family: var(--font);
+    font-size: 8px; font-weight: 700;
+    letter-spacing: 0.1em; text-transform: uppercase;
+    padding: 1px 5px;
+    border-radius: 2px;
+    margin-right: 6px;
+    vertical-align: middle;
+  }
+  .tldr-tag.tag-ai { background: rgba(32,178,170,0.15); color: #20B2AA; }
+  .tldr-tag.tag-enterprise { background: rgba(74,158,255,0.15); color: #4A9EFF; }
+  .tldr-tag.tag-vc { background: rgba(179,136,255,0.15); color: #B388FF; }
+  .tldr-tag.tag-macro { background: rgba(255,152,0,0.15); color: #FF9800; }
+  .tldr-item[data-cat="ai"] { border-left-color: rgba(32,178,170,0.4); }
+  .tldr-item[data-cat="enterprise"] { border-left-color: rgba(74,158,255,0.4); }
+  .tldr-item[data-cat="vc"] { border-left-color: rgba(179,136,255,0.4); }
+  .tldr-item[data-cat="macro"] { border-left-color: rgba(255,152,0,0.4); }
+
   /* Refresh flash */
   .refresh-flash {
     position: fixed; inset: 0; z-index: 99998;
@@ -1445,8 +1496,19 @@
 
         <div class="feed-date" id="feedDate">SUNDAY, MARCH 15, 2026</div>
 
+        <!-- TLDR: Pure signal across all categories -->
+        <div class="tldr-section" id="tldrSection">
+          <div class="tldr-header">TLDR — Signal Only</div>
+          <div class="tldr-item" data-cat="macro"><span class="tldr-tag tag-macro">Macro</span>U.S. struck Iran's Kharg Island oil terminal; Strait of Hormuz partially closed. WTI crude at $99/bbl (+57% in a month). IEA released 400M barrels from emergency reserves. This is wartime pricing.</div>
+          <div class="tldr-item" data-cat="ai"><span class="tldr-tag tag-ai">AI</span>NVIDIA GTC 2026 keynote Monday 11am PT. Jensen Huang teasing "world-surprising" chip reveal, Vera Rubin Ultra, N1X AI PC Superchip. Single biggest catalyst for $NVDA this quarter.</div>
+          <div class="tldr-item" data-cat="ai"><span class="tldr-tag tag-ai">AI</span>Anthropic designated "supply chain risk" by DoD after refusing unrestricted Pentagon access. Landmark legal battle underway. 30+ OpenAI/DeepMind employees filed amicus brief in support.</div>
+          <div class="tldr-item" data-cat="enterprise"><span class="tldr-tag tag-enterprise">Enterprise</span>Microsoft shipped Copilot Cowork (Wave 3) with Anthropic's Claude. New M365 E7 at $99/user/mo launches May 1. Atlassian cut 1,600 jobs, pivoting to AI-first.</div>
+          <div class="tldr-item" data-cat="vc"><span class="tldr-tag tag-vc">VC/M&amp;A</span>OpenAI closed $110B round (Amazon $50B, NVIDIA $30B, SoftBank $30B). SpaceX absorbed xAI at $58B. Anthropic raised $30B at $380B valuation. Capital concentration is unprecedented.</div>
+          <div class="tldr-item" data-cat="macro"><span class="tldr-tag tag-macro">Macro</span>S&amp;P 500 hit 2026 low. Fed holds 3.5-3.75% this week (FOMC March 17-18). Fear &amp; Greed at 20 (Extreme Fear). China halted U.S. exports — down 26% nominal. Risk-off across the board.</div>
+        </div>
+
         <!-- 1. AI PROVIDERS -->
-        <div class="feed-section">
+        <div class="feed-section" data-cat="ai">
           <div class="feed-section-header">AI Providers</div>
           <div class="feed-item signal-fire">
             <span class="signal-tag fire">Signal</span>
@@ -1479,7 +1541,7 @@
         </div>
 
         <!-- 2. ENTERPRISE AI -->
-        <div class="feed-section">
+        <div class="feed-section" data-cat="enterprise">
           <div class="feed-section-header">Enterprise AI</div>
           <div class="feed-item signal-fire">
             <span class="signal-tag fire">Signal</span>
@@ -1504,7 +1566,7 @@
         </div>
 
         <!-- 3. VC / PE / M&A -->
-        <div class="feed-section">
+        <div class="feed-section" data-cat="vc">
           <div class="feed-section-header">VC / PE / M&amp;A</div>
           <div class="feed-item signal-fire">
             <span class="signal-tag fire">Signal</span>
@@ -1529,7 +1591,7 @@
         </div>
 
         <!-- 4. GEOPOLITICS & MACRO -->
-        <div class="feed-section">
+        <div class="feed-section" data-cat="macro">
           <div class="feed-section-header">Geopolitics &amp; Macro</div>
           <div class="feed-item signal-fire">
             <span class="signal-tag fire">Signal</span>
