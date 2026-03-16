@@ -3,7 +3,7 @@
   "status": "idle",
   "brain": {
     "mode": "working",
-    "focus": "Draft detected: Round 5, pick 55 on clock. Team Cubell picks at 70/75. Disabling autopick.",
+    "focus": "Round 7 in progress. Team Cubell picks 94, 99 next. Roster: 7/26 - monitoring for our turn.",
     "model": "claude-sonnet-4-6",
     "thoughts": [
       {
@@ -89,7 +89,7 @@
     "subagents": []
   },
   "steps": [],
-  "updated_at": "2026-03-16T18:54:08Z",
+  "updated_at": "2026-03-16T18:55:15Z",
   "_tunnel_url": "https://charged-unique-architects-fusion.trycloudflare.com",
   "jobs": {
     "strategy_audit": {
