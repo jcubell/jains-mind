@@ -911,37 +911,20 @@ html, body {
     if (tunnelUrl) fetch(tunnelUrl + '/wake', { method: 'POST' }).catch(function(){});
   }
 
-  // Sleep button — POST to tunnel + enter local night mode
+  // Sleep button — POST to tunnel only (desktop sleeps, PWA stays awake)
   var sleepBtn = document.getElementById('sleepBtn');
   if (sleepBtn) {
     sleepBtn.addEventListener('click', function(e) {
       e.preventDefault();
       if (tunnelUrl) fetch(tunnelUrl + '/sleep', { method: 'POST' }).catch(function(){});
-      enterSleep();
-      showToast('Night mode active');
+      showToast('Desktop sleeping 🌙');
     });
     sleepBtn.addEventListener('touchend', function(e) {
       e.preventDefault();
       if (tunnelUrl) fetch(tunnelUrl + '/sleep', { method: 'POST' }).catch(function(){});
-      enterSleep();
-      showToast('Night mode active');
+      showToast('Desktop sleeping 🌙');
     }, { passive: false });
   }
-
-  // Dismiss night mode on tap
-  nm.addEventListener('click', exitSleep);
-  nm.addEventListener('touchend', function(e) { e.preventDefault(); exitSleep(); }, { passive: false });
-
-  // Poll tunnel for sleep state sync
-  setInterval(function() {
-    if (!tunnelUrl) return;
-    fetch(tunnelUrl + '/sleep-state?t=' + Date.now())
-      .then(function(r) { return r.json(); })
-      .then(function(d) {
-        if (d.sleep && !wasSleeping) { wasSleeping = true; enterSleep(); }
-        else if (!d.sleep && wasSleeping) { wasSleeping = false; exitSleep(); }
-      }).catch(function(){});
-  }, 2000);
 
   // ── REFRESH BUTTON ──────────────────────────────────────────────────────────
   // Refreshes the desktop dashboard (index.html) by POST to /refresh or
