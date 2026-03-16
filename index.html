@@ -752,7 +752,7 @@
     font-size: 10px;
   }
   .job-status-icon.completed { color: var(--green); }
-  .job-status-icon.active { color: #20B2AA; }
+  .job-status-icon.active { color: #20B2AA; animation: pplx-glow-pulse 1.5s ease-in-out infinite; }
   .job-status-icon.scheduled { color: #555; }
   .job-status-icon.missed { color: var(--amber); }
 
@@ -967,6 +967,11 @@
      =================================================================== */
 
   /* Perplexity Computer: Smooth fade-in for cards and feed items */
+  @keyframes pplx-breathe {
+    0%,100% { border-color: rgba(32,178,170,0.2); box-shadow: 0 0 5px 0px rgba(32,178,170,0.1); }
+    50% { border-color: rgba(32,178,170,0.35); box-shadow: 0 0 12px 2px rgba(32,178,170,0.2); }
+  }
+
   @keyframes pplx-fade-in {
     from { opacity: 0; transform: translateY(6px); }
     to { opacity: 1; transform: translateY(0); }
