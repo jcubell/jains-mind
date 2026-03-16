@@ -703,11 +703,12 @@
   @keyframes blink-s { 0%,50%{opacity:0.4} 51%,100%{opacity:0} }
   @keyframes blink-f { 0%,50%{opacity:0.8} 51%,100%{opacity:0} }
 
-  /* TODAY'S JOBS — Perplexity Computer themed */
+  /* TODAY'S JOBS — Perplexity Computer compact row design */
   /* ===== JOBS ===== */
 
-  /* Panel header — teal accent on label */
+  .jobs-section .panel-header { padding: 10px 16px 8px; }
   .jobs-section .panel-header h2 {
+    font-size: 10px;
     color: #20B2AA;
     letter-spacing: 0.18em;
   }
@@ -715,6 +716,7 @@
     color: #20B2AA;
     opacity: 0.6;
   }
+  .jobs-section .panel-body { padding: 8px 16px; }
 
   /* Scrollbar — teal tint */
   .jobs-section .panel-body::-webkit-scrollbar { width: 2px; }
@@ -724,125 +726,52 @@
     border-radius: 2px;
   }
 
-  /* Job cards — subtle border, slight bg tint, hover lift */
-  .jobs-section .job-card {
-    padding: 14px 12px;
-    margin-bottom: 6px;
-    background: rgba(32,178,170,0.03);
-    border: 1px solid rgba(32,178,170,0.12);
-    border-radius: 6px;
-    transition: background 0.2s ease, border-color 0.2s ease;
-  }
-  .jobs-section .job-card:last-child { margin-bottom: 0; }
-  .jobs-section .job-card:hover {
-    background: rgba(32,178,170,0.06);
-    border-color: rgba(32,178,170,0.22);
-  }
-
-  .jobs-section .job-header {
-    display: flex; align-items: center; justify-content: space-between;
-    margin-bottom: 6px;
-  }
-
-  /* Job name — clean, prominent */
-  .jobs-section .job-name {
-    font-family: var(--font);
-    font-size: 14px; font-weight: 600; color: #e8e8e8;
-  }
-
-  /* Job time — teal mono */
-  .jobs-section .job-time {
+  .job-category-label {
     font-family: var(--mono);
-    font-size: 10px; color: #20B2AA;
-    margin-left: 8px;
-  }
-
-  /* Badges — pill style */
-  .jobs-section .badge {
-    display: inline-block;
-    font-family: var(--mono);
-    padding: 2px 9px;
-    border-radius: 20px;
     font-size: 9px; font-weight: 600;
-    letter-spacing: 0.08em; text-transform: uppercase;
-  }
-  .jobs-section .badge-scheduled {
-    background: rgba(255,255,255,0.04);
-    color: #888888;
-    border: 1px solid rgba(255,255,255,0.12);
-  }
-  .jobs-section .badge-active {
-    background: rgba(32,178,170,0.12);
-    color: #20B2AA;
-    border: 1px solid rgba(32,178,170,0.25);
-  }
-  .jobs-section .badge-completed {
-    background: rgba(34,197,94,0.1);
-    color: var(--green);
-    border: 1px solid rgba(34,197,94,0.2);
-  }
-
-  /* Progress track — teal fill for active, green for done, muted for scheduled */
-  .jobs-section .progress-track {
-    width: 100%; height: 2px;
-    background: rgba(255,255,255,0.05);
-    border-radius: 1px; margin: 8px 0 6px; overflow: hidden;
-  }
-  .jobs-section .progress-fill {
-    height: 100%; border-radius: 1px;
-    background: rgba(255,255,255,0.08);
-    transition: width 0.5s ease;
-  }
-  .jobs-section .progress-fill-active { background: #20B2AA; }
-  .jobs-section .progress-fill-done { background: var(--green); }
-
-  /* Description text */
-  .jobs-section .job-desc {
-    font-family: var(--mono);
-    font-size: 12px; color: #aaaaaa;
-    line-height: 1.5;
-  }
-
-  /* Subtasks — indented, teal left border */
-  .jobs-section .job-subtasks {
-    margin-top: 8px;
-    padding: 0;
-    list-style: none;
-  }
-  .jobs-section .job-subtask {
-    font-family: var(--mono);
-    font-size: 10px; color: #999999;
-    line-height: 1.6;
-    padding: 2px 0 2px 12px;
-    border-left: 2px solid rgba(32,178,170,0.4);
+    letter-spacing: 0.14em; text-transform: uppercase;
+    color: rgba(32,178,170,0.6);
+    padding: 8px 0 4px;
+    border-bottom: 1px solid rgba(32,178,170,0.1);
     margin-bottom: 2px;
-    transition: border-color 0.2s ease;
   }
-  .jobs-section .job-card:hover .job-subtask {
-    border-left-color: rgba(32,178,170,0.5);
-  }
-  .jobs-section .job-subtask .st-icon {
-    margin-right: 4px;
-    font-size: 9px;
-    color: rgba(32,178,170,0.5);
-  }
+  .job-category-label:first-child { padding-top: 0; }
 
-  /* Strategy box — teal left border, light teal text */
-  .jobs-section .job-strategy {
-    margin-top: 8px;
-    padding: 7px 10px;
-    background: rgba(32,178,170,0.08);
-    border-radius: 4px;
-    font-family: var(--mono);
-    font-size: 10px; color: #b8f0ee;
-    line-height: 1.55;
-    border-left: 2px solid #20B2AA;
+  .job-row {
+    display: flex; align-items: center; gap: 8px;
+    padding: 5px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.03);
+    font-family: var(--mono); font-size: 11px;
+    transition: background 0.2s ease;
   }
-  .jobs-section .job-strategy-label {
-    font-family: var(--font);
-    font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
-    font-size: 8px; display: block; margin-bottom: 3px;
-    color: #20B2AA; opacity: 1;
+  .job-row:hover { background: rgba(32,178,170,0.04); }
+  .job-row:last-child { border-bottom: none; }
+
+  .job-status-icon {
+    width: 14px; flex-shrink: 0; text-align: center;
+    font-size: 10px;
+  }
+  .job-status-icon.completed { color: var(--green); }
+  .job-status-icon.active { color: #20B2AA; }
+  .job-status-icon.scheduled { color: #555; }
+  .job-status-icon.missed { color: var(--amber); }
+
+  .job-row.completed { opacity: 0.6; }
+  .job-row.completed .job-row-name { text-decoration: line-through; text-decoration-color: rgba(76,175,80,0.3); }
+  .job-row.active { background: rgba(32,178,170,0.04); }
+
+  .job-row-name {
+    font-weight: 500; color: #d4d4d4;
+    white-space: nowrap; min-width: 140px; flex-shrink: 0;
+  }
+  .job-row-time {
+    color: #20B2AA; font-size: 10px;
+    white-space: nowrap; min-width: 80px; flex-shrink: 0;
+  }
+  .job-row-desc {
+    color: #888; font-size: 10px;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    flex: 1; min-width: 0;
   }
 
   /* ===== FEED ===== */
@@ -1444,59 +1373,65 @@
       <div class="panel-header">
         <h2>Live Intelligence Feed</h2>
         <div style="display: flex; align-items: center; gap: 12px;">
-          <div class="fear-greed"><div class="fg-dot"></div>Fear &amp; Greed: 13</div>
+          <div class="fear-greed"><div class="fg-dot"></div>Fear &amp; Greed: 20</div>
           <span class="panel-meta" id="feedTimestamp">LIVE</span>
         </div>
       </div>
 
       <div class="ticker-bar" id="tickerBar">
-        <div class="ticker-item"><span class="ticker-symbol">$SPY</span><span class="ticker-price">6,696</span><span class="ticker-change ticker-up">+0.34%</span></div>
+        <div class="ticker-item"><span class="ticker-symbol">SPY</span><span class="ticker-price">$662</span><span class="ticker-change ticker-down">-0.57%</span></div>
         <span class="ticker-sep">·</span>
-        <div class="ticker-item"><span class="ticker-symbol">NASDAQ</span><span class="ticker-price">22,395</span><span class="ticker-change ticker-up">+0.34%</span></div>
+        <div class="ticker-item"><span class="ticker-symbol">NASDAQ</span><span class="ticker-price">22,105</span><span class="ticker-change ticker-down">-0.93%</span></div>
         <span class="ticker-sep">·</span>
-        <div class="ticker-item"><span class="ticker-symbol">DOW</span><span class="ticker-price">46,931</span><span class="ticker-change ticker-up">+0.36%</span></div>
+        <div class="ticker-item"><span class="ticker-symbol">DOW</span><span class="ticker-price">46,558</span><span class="ticker-change ticker-down">-0.26%</span></div>
         <span class="ticker-sep">·</span>
-        <div class="ticker-item"><span class="ticker-symbol">$NVDA</span><span class="ticker-price">--</span><span class="ticker-change">GTC MON</span></div>
+        <div class="ticker-item"><span class="ticker-symbol">$NVDA</span><span class="ticker-price">$180</span><span class="ticker-change ticker-down">-1.59%</span></div>
         <span class="ticker-sep">·</span>
-        <div class="ticker-item"><span class="ticker-symbol">BRENT</span><span class="ticker-price">$101</span><span class="ticker-change ticker-down">Hormuz</span></div>
+        <div class="ticker-item"><span class="ticker-symbol">$TSLA</span><span class="ticker-price">$391</span><span class="ticker-change ticker-down">-0.96%</span></div>
         <span class="ticker-sep">·</span>
-        <div class="ticker-item"><span class="ticker-symbol">BTC</span><span class="ticker-price">$72,633</span><span class="ticker-change ticker-up">+3.0%</span></div>
+        <div class="ticker-item"><span class="ticker-symbol">BTC</span><span class="ticker-price">$72,520</span><span class="ticker-change ticker-down">-0.43%</span></div>
         <span class="ticker-sep">·</span>
-        <div class="ticker-item"><span class="ticker-symbol">ETH</span><span class="ticker-price">$2,074</span><span class="ticker-change ticker-up">+0.6%</span></div>
+        <div class="ticker-item"><span class="ticker-symbol">ETH</span><span class="ticker-price">$2,179</span><span class="ticker-change">flat</span></div>
         <span class="ticker-sep">·</span>
-        <div class="ticker-item"><span class="ticker-symbol">GOLD</span><span class="ticker-price">$5,120</span><span class="ticker-change ticker-up">+0.05%</span></div>
+        <div class="ticker-item"><span class="ticker-symbol">GOLD</span><span class="ticker-price">$5,007</span><span class="ticker-change ticker-down">-1.08%</span></div>
+        <span class="ticker-sep">·</span>
+        <div class="ticker-item"><span class="ticker-symbol">OIL</span><span class="ticker-price">$99.27</span><span class="ticker-change ticker-up">+0.57%</span></div>
       </div>
 
       <div class="panel-body">
 
-        <div class="feed-date" id="feedDate">FRIDAY, MARCH 13, 2026</div>
+        <div class="feed-date" id="feedDate">SUNDAY, MARCH 15, 2026</div>
 
         <!-- 1. AI PROVIDERS -->
         <div class="feed-section">
           <div class="feed-section-header">AI Providers</div>
           <div class="feed-item signal-fire">
             <span class="signal-tag fire">Signal</span>
-            <span class="entity-ref">Anthropic</span> vs Pentagon escalates — DOD labeled Anthropic a "supply-chain risk" after it refused mass surveillance and autonomous weapons terms. 30+ <span class="entity-ref">OpenAI</span> and <span class="entity-ref">Google DeepMind</span> employees filed amicus brief in Anthropic's defense.
+            <span class="entity-ref">NVIDIA</span> GTC 2026 opens Monday in San Jose (30,000 attendees from 190 countries) with CEO Jensen Huang's keynote at 11am PT unveiling expected 'world-surprising' chip announcements, details on the Vera Rubin Ultra platform, the N1X AI PC Superchip (<span class="entity-ref">MediaTek</span> joint venture), and the NemoClaw open-source enterprise AI agent platform — the most consequential AI hardware event of the year. <span class="ticker-ref">$NVDA</span>
           </div>
           <div class="feed-item signal-fire">
             <span class="signal-tag fire">Signal</span>
-            <span class="entity-ref">DeepSeek</span> V4 release imminent — 1T parameter multimodal model, trained on <span class="entity-ref">Huawei</span>/Cambricon chips. Apache 2.0 license. V4 Lite already spotted on their site.
+            <span class="entity-ref">Anthropic</span> is embroiled in a landmark legal battle after the Trump administration's Department of War designated it a 'supply chain risk' and ordered all federal agencies to stop using Claude, following Anthropic's refusal to grant the Pentagon unrestricted access to its model without human-in-the-loop guardrails — 30+ <span class="entity-ref">OpenAI</span> and <span class="entity-ref">Google DeepMind</span> employees filed an amicus brief in Anthropic's defense, and legal experts say Anthropic has a strong case. <span class="ticker-ref">$AMZN</span> <span class="ticker-ref">$GOOGL</span>
           </div>
           <div class="feed-item signal-watch">
             <span class="signal-tag watch">Watch</span>
-            <span class="entity-ref">NVIDIA</span> GTC 2026 kicks off Monday. Jensen Huang keynote. Expected: NemoClaw open-source agent platform, physical AI, inference stack updates.
+            <span class="entity-ref">xAI</span> is being 'rebuilt from foundations up' per <span class="entity-ref">Elon Musk</span>, with <span class="entity-ref">SpaceX</span> having fully acquired xAI in a $58B share-exchange deal (combined $1.25T entity) in February; the restructuring will integrate Grok as AI reasoning for Optimus robots, while Grok Imagine surpassed 1.245 billion videos generated in January alone, fueled by 110,000 NVIDIA GB200 GPUs. <span class="ticker-ref">$TSLA</span>
           </div>
           <div class="feed-item signal-watch">
             <span class="signal-tag watch">Watch</span>
-            <span class="entity-ref">Google</span> shipped major Gemini upgrades to Workspace — cross-app document generation from emails, files, and web. Drive becomes active knowledge base.
+            <span class="entity-ref">DeepSeek</span> has not officially launched V4 (mid-Feb window missed), but Chinese tech media reported a 'V4 Lite' update on March 9 with improved coding and expanded context handling; separately, Reuters reported DeepSeek is withholding its latest flagship model from U.S. chipmakers including <span class="entity-ref">NVIDIA</span>, breaking standard industry practice for performance optimization. <span class="ticker-ref">$NVDA</span>
+          </div>
+          <div class="feed-item signal-watch">
+            <span class="signal-tag watch">Watch</span>
+            <span class="entity-ref">OpenAI</span> signed a Pentagon deployment deal on Feb 28 that triggered a 295% surge in ChatGPT uninstalls and the resignation of a senior hardware executive citing governance concerns over surveillance and lethal-autonomy guardrails — the public backlash mirrors the Anthropic-DoD standoff and signals deepening civil-military AI tension across the entire sector.
           </div>
           <div class="feed-item signal-noise">
             <span class="signal-tag noise">Noise</span>
-            Canal+ multi-year deals with Google Cloud &amp; OpenAI for AI video production. OpenAI Caitlin Kalinowski resigned over Pentagon deal.
+            <span class="entity-ref">Google</span> is quietly expanding its Pentagon work and outpacing rivals in user growth: Gemini paid subscriptions rose 258% year-over-year while Claude grew 200%+; approximately 20% of weekly ChatGPT users also used Gemini in the same week, making Google the stealth beneficiary of the Anthropic-OpenAI Pentagon standoff. <span class="ticker-ref">$GOOGL</span>
           </div>
           <div class="my-take">
             <span class="my-take-label">Insight</span>
-            The Anthropic-Pentagon standoff is defining the power dynamics of AI governance in 2026. If the DOD precedent holds, every AI lab's red lines are meaningless. Meanwhile DeepSeek V4 on non-NVIDIA hardware is the decoupling the market hasn't priced in.
+            GTC 2026 is the week's single biggest market catalyst for NVDA — Jensen Huang's 'world-surprising' chip reveal could reprice the AI hardware stack. Meanwhile, the Anthropic-Pentagon legal fight is the most consequential AI governance moment since ChatGPT's launch: a ruling that validates government authority to strip AI firms of commercial viability without due process would reshape every enterprise AI deal structure in the U.S. market. Google is the structural winner regardless of outcome — it avoided the DoD drama while capturing Anthropic's and OpenAI's distracted user growth. Watch NVDA closely Monday; any delay on Vera Rubin shipping dates or HBM4 supply concerns could trigger sector-wide volatility.
           </div>
         </div>
 
@@ -1505,48 +1440,48 @@
           <div class="feed-section-header">Enterprise AI</div>
           <div class="feed-item signal-fire">
             <span class="signal-tag fire">Signal</span>
-            <span class="ticker-ref">$ADBE</span> CEO Shantanu Narayen stepping down after 18 years amid AI disruption fears. Stock down 8% pre-market. Revenue from AI-first products tripled, but shares are -23% YTD, -60% from 2021 peak.
+            <span class="entity-ref">Microsoft</span> launched Copilot Cowork (Wave 3 of M365 Copilot) on March 9 — built in direct partnership with <span class="entity-ref">Anthropic</span>'s Claude technology — enabling long-running multi-step agentic tasks across Microsoft 365; the new M365 E7 Frontier Suite launches May 1 at $99/user/month, with Agent 365 at $15/user/month, representing Microsoft's clearest monetization response to AI disruption fears that erased ~$220B in MSFT market cap in a single week earlier this year. <span class="ticker-ref">$MSFT</span>
           </div>
           <div class="feed-item signal-fire">
             <span class="signal-tag fire">Signal</span>
-            <span class="entity-ref">Atlassian</span> (<span class="ticker-ref">$TEAM</span>) cutting 1,600 jobs (10% of workforce) to fund AI pivot. CTO also departing. Market cap down 50%+ since Jan 2026.
+            <span class="entity-ref">Atlassian</span> cut 1,600 employees (~10% of workforce) on March 11, explicitly citing an AI pivot — CEO Mike Cannon-Brookes framed it as redirecting capital to AI product development and enterprise sales; Atlassian follows Block in a growing pattern of 'AI-branded layoffs' that blur restructuring with genuine strategic pivots, with <span class="ticker-ref">$TEAM</span> stock already under pressure from fears that agentic AI makes its collaboration software obsolete.
           </div>
           <div class="feed-item signal-watch">
             <span class="signal-tag watch">Watch</span>
-            <span class="entity-ref">Anthropic</span> expanded Claude enterprise — shared context across Excel and PowerPoint, automating cross-app workflows in single sessions.
+            <span class="entity-ref">Anthropic</span> launched the Claude Partner Network — a zero-commission enterprise marketplace for third-party Claude-powered applications — with launch partners <span class="entity-ref">Snowflake</span>, <span class="entity-ref">Harvey</span>, and <span class="entity-ref">Replit</span>; simultaneously, Claude gained shared context across Microsoft Excel and PowerPoint for cross-application workflow automation. <span class="ticker-ref">$CRM</span> <span class="ticker-ref">$SNOW</span>
           </div>
-          <div class="feed-item signal-noise">
-            <span class="signal-tag noise">Noise</span>
-            US State Dept, Treasury, HHS all phasing out Anthropic tools per White House directive. StateChat switching to OpenAI GPT-4.1.
+          <div class="feed-item signal-watch">
+            <span class="signal-tag watch">Watch</span>
+            <span class="entity-ref">Salesforce</span> and <span class="entity-ref">Oracle</span> are positioning their proprietary enterprise data as the key moat against AI disruption, with Salesforce's Agentforce platform yet to show substantial growth metrics; <span class="entity-ref">Google</span> upgraded Gemini for Workspace to generate documents and presentations directly from cross-app enterprise data, sharpening competition with Microsoft Copilot. <span class="ticker-ref">$CRM</span> <span class="ticker-ref">$ORCL</span> <span class="ticker-ref">$GOOGL</span>
           </div>
           <div class="my-take">
             <span class="my-take-label">Insight</span>
-            Adobe and Atlassian are the canaries. Legacy software incumbents are being forced into existential AI pivots while their stock craters. The "AI is adding zero to GDP" narrative is colliding with the reality that it's destroying incumbents faster than it's building new ones.
+            The enterprise AI monetization race is crystallizing into two business models: (1) Microsoft/Anthropic's agent-platform play ($99/user bundles) vs. (2) Salesforce/Oracle's 'your data is your moat' defensive posture. Atlassian's 10% layoff is the clearest signal yet that mid-tier SaaS is being forced to choose — restructure aggressively toward AI or face structural revenue decline. Microsoft's Wave 3 Copilot launch with Claude integration is the most material enterprise AI product release of the quarter; watch May 1 Agent 365 GA date for early enterprise adoption signals.
           </div>
         </div>
 
-        <!-- 3. VC/PE M&A -->
+        <!-- 3. VC / PE / M&A -->
         <div class="feed-section">
-          <div class="feed-section-header">VC/PE M&amp;A</div>
+          <div class="feed-section-header">VC / PE / M&amp;A</div>
           <div class="feed-item signal-fire">
             <span class="signal-tag fire">Signal</span>
-            February 2026 set all-time VC record: $189B in one month. OpenAI $110B, Anthropic $30B, Waymo $16B accounted for 83% of total. AI startups took 90% of all global venture dollars.
+            <span class="entity-ref">OpenAI</span> closed a $110B funding round in February backed by <span class="entity-ref">Amazon</span> ($50B), <span class="entity-ref">NVIDIA</span> ($30B), and <span class="entity-ref">SoftBank</span> ($30B) — one of the largest private funding rounds in history — to expand global AI infrastructure and compute capacity, signaling that hyperscaler capital allocation toward foundation model companies is accelerating at sovereign-fund scale. <span class="ticker-ref">$AMZN</span> <span class="ticker-ref">$NVDA</span> <span class="ticker-ref">$MSFT</span>
+          </div>
+          <div class="feed-item signal-fire">
+            <span class="signal-tag fire">Signal</span>
+            <span class="entity-ref">SpaceX</span> completed the acquisition of <span class="entity-ref">xAI</span> in a $58B share-exchange deal in February valuing the combined entity at $1.25 trillion — the largest M&amp;A deal in history by combined enterprise value — integrating Grok AI and the 100,000+ GPU Colossus supercomputer cluster into Starlink and Optimus robotics infrastructure. <span class="ticker-ref">$TSLA</span>
           </div>
           <div class="feed-item signal-watch">
             <span class="signal-tag watch">Watch</span>
-            This week: Nexthop AI $500M Series B (AI networking), Genspark $385M Series B extension ($1.6B valuation), Eridu $200M Series A (AI networking).
+            <span class="entity-ref">Anthropic</span> raised $30B in Series G at a $380B valuation (Feb 12) from 30+ investors including Founders Fund, Coatue, and NVIDIA; <span class="entity-ref">Waymo</span> raised $16B at $126B valuation for robotaxi expansion; <span class="entity-ref">Databricks</span> closed $5B Series L at $134B valuation — its third major raise in under a year. <span class="ticker-ref">$GOOGL</span> <span class="ticker-ref">$NVDA</span>
           </div>
           <div class="feed-item signal-watch">
             <span class="signal-tag watch">Watch</span>
-            IPO window still frozen — Clear Street and Liftoff both withdrew listings. Public market volatility stalling new offerings despite strong private demand.
-          </div>
-          <div class="feed-item signal-noise">
-            <span class="signal-tag noise">Noise</span>
-            BackOps.ai $26M Series A. Rebar $14M Series A. Juicebox $80M Series B. Standard Kernel $20M seed for GPU optimization.
+            <span class="entity-ref">CoreWeave</span> (<span class="ticker-ref">$CRWV</span>) is up 123% since its March 2025 IPO with a $56B revenue backlog — nearly double the combined 2026-27 analyst revenue estimate of $31B — after NVIDIA's $2B strategic investment at $87.20/share; <span class="entity-ref">Scale AI</span> and <span class="entity-ref">Databricks</span> remain the most-watched 2026 IPO candidates. <span class="ticker-ref">$NVDA</span>
           </div>
           <div class="my-take">
             <span class="my-take-label">Insight</span>
-            $189B in one month with 90% going to AI — this is the most concentrated capital deployment in venture history. But the IPO market is frozen and public AI stocks are getting hammered. The private-public valuation gap is becoming a systemic risk.
+            AI capital concentration is at an unprecedented extreme: OpenAI's $110B round, Anthropic's $30B raise, and SpaceX/xAI's $1.25T merger consumed a dominant share of global venture and strategic capital in Feb 2026 alone. The structural shift to watch: hyperscalers (Amazon, Microsoft, NVIDIA, Google) are now direct equity holders in their AI model suppliers, creating strategic alignment but also potential antitrust exposure. With M&amp;A at $4.4T globally in 2025 and 80% of executives planning to maintain or increase deal activity, the second half of 2026 should see AI infrastructure consolidation accelerate.
           </div>
         </div>
 
@@ -1555,27 +1490,23 @@
           <div class="feed-section-header">Geopolitics &amp; Macro</div>
           <div class="feed-item signal-fire">
             <span class="signal-tag fire">Signal</span>
-            Strait of Hormuz effectively closed — daily transits collapsed from 138 to under 5 ships. Brent crude above $101, peaked at $126. Iran's new Supreme Leader vows to maintain blockade. 16 commercial vessels targeted since Feb 28.
+            The U.S. launched military strikes on Iran's Kharg Island (Iran's primary oil export terminal) on March 13-14, entering week 3 of active U.S.-Iran conflict under Operation Epic Fury; <span class="entity-ref">Iran</span> retaliated with strikes on <span class="entity-ref">UAE</span> infrastructure including Jebel Ali port and shut down the Ruwais refinery via drone strike; Iran has selectively closed the Strait of Hormuz to non-allied tankers while allowing Chinese oil traffic — WTI crude has surged ~57% over the past month to ~$99/bbl, with <span class="entity-ref">IEA</span> releasing 400M barrels from emergency reserves. <span class="ticker-ref">$USO</span> <span class="ticker-ref">$XOM</span> <span class="ticker-ref">$CVX</span>
           </div>
           <div class="feed-item signal-fire">
             <span class="signal-tag fire">Signal</span>
-            S&amp;P 500 and Dow at 2026 lows after Thursday's selloff. Indexes attempting relief bounce today (+0.34%) but heading for 3rd straight losing week. PCE inflation data due today.
+            The S&amp;P 500 closed at a new 2026 low on Friday (6,632, -0.61% on the day, -1.6% on the week), the Nasdaq broke below its 200-day moving average, and the DOW fell -2.0% on the week; Q4 GDP was revised down to +0.7%, the Fear &amp; Greed Index stands at 20 (Extreme Fear) — its lowest 2026 reading — and futures markets now price near-zero probability of any Fed rate cut in 2026 as oil-driven inflation re-acceleration forces the <span class="entity-ref">FOMC</span> into a hold posture ahead of the March 17-18 meeting. <span class="ticker-ref">$SPY</span> <span class="ticker-ref">$QQQ</span> <span class="ticker-ref">$DIA</span>
           </div>
           <div class="feed-item signal-watch">
             <span class="signal-tag watch">Watch</span>
-            US temporarily lifted Russian oil sanctions on in-transit cargoes to ease supply pressure. IEA releasing 400M barrels from emergency reserves. Navy escorts for Strait "by end of month" per Energy Sec.
+            The <span class="entity-ref">Federal Reserve</span> holds rates at 3.5-3.75% at this week's FOMC meeting (March 17-18) with 97% probability per futures markets — two dissenters favor cuts but the Strait of Hormuz oil shock has effectively frozen any dovish pivot; Trump is pressuring the Fed for four cuts this year, creating political tension as inflation re-accelerates from energy prices, and the 10-year Treasury yield climbed 16 basis points this week to 4.29%. <span class="ticker-ref">$TLT</span>
           </div>
           <div class="feed-item signal-watch">
             <span class="signal-tag watch">Watch</span>
-            Crypto Fear &amp; Greed at 13 (Extreme Fear). BTC recovering to $72.6K from $60K bottom. Oil spike complicating Fed rate cut expectations — Apollo's Slok warns inflation already too high.
-          </div>
-          <div class="feed-item signal-noise">
-            <span class="signal-tag noise">Noise</span>
-            Jefferies upgraded Nutrien (NTR) on fertilizer supply disruption. Federal judge blocked DOJ subpoenas to Fed — win for Powell.
+            U.S.-China trade tensions intensified as <span class="entity-ref">China</span> essentially halted purchases of U.S. exports (down 26% in nominal terms vs. 2024) following retaliatory tariff escalations; China is selectively receiving Iranian oil through the Strait of Hormuz while Gulf neighbors are cut off, creating a de facto energy alliance that gives Beijing structural leverage in any tariff negotiation. <span class="ticker-ref">$FXI</span> <span class="ticker-ref">$USO</span>
           </div>
           <div class="my-take">
             <span class="my-take-label">Insight</span>
-            The Hormuz blockade is the largest energy supply disruption since the 1970s oil crisis. Markets are trying to bounce but the structural problem hasn't changed — 20% of global oil supply is offline with no clear resolution timeline. The Fed is trapped between oil-driven inflation and a slowing economy.
+            The Strait of Hormuz conflict is now the dominant macro variable — it is simultaneously driving oil above $99/bbl, re-accelerating inflation, killing Fed rate-cut expectations, weakening GDP growth, crushing equities (S&amp;P at 2026 low), and creating a strategic energy alliance between China and Iran that gives Beijing leverage in U.S.-China trade talks. This is a stagflation scenario: slower growth (GDP revised to 0.7%) plus higher energy-driven inflation, precisely the environment the Fed cannot cut through. The most asymmetric risk: Iran escalation into UAE's major ports would spike oil above $120 and likely trigger a full bear market. Bitcoin at $72K has not functioned as a safe haven — it is correlated with risk-off equities, not gold.
           </div>
         </div>
 
@@ -2276,69 +2207,62 @@
     window._fetchUsageMetrics = fetchUsageMetrics;
   })();
 
-  var jobs = [
-    { name: 'Morning Brief', time: '7:00 AM ET', scheduleHour: 7, scheduleMinute: 0, status: 'scheduled', desc: 'AI news digest, market movers, SEC filing scan', recurring: false, prevHour: 0, prevMinute: 0 },
-    { name: 'Sorare Morning Picks', time: '11:00 AM ET', scheduleHour: 11, scheduleMinute: 0, status: 'active', desc: 'Daily farming + missions + strategic picks', recurring: false, prevHour: 7, prevMinute: 0,
-      subtasks: [
-        'Claim free WNTR pack \u2192 Open Daily Pack mission (+1 Wheel Ticket)',
-        'Spin Wheel (Golden Spin: 3/10) \u2192 target 1 golden spin every 3-5 days',
-        'Quick Play \u2192 high-variance players, L10+5 target, avoid B2Bs',
-        'Daily Picker \u2192 pace-up matchups | Scorer Picker \u2192 guards L10 20-34',
-        'WNTR Sprint \u2192 buy Bronze packs, quick-sell dupes, cycle board L1-L2',
-        'Monitor: Collections (35/36 NBA, 142/150 WNTR) + Hot Streaks'
-      ],
-      strategy: 'WNTR deadline Mar 22 \u2014 spend ALL Essence on packs before conversion. Punt watch: Sabonis/Curry/Nurkic at L10=0, slot immediately on return.'
+  var jobCategories = [
+    {
+      label: 'SORARE',
+      jobs: [
+        { name: 'Morning Picks', time: '11:00 AM', scheduleHour: 11, scheduleMinute: 0, desc: 'WNTR pack, wheel, Quick Play, Picker missions, collections' },
+        { name: 'Evening Strategy', time: '5:00 PM', scheduleHour: 17, scheduleMinute: 0, desc: 'Verify tasks, optimize lineups, Hot Streak, injury swaps' }
+      ]
     },
-    { name: 'Afternoon Brief', time: '1:00 PM ET', scheduleHour: 13, scheduleMinute: 0, status: 'scheduled', desc: 'Midday market update, breaking AI announcements', recurring: false, prevHour: 11, prevMinute: 0 },
-    { name: 'Sorare Evening Strategy', time: '5:00 PM ET', scheduleHour: 17, scheduleMinute: 0, status: 'scheduled', desc: 'Lineup optimization + catch-up for missed morning tasks', recurring: false, prevHour: 13, prevMinute: 0,
-      subtasks: [
-        'Catch-up \u2192 verify pack/wheel/Quick Play/Picker all completed',
-        'API auth \u2192 fetch collection (305 cards) \u2192 fetch open fixtures',
-        'Score cards: 30% form + 20% season + 15% matchup + 15% proj + 10% H/A + 10% power',
-        'Build 3-5 lineups per comp: Floor/Streak, Balanced, Ceiling, Correlation, Contrarian',
-        'Cap 120+MVP \u2192 Jokic permanent MVP (64.3), 4 slots under 120 cap',
-        'Daily Pickup + Limited Contender + Common Champion lineups',
-        'Hot Streak check \u2192 L1-L2: always submit | L3+: skip weak GWs'
-      ],
-      strategy: 'MVP hierarchy: Jokic (64.3) > Bam (50.4) > Edwards (46.6) > KD (41.5) > Cade (41.3). Protect L3+ streaks \u2014 skipping beats risking $50-$1K reset.'
+    {
+      label: 'INTELLIGENCE FEED',
+      jobs: [
+        { name: 'Morning Brief', time: '7:00 AM', scheduleHour: 7, scheduleMinute: 0, desc: 'AI news digest, market movers, overnight developments' },
+        { name: 'Afternoon Brief', time: '1:00 PM', scheduleHour: 13, scheduleMinute: 0, desc: 'Midday market update, breaking AI announcements' },
+        { name: 'Evening Brief', time: '8:00 PM', scheduleHour: 20, scheduleMinute: 0, desc: 'EOD wrap, after-hours moves, overnight preview' }
+      ]
     },
-    { name: 'Evening Brief', time: '8:00 PM ET', scheduleHour: 20, scheduleMinute: 0, status: 'scheduled', desc: 'End of day wrap, after-hours moves, overnight preview', recurring: false, prevHour: 17, prevMinute: 0 },
-    { name: 'Market Intelligence Scan', time: 'Every 4 hours', scheduleHour: -1, scheduleMinute: 0, status: 'active', desc: 'Continuous monitoring of AI value chain developments', recurring: true }
+    {
+      label: 'MONITORING',
+      jobs: [
+        { name: 'Market Intel Scan', time: 'Every 3h', scheduleHour: -1, recurring: true, desc: 'AI value chain, markets, geopolitics monitoring' }
+      ]
+    }
   ];
+
   function getETNow() { return new Date(new Date().toLocaleString('en-US', { timeZone: 'America/New_York' })); }
-  function calcProgress(job) {
-    var now = getETNow(), cm = now.getHours()*60+now.getMinutes();
-    if (job.recurring) return Math.min(100, Math.round((cm%240)/240*100));
-    var t = job.scheduleHour*60+job.scheduleMinute, p = job.prevHour*60+job.prevMinute;
-    if (cm >= t) return 100;
-    var w = t-p; if (w<=0) w=60;
-    var e = cm-p; if (e<0) return 0;
-    return Math.min(100, Math.max(0, Math.round(e/w*100)));
-  }
-  function getStatusForJob(job) {
-    var now = getETNow(), cm = now.getHours()*60+now.getMinutes(), t = job.scheduleHour*60+job.scheduleMinute;
-    if (job.recurring) return job.status;
+
+  function getJobStatus(job) {
+    if (job.recurring) return 'active';
+    var now = getETNow(), cm = now.getHours() * 60 + now.getMinutes();
+    var t = job.scheduleHour * 60 + (job.scheduleMinute || 0);
     if (cm >= t) return 'completed';
-    if (t-cm <= 30 && t-cm > 0) return 'active';
-    return job.status;
+    if (t - cm <= 30 && t - cm > 0) return 'active';
+    return 'scheduled';
   }
+
   function renderJobs() {
-    var c = document.getElementById('jobsContainer'), h = '';
-    for (var i=0;i<jobs.length;i++) {
-      var j=jobs[i], p=calcProgress(j), s=getStatusForJob(j);
-      var fillClass = 'progress-fill';
-      if (s === 'active') fillClass += ' progress-fill-active';
-      else if (s === 'completed') fillClass += ' progress-fill-done';
-      var extra = '';
-      if (j.subtasks) {
-        extra += '<ul class="job-subtasks">';
-        for (var k=0;k<j.subtasks.length;k++) { extra += '<li class="job-subtask"><span class="st-icon">\u25B8</span>'+j.subtasks[k]+'</li>'; }
-        extra += '</ul>';
+    var c = document.getElementById('jobsContainer');
+    var h = '', totalJobs = 0;
+    for (var ci = 0; ci < jobCategories.length; ci++) {
+      var cat = jobCategories[ci];
+      h += '<div class="job-category-label">' + cat.label + '</div>';
+      for (var ji = 0; ji < cat.jobs.length; ji++) {
+        var j = cat.jobs[ji], s = getJobStatus(j);
+        totalJobs++;
+        var icon = s === 'completed' ? '✓' : s === 'active' ? '●' : s === 'missed' ? '✗' : '○';
+        h += '<div class="job-row ' + s + '">'
+          + '<span class="job-status-icon ' + s + '">' + icon + '</span>'
+          + '<span class="job-row-name">' + j.name + '</span>'
+          + '<span class="job-row-time">' + j.time + '</span>'
+          + '<span class="job-row-desc">' + j.desc + '</span>'
+          + '</div>';
       }
-      if (j.strategy) { extra += '<div class="job-strategy"><span class="job-strategy-label">Strategy</span>'+j.strategy+'</div>'; }
-      h += '<div class="job-card"><div class="job-header"><div><span class="job-name">'+j.name+'</span><span class="job-time">'+j.time+'</span></div><span class="badge badge-'+s+'">'+s.charAt(0).toUpperCase()+s.slice(1)+'</span></div><div class="progress-track"><div class="'+fillClass+'" style="width:'+p+'%"></div></div><div class="job-desc">'+j.desc+'</div>'+extra+'</div>';
     }
     c.innerHTML = h;
+    var countEl = document.getElementById('jobCount');
+    if (countEl) countEl.textContent = totalJobs + ' Jobs';
   }
   renderJobs(); setInterval(renderJobs, 30000);
 

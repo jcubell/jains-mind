@@ -304,6 +304,16 @@ Two-field pushes: render as `title + detail` with left-border accent.
 
 ### 2026-03-15 — Perplexity Computer
 
+#### Compact Jobs Widget + Fresh Intelligence Feed
+- Redesigned Today's Jobs from card-based layout to compact single-line rows grouped by category (SORARE, INTELLIGENCE FEED, MONITORING)
+- Status icons: ✓ green for completed, ● teal pulse for active, ○ gray for scheduled
+- Completed rows get strikethrough + reduced opacity; removed all subtask/strategy CSS
+- Reduced `.panel-body` padding to `8px 16px`
+- Fresh intelligence feed data for March 15: updated all 4 categories (AI Providers, Enterprise AI, VC/PE/M&A, Geopolitics & Macro)
+- Updated ticker bar with latest prices (SPY $662, NASDAQ 22,105, NVDA $180, BTC $72,520, OIL $99.27)
+- Fear & Greed index updated to 20 (Extreme Fear)
+- Added $TSLA and OIL to ticker bar
+
 #### Teal Laser Border for Perplexity-Owned Widgets
 - Added animated conic-gradient spinning border to `.jobs-section` and `.right-panel` (teal #20B2AA)
 - `@property --pplx-laser-angle`, `pplx-laser-spin` (4s), `pplx-laser-pulse` (2.5s), `pplx-scanline` (5s)
