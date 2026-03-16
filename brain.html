@@ -510,9 +510,33 @@ html, body {
   gap: 6px;
 }
 .desktop-link:active { opacity: 0.6; }
+/* Pull to refresh indicator */
+#pullIndicator {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  display: flex; align-items: center; justify-content: center;
+  height: 0; overflow: hidden;
+  z-index: 9998;
+  transition: height 0.15s ease;
+  background: linear-gradient(to bottom, rgba(10,0,0,0.95), transparent);
+}
+#pullIndicator .pull-icon {
+  display: flex; align-items: center; gap: 8px;
+  font-family: var(--mono); font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--accent); opacity: 0; transition: opacity 0.15s ease;
+}
+#pullIndicator.ready .pull-icon { opacity: 1; }
+#pullIndicator svg { transition: transform 0.2s ease; }
+#pullIndicator.ready svg { transform: rotate(180deg); }
 </style>
 </head>
 <body>
+<div id="pullIndicator">
+  <div class="pull-icon">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+    <span id="pullLabel">Pull to refresh</span>
+  </div>
+</div>
 
 <!-- Top Bar -->
 <div class="top-bar">
@@ -962,6 +986,56 @@ html, body {
     }
   }, 10000);
 
+})();
+</script>
+<script>
+// ── PULL TO REFRESH ──────────────────────────────────────────────────────────
+(function() {
+  var THRESHOLD = 72;  // px to pull before triggering
+  var startY = 0;
+  var pulling = false;
+  var refreshing = false;
+  var indicator = document.getElementById('pullIndicator');
+  var label = document.getElementById('pullLabel');
+
+  document.addEventListener('touchstart', function(e) {
+    if (window.scrollY === 0) {
+      startY = e.touches[0].clientY;
+      pulling = true;
+    }
+  }, { passive: true });
+
+  document.addEventListener('touchmove', function(e) {
+    if (!pulling || refreshing) return;
+    var dy = e.touches[0].clientY - startY;
+    if (dy <= 0) return;
+    var progress = Math.min(dy, THRESHOLD * 1.5);
+    var h = Math.min(progress * 0.5, 44);
+    if (indicator) {
+      indicator.style.height = h + 'px';
+      if (dy >= THRESHOLD) {
+        indicator.classList.add('ready');
+        if (label) label.textContent = 'Release to refresh';
+      } else {
+        indicator.classList.remove('ready');
+        if (label) label.textContent = 'Pull to refresh';
+      }
+    }
+  }, { passive: true });
+
+  document.addEventListener('touchend', function(e) {
+    if (!pulling || refreshing) return;
+    var dy = (e.changedTouches[0] ? e.changedTouches[0].clientY : startY) - startY;
+    pulling = false;
+    if (dy >= THRESHOLD) {
+      refreshing = true;
+      if (indicator) { indicator.style.height = '44px'; }
+      if (label) label.textContent = 'Refreshing…';
+      setTimeout(function() { location.reload(); }, 400);
+    } else {
+      if (indicator) { indicator.style.height = '0'; indicator.classList.remove('ready'); }
+    }
+  }, { passive: true });
 })();
 </script>
 <script>
