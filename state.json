@@ -3,9 +3,15 @@
   "status": "idle",
   "brain": {
     "mode": "working",
-    "focus": "Reviewing jobs and intelligence feed JS sections in index.html",
+    "focus": "Updating CONTRIBUTING.md with latest version info and Perplexity guidance",
     "model": "claude-sonnet-4-6",
     "thoughts": [
+      {
+        "time": "10:42 PM ET",
+        "type": "action",
+        "text": "Adding jobs array docs, feed HTML structure, activity stream detail notes",
+        "title": "Updating CONTRIBUTING.md with latest version info and Perplexity guidance"
+      },
       {
         "time": "10:41 PM ET",
         "type": "action",
@@ -71,12 +77,6 @@
         "type": "complete",
         "text": "Expanded thought stream with title+detail rendering; deployed to GitHub Pages",
         "title": "Done: Dashboard Activity Enhancer"
-      },
-      {
-        "time": "10:31 PM ET",
-        "type": "action",
-        "text": "Pushing updated index.html with enhanced activity log",
-        "title": "Deploying to GitHub Pages"
       }
     ],
     "subagent": {
@@ -89,6 +89,6 @@
     "currentModel": "claude-sonnet-4-6"
   },
   "steps": [],
-  "updated_at": "2026-03-16T02:42:05Z",
+  "updated_at": "2026-03-16T02:42:25Z",
   "_tunnel_url": "https://charged-unique-architects-fusion.trycloudflare.com"
 }
