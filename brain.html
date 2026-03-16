@@ -557,6 +557,8 @@ html, body {
   <span class="cost-strip-item"><span class="cost-strip-label">Session</span><span class="cost-strip-val" id="sessVal">—</span></span>
   <span class="cost-strip-sep"></span>
   <span class="cost-strip-item"><span class="cost-strip-label">Today</span><span class="cost-strip-val" id="dayVal">—</span></span>
+  <span class="cost-strip-sep"></span>
+  <span class="cost-strip-item"><span class="cost-strip-label">Month</span><span class="cost-strip-val" id="monthVal">—</span></span>
 </div>
 
 <!-- Main Content -->
@@ -965,9 +967,11 @@ html, body {
       var dv = document.getElementById('dayVal');
       if (dv && data.daily) {
         var daily = data.daily.actual_or != null ? data.daily.actual_or : data.daily.est_cost;
-        // Include BYOK if available
-        if (data.daily.byok != null) daily += data.daily.byok;
         dv.textContent = fmtCost(daily);
+      }
+      var mv = document.getElementById('monthVal');
+      if (mv && data.monthly && data.monthly.actual_or != null) {
+        mv.textContent = fmtCost(data.monthly.actual_or);
       }
     }
 

@@ -176,24 +176,25 @@ const server = http.createServer(async (req, res) => {
         const rawWeekly  = orWeekly  + byokWeekly;
         const rawMonthly = orMonthly + byokMonthly;
 
-        // === Baseline delta: subtract snapshot if cost_baseline.json exists ===
+        // OR resets usage_daily at midnight UTC (= 8 PM ET).
+        // So rawDaily IS today's spend — no baseline subtraction needed for daily/monthly.
+        dailyCost   = rawDaily;
+        weeklyCost  = rawWeekly;
+        monthlyCost = rawMonthly;
+
+        // === Session cost: delta since session baseline snapshot ===
+        // baseline.json is written at session start (or midnight ET cron).
+        // Session = how much spent since that snapshot.
         let baseline = null;
         try {
-          const fs2 = require('fs');
-          baseline = JSON.parse(fs2.readFileSync('/Users/jc_agent/.openclaw/workspace/dashboard/cost_baseline.json', 'utf8'));
+          baseline = JSON.parse(fs.readFileSync('/Users/jc_agent/.openclaw/workspace/dashboard/cost_baseline.json', 'utf8'));
         } catch(e) { baseline = null; }
 
         if (baseline) {
-          dailyCost   = Math.max(0, rawDaily   - (baseline.total_daily   || 0));
-          monthlyCost = Math.max(0, rawMonthly - (baseline.total_monthly || 0));
-          weeklyCost  = Math.max(0, rawWeekly  - ((baseline.usage_weekly || 0) + (baseline.byok_usage_weekly || 0)));
+          sessionCost = Math.max(0, rawDaily - (baseline.total_daily || 0));
         } else {
-          dailyCost   = rawDaily;
-          weeklyCost  = rawWeekly;
-          monthlyCost = rawMonthly;
+          sessionCost = 0;
         }
-        // Session cost = delta since baseline (same as daily delta when baseline is same-day)
-        sessionCost = dailyCost;
         orSource = 'openrouter';
       }
 
