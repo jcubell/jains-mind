@@ -2,8 +2,8 @@
   "objective": "",
   "status": "idle",
   "brain": {
-    "mode": "idle",
-    "focus": "Done \u2014 assessed power build gaps",
+    "mode": "working",
+    "focus": "Reading message...",
     "model": "claude-sonnet-4-6",
     "thoughts": [
       {
@@ -89,7 +89,7 @@
     "subagents": []
   },
   "steps": [],
-  "updated_at": "2026-03-16T22:39:28Z",
+  "updated_at": "2026-03-16T22:40:20Z",
   "_tunnel_url": "https://charged-unique-architects-fusion.trycloudflare.com",
   "jobs": {
     "strategy_audit": {
@@ -111,16 +111,6 @@
     "sorare_evening": {
       "status": "scheduled",
       "scheduledAt": "5:00 PM"
-    },
-    "intelligence_feed": {
-      "status": "completed",
-      "completedAt": "6:33 PM",
-      "run": 5,
-      "commit": "f73acf5",
-      "categories_updated": 7,
-      "tldr_items": 7,
-      "markets_refreshed": true,
-      "fear_greed": 23
     }
   }
 }
