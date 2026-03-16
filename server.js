@@ -146,12 +146,19 @@ const server = http.createServer((req, res) => {
           const daily = entry.daily || [];
 
           // Session cost = today's daily entries only (distinct from all-time aggregate)
+          // Fallback: if no today entry found, use sessionCostUSD from codexbar (current session)
           const todayStr = new Date().toLocaleDateString('en-CA'); // YYYY-MM-DD in local time
+          let foundToday = false;
           for (const day of daily) {
             if (day.date === todayStr) {
               sessionCost += day.totalCost || 0;
               totalTokens += day.totalTokens || 0;
+              foundToday = true;
             }
+          }
+          // Fallback: codexbar's sessionCostUSD tracks the running session cost directly
+          if (!foundToday && entry.sessionCostUSD) {
+            sessionCost += entry.sessionCostUSD;
           }
 
           // Per-model breakdown from all daily entries (for model breakdown widget)
