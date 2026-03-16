@@ -2,8 +2,8 @@
   "objective": "",
   "status": "idle",
   "brain": {
-    "mode": "working",
-    "focus": "Thinking through Tandem setup \u2014 what should the agent use it for",
+    "mode": "idle",
+    "focus": "Done \u2014 Tandem recommendations ready",
     "model": "claude-sonnet-4-6",
     "thoughts": [
       {
@@ -89,7 +89,7 @@
     "subagents": []
   },
   "steps": [],
-  "updated_at": "2026-03-16T18:37:39Z",
+  "updated_at": "2026-03-16T18:37:53Z",
   "_tunnel_url": "https://charged-unique-architects-fusion.trycloudflare.com",
   "jobs": {
     "strategy_audit": {
