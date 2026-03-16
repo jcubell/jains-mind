@@ -3,7 +3,7 @@
   "status": "idle",
   "brain": {
     "mode": "working",
-    "focus": "Waiting for sub-agent: ESPN mock draft running",
+    "focus": "Draft detected: Round 5, pick 55 on clock. Team Cubell picks at 70/75. Disabling autopick.",
     "model": "claude-sonnet-4-6",
     "thoughts": [
       {
@@ -89,7 +89,7 @@
     "subagents": []
   },
   "steps": [],
-  "updated_at": "2026-03-16T18:54:03Z",
+  "updated_at": "2026-03-16T18:54:08Z",
   "_tunnel_url": "https://charged-unique-architects-fusion.trycloudflare.com",
   "jobs": {
     "strategy_audit": {
