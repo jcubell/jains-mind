@@ -91,9 +91,11 @@ html, body {
   font-size: 10px; font-weight: 500;
   letter-spacing: 0.08em; text-transform: uppercase;
   color: rgba(255,255,255,0.4);
-  background: transparent;
+  background: rgba(255,255,255,0.03);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   border: 1px solid rgba(255,255,255,0.12);
-  border-radius: 6px;
+  border-radius: 8px;
   padding: 6px 12px;
   cursor: pointer;
   transition: all 0.2s ease;
@@ -102,6 +104,7 @@ html, body {
   min-height: 36px;
   display: flex;
   align-items: center;
+  gap: 5px;
 }
 .action-btn:active {
   opacity: 0.6;
@@ -140,7 +143,7 @@ html, body {
 
 /* Main content — offset for fixed top bar */
 .main {
-  padding-top: calc(var(--safe-top) + 64px);
+  padding-top: calc(var(--safe-top) + 56px);
   padding-bottom: calc(var(--safe-bottom) + 20px);
   padding-left: calc(16px + var(--safe-left));
   padding-right: calc(16px + var(--safe-right));
@@ -175,7 +178,7 @@ html, body {
 /* ===== BRAIN HERO CARD ===== */
 .brain-card {
   position: relative;
-  border-radius: 18px;
+  border-radius: 16px;
   border: 1.5px solid var(--m-border);
   box-shadow: 0 0 8px 1px var(--m-glow), inset 0 0 10px var(--m-glow);
   animation: border-breathe 3.5s ease-in-out infinite;
@@ -343,15 +346,16 @@ html, body {
 .section-card {
   background: rgba(20,5,5,0.7);
   border: 1px solid rgba(255,50,50,0.1);
-  border-radius: 14px;
+  border-radius: 12px;
+  box-shadow: 0 1px 0 rgba(255,255,255,0.03) inset;
   margin-bottom: 12px;
   overflow: hidden;
 }
 .section-header {
-  font-family: var(--font);
-  font-size: 10px; font-weight: 700;
-  letter-spacing: 0.18em; text-transform: uppercase;
-  color: rgba(255,100,100,0.6);
+  font-family: var(--mono);
+  font-size: 9px; font-weight: 600;
+  letter-spacing: 0.15em; text-transform: uppercase;
+  color: var(--text-3);
   padding: 12px 16px 8px;
   border-bottom: 1px solid rgba(255,50,50,0.08);
 }
@@ -455,26 +459,26 @@ html, body {
 .signal-tag.fire { color: #ff4444; }
 .signal-tag.watch { color: #888888; }
 
-/* Clock display */
-.clock-display {
-  text-align: center;
-  padding: 12px 16px;
-}
-.clock-time {
-  font-family: var(--font);
-  font-size: 48px; font-weight: 900;
-  color: var(--m-color);
-  letter-spacing: -0.04em;
-  line-height: 1;
-  text-shadow: 0 0 30px var(--m-glow);
-}
-.clock-date {
+/* Compact top-bar clock */
+.top-bar-clock {
   font-family: var(--mono);
   font-size: 11px;
+  font-weight: 400;
   color: var(--text-3);
-  letter-spacing: 0.2em; text-transform: uppercase;
-  margin-top: 6px;
+  letter-spacing: 0.08em;
+  margin: 0 auto 0 12px;
+  opacity: 0.7;
 }
+
+/* Feed scrollable */
+#signalFeed {
+  max-height: 280px;
+  overflow-y: auto;
+  padding: 4px 16px 12px;
+}
+#signalFeed::-webkit-scrollbar { width: 3px; }
+#signalFeed::-webkit-scrollbar-track { background: transparent; }
+#signalFeed::-webkit-scrollbar-thumb { background: var(--m-border); border-radius: 2px; }
 
 /* Night mode removed — sleep only applies to desktop */
 
@@ -515,9 +519,12 @@ html, body {
   text-decoration: none;
   letter-spacing: 0.08em;
   border: 1px solid rgba(255,50,50,0.12);
-  padding: 8px 20px; border-radius: 8px;
+  padding: 8px 20px; border-radius: 10px;
   transition: all 0.2s ease;
   -webkit-tap-highlight-color: transparent;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
 }
 .desktop-link:active { opacity: 0.6; }
 </style>
@@ -527,10 +534,11 @@ html, body {
 <!-- Top Bar -->
 <div class="top-bar">
   <div class="top-bar-title">J<span class="ai">AI</span>N Brain</div>
+  <div class="top-bar-clock" id="topBarClock">--:--</div>
   <div class="top-bar-actions">
     <div class="status-dot" id="statusDot"></div>
-    <button class="action-btn refresh-btn" id="refreshBtn" title="Hard refresh desktop"><span class="refresh-icon">&#8635;</span> Refresh</button>
-    <button class="action-btn sleep-btn" id="sleepBtn" title="Sleep / Night mode">&#9790; Sleep</button>
+    <button class="action-btn refresh-btn" id="refreshBtn" title="Hard refresh desktop"><span class="refresh-icon"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg></span> Refresh</button>
+    <button class="action-btn sleep-btn" id="sleepBtn" title="Sleep / Wake desktop"><span id="sleepIcon"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg></span> <span id="sleepLabel">Sleep</span></button>
   </div>
 </div>
 
@@ -539,12 +547,6 @@ html, body {
 
 <!-- Main Content -->
 <div class="main">
-
-  <!-- Clock -->
-  <div class="clock-display">
-    <div class="clock-time" id="liveClock">--:--</div>
-    <div class="clock-date" id="liveDate">---</div>
-  </div>
 
   <!-- Brain Feed Card -->
   <div class="brain-card" id="brainCard">
@@ -607,18 +609,14 @@ html, body {
   <!-- Key Signals -->
   <div class="section-card">
     <div class="section-header">Key Signals</div>
-    <div class="feed-items">
-      <div class="feed-item signal-fire"><span class="signal-tag fire">Signal</span>Anthropic vs Pentagon — DOD labeled supplier "supply-chain risk" after refusing weapons terms.</div>
-      <div class="feed-item signal-fire"><span class="signal-tag fire">Signal</span>Hormuz blockade — Brent above $101. 16 vessels targeted since Feb 28.</div>
-      <div class="feed-item signal-fire"><span class="signal-tag fire">Signal</span>DeepSeek V4 release imminent — 1T param multimodal, Apache 2.0. On Huawei chips.</div>
-      <div class="feed-item signal-watch"><span class="signal-tag watch">Watch</span>NVIDIA GTC 2026 kicks off Monday. Jensen keynote + NemoClaw agent platform.</div>
-      <div class="feed-item signal-watch"><span class="signal-tag watch">Watch</span>Adobe CEO stepping down. $ADBE -8% pre-market, -60% from 2021 peak.</div>
+    <div class="feed-items" id="signalFeed">
+      <div class="feed-item signal-watch"><span class="signal-tag watch">Watch</span>Loading signals…</div>
     </div>
   </div>
 
   <!-- Link to Desktop -->
   <div class="desktop-link-row">
-    <a class="desktop-link" href="https://jcubell.github.io/jains-mind/" target="_blank">Open Desktop Dashboard &#8599;</a>
+    <a class="desktop-link" href="https://jcubell.github.io/jains-mind/" target="_blank">Open Desktop Dashboard <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></a>
   </div>
 
 </div>
@@ -813,30 +811,69 @@ html, body {
   // ── CLOCK ───────────────────────────────────────────────────────────────────
   function updateClock() {
     var now = new Date();
-    var opts12 = { timeZone: 'America/New_York', hour: '2-digit', minute: '2-digit', hour12: true };
-    var optsDate = { timeZone: 'America/New_York', weekday: 'short', month: 'short', day: 'numeric' };
-    var clk = document.getElementById('liveClock');
-    var dt = document.getElementById('liveDate');
-    if (clk) clk.textContent = now.toLocaleTimeString('en-US', opts12).replace(':00 ', ' ').replace(':00AM','AM').replace(':00PM','PM');
-    if (dt) dt.textContent = now.toLocaleDateString('en-US', optsDate).toUpperCase();
+    var opts12 = { timeZone: 'America/New_York', hour: 'numeric', minute: '2-digit', hour12: true };
+    var clk = document.getElementById('topBarClock');
+    if (clk) clk.textContent = now.toLocaleTimeString('en-US', opts12);
   }
   updateClock();
-  setInterval(updateClock, 1000);
+  setInterval(updateClock, 10000);
 
-  // Sleep button — sends signal to desktop only, PWA stays fully awake
+  // ── SLEEP / WAKE TOGGLE ─────────────────────────────────────────────────────
+  var desktopSleeping = false;
+  var SLEEP_ICON = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>';
+  var WAKE_ICON = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>';
+
+  function handleSleepToggle(e) {
+    e.preventDefault();
+    var iconEl = document.getElementById('sleepIcon');
+    var labelEl = document.getElementById('sleepLabel');
+    if (!desktopSleeping) {
+      if (tunnelUrl) fetch(tunnelUrl + '/sleep', { method: 'POST' }).catch(function(){});
+      desktopSleeping = true;
+      if (iconEl) iconEl.innerHTML = WAKE_ICON;
+      if (labelEl) labelEl.textContent = 'Wake';
+      showToast('Desktop sleeping');
+    } else {
+      if (tunnelUrl) fetch(tunnelUrl + '/wake', { method: 'POST' }).catch(function(){});
+      desktopSleeping = false;
+      if (iconEl) iconEl.innerHTML = SLEEP_ICON;
+      if (labelEl) labelEl.textContent = 'Sleep';
+      showToast('Desktop awake');
+    }
+  }
+
   var sleepBtn = document.getElementById('sleepBtn');
   if (sleepBtn) {
-    sleepBtn.addEventListener('click', function(e) {
-      e.preventDefault();
-      if (tunnelUrl) fetch(tunnelUrl + '/sleep', { method: 'POST' }).catch(function(){});
-      showToast('Desktop sleeping 🌙');
-    });
-    sleepBtn.addEventListener('touchend', function(e) {
-      e.preventDefault();
-      if (tunnelUrl) fetch(tunnelUrl + '/sleep', { method: 'POST' }).catch(function(){});
-      showToast('Desktop sleeping 🌙');
-    }, { passive: false });
+    sleepBtn.addEventListener('click', handleSleepToggle);
+    sleepBtn.addEventListener('touchend', handleSleepToggle, { passive: false });
   }
+
+  // ── TLDR / KEY SIGNALS ──────────────────────────────────────────────────────
+  function loadTldr() {
+    if (!tunnelUrl) return;
+    fetch(tunnelUrl + '/tldr?t=' + Date.now(), { cache: 'no-store' })
+      .then(function(r) { return r.json(); })
+      .then(function(d) {
+        var container = document.getElementById('signalFeed');
+        if (!container || !d.items || !d.items.length) return;
+        container.innerHTML = '';
+        d.items.forEach(function(item) {
+          var div = document.createElement('div');
+          div.className = 'feed-item signal-' + (item.cat === 'fire' ? 'fire' : 'watch');
+          var tag = document.createElement('span');
+          tag.className = 'signal-tag ' + (item.cat === 'fire' ? 'fire' : 'watch');
+          tag.textContent = item.cat === 'fire' ? 'SIGNAL' : 'WATCH';
+          div.appendChild(tag);
+          var tmp = document.createElement('div');
+          tmp.innerHTML = item.html;
+          div.appendChild(document.createTextNode(tmp.textContent || tmp.innerText || ''));
+          container.appendChild(div);
+        });
+      })
+      .catch(function(){});
+  }
+  setTimeout(loadTldr, 4000);
+  setInterval(loadTldr, 5 * 60 * 1000);
 
   // ── REFRESH BUTTON ──────────────────────────────────────────────────────────
   // Refreshes the desktop dashboard (index.html) by POST to /refresh or
