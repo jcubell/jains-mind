@@ -4,12 +4,48 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
 <title>J.AI.N'S Mind — Command Center</title>
 <link href="https://api.fontshare.com/v2/css?f[]=satoshi@300,400,500,700&display=swap" rel="stylesheet">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
+/*
+================================================================================
+  DASHBOARD OWNERSHIP MAP — READ BEFORE EDITING
+================================================================================
+
+  OWNED BY J.AI.N (do not modify without coordinating):
+  ┌─ .brain-hero-wrap / .brain-hero     — Brain Feed hero widget (top-left)
+  ├─ #brainFocus, #brainStream          — Live focus + thought stream
+  ├─ #modelRoster, #subagentPanel       — Model chips + sub-agent card
+  ├─ .model-chip, setModelTheme()       — Per-model color theming
+  ├─ push_brain.py / push_github.py     — State push pipeline
+  └─ --m-color, --m-glow, --m-border    — Model-color CSS vars (DO NOT hardcode red)
+
+  OWNED BY PERPLEXITY COMPUTER (your zone):
+  ┌─ .jobs-section                      — Today's Jobs panel (bottom-left)
+  ├─ .right-panel / .feed-section       — Live Intelligence Feed (right)
+  ├─ .ticker-bar                        — Market ticker
+  ├─ var(jobs data array in JS)         — Job definitions (name/time/desc/subtasks)
+  └─ Feed HTML content                  — News items, insights, signal/watch/noise
+
+  SHARED (coordinate before changing):
+  ┌─ .top-bar                           — Title, clock, status dot
+  ├─ :root CSS variables                — Global colors/fonts
+  └─ .dashboard grid layout             — Two-column grid
+
+  PERPLEXITY: YOUR ACCENT COLOR IS TEAL #20B2AA — not red (red = J.AI.N's Brain Feed)
+  When you add new sections, scope ALL CSS under your section class (.jobs-section, .right-panel)
+  Never modify: #brainFocus, #brainStream, #modelRoster, #subagentPanel, #objDot, setModelTheme()
+  Branch workflow: edit on main → git push origin main → git push origin main:master --force
+  GitHub Pages serves from master branch. URL: https://jcubell.github.io/jains-mind
+================================================================================
+*/
+
   *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
   :root {
@@ -19,8 +55,8 @@
     --border-light: #161616;
     --text: #d4d4d4;
     --text-2: #999999;
-    --text-3: #666666;
-    --text-muted: #444444;
+    --text-3: #888888;
+    --text-muted: #666666;
     --accent: #ff2222;
     --accent-soft: rgba(255, 34, 34, 0.08);
     --green: #4caf50;
@@ -32,6 +68,9 @@
     --neon: #ff2222;
     --font: 'Satoshi', -apple-system, BlinkMacSystemFont, sans-serif;
     --mono: 'JetBrains Mono', 'SF Mono', monospace;
+    --m-color: #ff4444;
+    --m-glow: rgba(255,68,68,0.2);
+    --m-border: rgba(255,68,68,0.4);
   }
 
   html, body {
@@ -64,25 +103,38 @@
     font-family: var(--font);
     font-size: 12px; font-weight: 700;
     letter-spacing: 0.2em; text-transform: uppercase;
-    color: var(--text-muted);
+    color: var(--text-2);
   }
   .top-bar-title .ai { color: var(--accent); }
   .top-bar-right { display: flex; align-items: center; gap: 20px; }
+  .sleep-btn {
+    font-family: var(--mono);
+    font-size: 10px; font-weight: 500;
+    letter-spacing: 0.1em; text-transform: uppercase;
+    color: rgba(255,255,255,0.3);
+    background: transparent;
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 3px;
+    padding: 3px 10px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  .sleep-btn:hover { color: rgba(255,255,255,0.6); border-color: rgba(255,255,255,0.25); }
   .live-clock {
     font-family: var(--mono);
     font-size: 11px; font-weight: 400;
-    color: var(--text-muted); letter-spacing: 0.02em;
+    color: #888888; letter-spacing: 0.02em;
   }
   .status-indicator {
     display: flex; align-items: center; gap: 7px;
     font-family: var(--mono);
     font-size: 10px; letter-spacing: 0.06em; text-transform: uppercase;
-    color: var(--text-muted);
+    color: #20B2AA;
     transition: color 0.6s ease;
   }
   .status-dot {
     width: 6px; height: 6px; border-radius: 50%;
-    background: var(--green);
+    background: #20B2AA;
     transition: background 0.6s ease;
   }
   .status-thinking .status-dot { background: var(--accent); animation: pulse-think 1.2s ease-in-out infinite; }
@@ -128,18 +180,10 @@
     initial-value: 0deg;
   }
 
-  /* IDLE: organic breathing — multi-step for a natural heartbeat feel */
+  /* IDLE: slow breathe */
   @keyframes border-breathe {
-    0%   { opacity: 0.5;  box-shadow: 0 0 8px 1px var(--m-glow, rgba(255,34,34,0.2)),  inset 0 0 10px var(--m-glow, rgba(255,34,34,0.04)); }
-    30%  { opacity: 0.85; box-shadow: 0 0 22px 4px var(--m-glow, rgba(255,34,34,0.42)), inset 0 0 22px var(--m-glow, rgba(255,34,34,0.09)); }
-    50%  { opacity: 1;    box-shadow: 0 0 32px 8px var(--m-glow, rgba(255,34,34,0.58)), inset 0 0 32px var(--m-glow, rgba(255,34,34,0.14)); }
-    70%  { opacity: 0.85; box-shadow: 0 0 22px 4px var(--m-glow, rgba(255,34,34,0.42)), inset 0 0 22px var(--m-glow, rgba(255,34,34,0.09)); }
-    100% { opacity: 0.5;  box-shadow: 0 0 8px 1px var(--m-glow, rgba(255,34,34,0.2)),  inset 0 0 10px var(--m-glow, rgba(255,34,34,0.04)); }
-  }
-  /* Idle inner ambient glow — pulsing background halo behind content */
-  @keyframes hero-ambient {
-    0%,100% { background-color: var(--bg); }
-    50%      { background-color: color-mix(in srgb, var(--bg) 96%, var(--m-color, #ff2222) 4%); }
+    0%,100% { opacity: 0.35; box-shadow: 0 0 6px 0px rgba(255,0,0,0.15), inset 0 0 8px rgba(255,0,0,0.03); }
+    50%      { opacity: 0.75; box-shadow: 0 0 18px 3px rgba(255,0,0,0.35), inset 0 0 20px rgba(255,0,0,0.07); }
   }
   /* WORKING: fast laser spin */
   @keyframes laser-spin {
@@ -147,18 +191,8 @@
     100% { --laser-angle: 360deg; }
   }
   @keyframes border-working-pulse {
-    0%,100% { opacity: 1;    box-shadow: 0 0 20px 4px var(--m-glow, rgba(255,20,20,0.6)),  0 0 50px 8px  var(--m-glow, rgba(255,0,0,0.25)),  inset 0 0 30px var(--m-glow, rgba(255,0,0,0.1)); }
-    50%      { opacity: 0.88; box-shadow: 0 0 38px 10px var(--m-glow, rgba(255,50,50,0.8)), 0 0 80px 20px var(--m-glow, rgba(255,0,0,0.4)),  inset 0 0 48px var(--m-glow, rgba(255,0,0,0.18)); }
-  }
-  /* Working: focus text shimmer/pulse */
-  @keyframes focus-text-glow {
-    0%,100% { text-shadow: 0 0 16px var(--m-glow, rgba(255,40,40,0.4)),  0 0 32px var(--m-glow, rgba(255,40,40,0.15)); }
-    50%      { text-shadow: 0 0 28px var(--m-glow, rgba(255,80,80,0.7)),  0 0 56px var(--m-glow, rgba(255,40,40,0.35)), 0 0 80px var(--m-glow, rgba(255,20,20,0.15)); }
-  }
-  /* Working: thought row highlight flash for newest */
-  @keyframes thought-flash {
-    0%   { background: rgba(255,60,60,0.12); }
-    100% { background: transparent; }
+    0%,100% { opacity: 1; box-shadow: 0 0 20px 4px rgba(255,20,20,0.6), 0 0 50px 8px rgba(255,0,0,0.25), inset 0 0 30px rgba(255,0,0,0.1); }
+    50%      { opacity: 0.85; box-shadow: 0 0 30px 8px rgba(255,50,50,0.8), 0 0 70px 16px rgba(255,0,0,0.4), inset 0 0 40px rgba(255,0,0,0.15); }
   }
   @keyframes scanline {
     0% { transform: translateY(-100%); opacity: 0; }
@@ -182,10 +216,10 @@
     display: flex; flex-direction: column;
     overflow: hidden;
     border-radius: 12px;
-    /* IDLE: bright model-colored border that breathes organically */
-    border: 2px solid var(--m-color, rgba(255,34,34,0.8));
-    box-shadow: 0 0 14px 2px var(--m-glow, rgba(255,34,34,0.3)), inset 0 0 14px var(--m-glow, rgba(255,34,34,0.06));
-    animation: border-breathe 5s ease-in-out infinite, hero-ambient 5s ease-in-out infinite;
+    /* IDLE: simple dim border that breathes */
+    border: 1.5px solid var(--m-border);
+    box-shadow: 0 0 8px 1px var(--m-glow), inset 0 0 10px var(--m-glow);
+    animation: border-breathe 3.5s ease-in-out infinite;
     transition: border-color 0.6s ease, box-shadow 0.6s ease;
   }
   /* WORKING state — laser spin + intense glow */
@@ -193,19 +227,15 @@
     background:
       linear-gradient(var(--bg), var(--bg)) padding-box,
       conic-gradient(from var(--laser-angle),
-        #ff0000 0deg,
-        #ff5500 30deg,
-        #ff0000 60deg,
-        #cc0000 100deg,
-        #ff2200 150deg,
-        #ff0000 200deg,
-        #ff4400 250deg,
-        #ff0000 300deg,
-        #cc0000 340deg,
-        #ff0000 360deg
+        #ff4444 0deg,
+        #ff6666 30deg,
+        #cc0000 80deg,
+        #ff4444 160deg,
+        #990000 220deg,
+        #ff4444 360deg
       ) border-box;
     border: 2px solid transparent;
-    animation: laser-spin 1.2s linear infinite, border-working-pulse 2s ease-in-out infinite;
+    animation: laser-spin 1.2s linear infinite, border-working-pulse 1.8s ease-in-out infinite;
   }
   .brain-hero::before {
     content: '';
@@ -219,35 +249,29 @@
     content: '';
     position: absolute; left: 0; right: 0;
     height: 2px;
-    background: linear-gradient(90deg, transparent, rgba(255,40,40,0.1), rgba(255,80,80,0.35), rgba(255,40,40,0.1), transparent);
+    background: linear-gradient(90deg, transparent, var(--m-glow), var(--m-border), var(--m-glow), transparent);
     pointer-events: none; z-index: 1;
     opacity: 0;
     transition: opacity 0.6s ease;
   }
   .brain-hero.working::after {
     opacity: 1;
-    animation: scanline 3s ease-in-out infinite;
-    background: linear-gradient(90deg, transparent, rgba(255,60,60,0.08), rgba(255,100,100,0.45), rgba(255,60,60,0.08), transparent);
+    animation: scanline 2.5s ease-in-out infinite;
   }
   .brain-hero-header {
-    padding: 16px 20px 14px;
-    border-bottom: 1px solid rgba(255,0,0,0.12);
-    display: flex; align-items: center; gap: 14px;
-    flex-shrink: 0;
+    padding: 10px 16px 10px;
+    border-bottom: 1px solid var(--m-glow);
+    display: flex; align-items: center; gap: 8px;
+    flex-shrink: 0; flex-wrap: nowrap; overflow: hidden;
     position: relative; z-index: 2;
-    transition: border-bottom-color 0.6s ease;
-  }
-  .brain-hero.working .brain-hero-header {
-    border-bottom-color: rgba(255,40,40,0.25);
   }
   .brain-hero-label {
     font-family: var(--font);
-    font-size: 20px; font-weight: 700;
-    letter-spacing: 0.18em; text-transform: uppercase;
-    color: var(--m-color, rgba(255,80,80,0.95));
-    display: flex; align-items: center; gap: 12px;
-    text-shadow: 0 0 16px var(--m-glow, rgba(255,60,60,0.3));
-    transition: color 0.6s ease, text-shadow 0.6s ease;
+    font-size: 14px; font-weight: 700;
+    letter-spacing: 0.16em; text-transform: uppercase;
+    color: var(--m-color);
+    display: flex; align-items: center; gap: 8px;
+    flex: 1; min-width: 0; white-space: nowrap; overflow: hidden;
   }
   .brain-hero-label img {
     width: 36px; height: 36px;
@@ -257,13 +281,14 @@
 
   .brain-powered {
     font-family: var(--mono);
-    font-size: 9px;
-    letter-spacing: 0.1em;
+    font-size: 8px;
+    letter-spacing: 0.08em;
     text-transform: uppercase;
-    color: rgba(255,80,80,0.5);
-    margin-left: auto;
+    color: var(--m-glow);
+    margin-left: auto; flex-shrink: 0;
+    display: flex; align-items: center; gap: 4px;
   }
-  .brain-powered span { color: rgba(255,100,100,0.8); }
+  .brain-powered span { color: var(--m-color); }
   .brain-hero-focus {
     flex: 0 0 auto;
     padding: 16px 16px 12px;
@@ -274,20 +299,12 @@
     font-family: var(--font);
     font-size: 28px; font-weight: 700;
     line-height: 1.25;
-    color: #ffffff;
+    color: var(--text);
     letter-spacing: -0.02em;
-    /* Idle: subtle ambient text glow synced with border breathe */
-    text-shadow: 0 0 24px var(--m-glow, rgba(255,34,34,0.25));
-    animation: focus-idle-glow 5s ease-in-out infinite;
-    transition: color 0.4s ease, text-shadow 0.4s ease;
-  }
-  @keyframes focus-idle-glow {
-    0%,100% { text-shadow: 0 0 12px var(--m-glow, rgba(255,34,34,0.15)); }
-    50%      { text-shadow: 0 0 32px var(--m-glow, rgba(255,34,34,0.35)), 0 0 8px rgba(255,255,255,0.05); }
   }
   .brain-focus-text.working {
-    color: var(--m-color, #ff6060);
-    animation: focus-text-glow 2s ease-in-out infinite;
+    color: var(--m-color);
+    text-shadow: 0 0 24px var(--m-glow);
   }
   .brain-hero-stream {
     flex: 1;
@@ -296,7 +313,7 @@
     position: relative; z-index: 2;
   }
   .brain-hero-stream::-webkit-scrollbar { width: 2px; }
-  .brain-hero-stream::-webkit-scrollbar-thumb { background: rgba(255,0,0,0.2); }
+  .brain-hero-stream::-webkit-scrollbar-thumb { background: var(--m-glow); }
   .thought-row {
     display: flex; align-items: baseline; gap: 8px;
     padding: 5px 0;
@@ -305,12 +322,276 @@
     font-size: 11px; line-height: 1.5;
   }
   .thought-row:last-child { border-bottom: none; }
-  .thought-row .t-time { color: rgba(255,80,80,0.7); white-space: nowrap; flex-shrink: 0; min-width: 60px; }
-  .thought-row .t-icon { color: rgba(255,100,100,0.8); flex-shrink: 0; }
-  .thought-row .t-text { color: #b0b0b0; }
-  .thought-row.new .t-text { color: #e0e0e0; }
-  /* Newest entry gets a brief flash highlight when injected */
-  .thought-row.new { animation: thought-flash 1.2s ease-out forwards; }
+  .thought-row .t-time { color: var(--m-border); white-space: nowrap; flex-shrink: 0; min-width: 60px; }
+  .thought-row .t-icon { color: var(--m-color); flex-shrink: 0; }
+  .thought-row .t-text { color: var(--text-2); }
+  .thought-row.new .t-text { color: var(--text); }
+
+  /* Model roster — inline with Brain Feed title, single line */
+  .model-roster {
+    display: flex; align-items: center; gap: 4px;
+    margin-left: 6px; flex-wrap: nowrap; flex-shrink: 1;
+  }
+  .model-chip[data-model="whisper"] { display: none; }
+  .model-chip[data-model="whisper"].active { display: inline-block; }
+  .model-chip {
+    font-family: var(--mono);
+    font-size: 9px; font-weight: 500;
+    padding: 2px 6px; border-radius: 20px;
+    letter-spacing: 0.04em;
+    color: rgba(255,255,255,0.35);
+    border: 1px solid rgba(255,255,255,0.12);
+    background: rgba(255,255,255,0.03);
+    transition: all 0.3s ease;
+    white-space: nowrap; flex-shrink: 0;
+  }
+  .model-chip.active {
+    color: var(--m-color);
+    border-color: var(--m-border);
+    background: var(--m-glow);
+    box-shadow: 0 0 8px var(--m-glow);
+  }
+
+  .or-model-badge {
+    font-family: var(--mono);
+    font-size: 7px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-weight: 700;
+  }
+  .badge-openrouter {
+    background: rgba(100, 60, 255, 0.12);
+    border: 1px solid rgba(100, 60, 255, 0.3);
+    color: rgba(160, 130, 255, 0.8);
+  }
+  .badge-openrouter-themed {
+    background: color-mix(in srgb, var(--m-color) 12%, transparent);
+    border: 1px solid color-mix(in srgb, var(--m-color) 30%, transparent);
+    color: var(--m-color);
+    opacity: 0.75;
+    transition: background 0.4s ease, border-color 0.4s ease, color 0.4s ease;
+  }
+  .badge-openclaw {
+    background: rgba(255, 90, 0, 0.12);
+    border: 1px solid rgba(255, 100, 0, 0.3);
+    color: rgba(255, 150, 60, 0.85);
+  }
+
+  /* Model usage breakdown — compact inline strip (hidden: redundant with breakdown panel) */
+  .or-model-usage-wrap {
+    display: none !important;
+  }
+  .or-model-header { display: none; }
+  .or-model-label {
+    font-family: var(--mono);
+    font-size: 7px;
+    color: rgba(255,255,255,0.22);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    flex-shrink: 0;
+  }
+  .or-model-rows {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 4px;
+    align-items: center;
+  }
+  .or-model-row {
+    display: flex;
+    align-items: center;
+    gap: 3px;
+    background: rgba(255,255,255,0.04);
+    border-radius: 3px;
+    padding: 1px 5px 1px 3px;
+  }
+  .or-model-dot {
+    width: 5px; height: 5px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+  .or-model-name {
+    font-family: var(--mono);
+    font-size: 7px;
+    color: rgba(255,255,255,0.45);
+    max-width: 70px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .or-model-bar-track { display: none; }
+  .or-model-bar-fill { display: none; }
+  .or-model-pct {
+    font-family: var(--mono);
+    font-size: 7px;
+    color: rgba(255,255,255,0.35);
+    flex-shrink: 0;
+  }
+
+  /* Sub-agents panel — bottom of brain hero */
+  .brain-subagents {
+    flex-shrink: 0;
+    border-top: 1px solid var(--m-glow);
+    padding: 8px 16px 10px;
+    position: relative; z-index: 2;
+  }
+  .subagents-label {
+    font-family: var(--font);
+    font-size: 9px; font-weight: 700;
+    letter-spacing: 0.16em; text-transform: uppercase;
+    color: var(--m-border);
+    margin-bottom: 6px;
+  }
+  .subagent-row {
+    display: flex; align-items: center; gap: 8px;
+    padding: 4px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    font-family: var(--mono); font-size: 10px;
+  }
+  .subagent-row:last-child { border-bottom: none; }
+  .subagent-dot {
+    width: 5px; height: 5px; border-radius: 50%;
+    background: var(--m-color); flex-shrink: 0;
+    animation: laser-pulse 1.2s ease-in-out infinite;
+  }
+  .subagent-name { color: rgba(255,255,255,0.7); font-weight: 600; flex-shrink: 0; }
+  .subagent-task { color: rgba(255,255,255,0.35); flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .subagent-model { color: var(--m-color); flex-shrink: 0; font-size: 9px; opacity: 0.5; }
+  .subagents-empty { color: rgba(255,255,255,0.15); font-family: var(--mono); font-size: 10px; font-style: italic; }
+
+  /* Per-model conic-gradient overrides */
+  .brain-hero.model-grok { background: linear-gradient(#0a0a0a,#0a0a0a) padding-box, conic-gradient(from var(--laser-angle),#ff2222 0deg,#ff5555 30deg,#cc0000 80deg,#ff2222 160deg,#990000 220deg,#ff2222 360deg) border-box; }
+  .brain-hero.model-sonnet { background: linear-gradient(#0a0a0a,#0a0a0a) padding-box, conic-gradient(from var(--laser-angle),#ff9500 0deg,#ffb347 30deg,#ff6600 80deg,#ff9500 160deg,#cc7700 220deg,#ff9500 360deg) border-box; }
+  .brain-hero.model-gemini { background: linear-gradient(#0a0a0a,#0a0a0a) padding-box, conic-gradient(from var(--laser-angle),#4285f4 0deg,#74a9f7 30deg,#1a6cf5 80deg,#4285f4 160deg,#2456b8 220deg,#4285f4 360deg) border-box; }
+  .brain-hero.model-deepseek { background: linear-gradient(#0a0a0a,#0a0a0a) padding-box, conic-gradient(from var(--laser-angle),#a855f7 0deg,#c084fc 30deg,#9333ea 80deg,#a855f7 160deg,#7c22ce 220deg,#a855f7 360deg) border-box; }
+  .brain-hero.model-llama { background: linear-gradient(#0a0a0a,#0a0a0a) padding-box, conic-gradient(from var(--laser-angle),#22c55e 0deg,#4ade80 30deg,#16a34a 80deg,#22c55e 160deg,#15803d 220deg,#22c55e 360deg) border-box; }
+  .brain-hero.model-openai { background: linear-gradient(#0a0a0a,#0a0a0a) padding-box, conic-gradient(from var(--laser-angle),#00A3FF 0deg,#33b8ff 30deg,#0080cc 80deg,#00A3FF 160deg,#005fa3 220deg,#00A3FF 360deg) border-box; }
+  .brain-hero.model-whisper { background: linear-gradient(#0a0a0a,#0a0a0a) padding-box, conic-gradient(from var(--laser-angle),#e2e8f0 0deg,#f8fafc 30deg,#cbd5e1 80deg,#e2e8f0 160deg,#94a3b8 220deg,#e2e8f0 360deg) border-box; }
+  .brain-hero.model-default { background: linear-gradient(#0a0a0a,#0a0a0a) padding-box, conic-gradient(from var(--laser-angle),#ff4444 0deg,#ff6666 30deg,#cc0000 80deg,#ff4444 160deg,#990000 220deg,#ff4444 360deg) border-box; }
+
+  /* ===== USAGE METRICS PANEL — compact inline ===== */
+  .usage-metrics-panel {
+    flex-shrink: 0;
+    border-top: 1px solid var(--m-glow);
+    padding: 5px 12px 6px;
+    position: relative; z-index: 2;
+    background: rgba(0,0,0,0.12);
+  }
+  .usage-metrics-header {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 4px;
+  }
+  .usage-metrics-label {
+    font-family: var(--font);
+    font-size: 8px; font-weight: 700;
+    letter-spacing: 0.16em; text-transform: uppercase;
+    color: var(--m-border);
+    display: flex; align-items: center; gap: 5px;
+  }
+  .usage-metrics-label .um-dot {
+    width: 4px; height: 4px; border-radius: 50%;
+    background: var(--m-color); opacity: 0.6;
+  }
+  .usage-metrics-refresh {
+    font-family: var(--mono);
+    font-size: 7px; color: rgba(255,255,255,0.15);
+    letter-spacing: 0.05em;
+    transition: color 0.3s ease;
+  }
+  .usage-metrics-refresh.updating { color: var(--m-color); }
+
+  /* Inline cost strip — all values on one line */
+  .usage-cost-row {
+    display: flex; align-items: center;
+    gap: 0; margin-bottom: 4px;
+    background: rgba(255,255,255,0.02);
+    border: 1px solid rgba(255,255,255,0.05);
+    border-radius: 4px;
+    padding: 3px 8px;
+    flex-wrap: wrap;
+  }
+  .usage-cost-card {
+    flex: none;
+    display: flex; align-items: baseline; gap: 4px;
+    padding: 0 8px 0 0;
+    background: none; border: none; border-radius: 0;
+  }
+  .usage-cost-card + .usage-cost-card {
+    padding-left: 8px;
+    border-left: 1px solid rgba(255,255,255,0.07);
+  }
+  .usage-cost-card:hover { border-color: transparent; }
+  .usage-cost-card-label {
+    font-family: var(--mono);
+    font-size: 7px; letter-spacing: 0.08em; text-transform: uppercase;
+    color: rgba(255,255,255,0.22);
+    white-space: nowrap;
+  }
+  .usage-cost-card-value {
+    font-family: var(--mono);
+    font-size: 11px; font-weight: 600;
+    color: var(--m-color);
+    line-height: 1;
+  }
+  .usage-cost-card-sub {
+    font-family: var(--mono);
+    font-size: 8px; color: rgba(255,255,255,0.18);
+    white-space: nowrap;
+  }
+  .usage-cost-card.actual .usage-cost-card-value {
+    color: #4caf50;
+  }
+
+  .usage-model-breakdown {
+    display: flex; flex-direction: column; gap: 2px;
+  }
+  .usage-model-row {
+    display: flex; align-items: center; gap: 5px;
+    font-family: var(--mono); font-size: 9px;
+  }
+  .usage-model-name {
+    width: 90px; color: rgba(255,255,255,0.45);
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    flex-shrink: 0;
+  }
+  .usage-model-bar-wrap {
+    flex: 1; height: 2px;
+    background: rgba(255,255,255,0.05);
+    border-radius: 2px; overflow: hidden;
+  }
+  .usage-model-bar-fill {
+    height: 100%; border-radius: 2px;
+    background: var(--m-color);
+    transition: width 0.5s ease;
+    opacity: 0.6;
+  }
+  .usage-model-cost {
+    width: 40px; text-align: right;
+    color: rgba(255,255,255,0.3);
+    flex-shrink: 0;
+  }
+  .usage-model-pct {
+    width: 24px; text-align: right;
+    color: var(--m-color); opacity: 0.45;
+    flex-shrink: 0; font-size: 8px;
+  }
+  .usage-source-badge {
+    font-family: var(--mono);
+    font-size: 7px; letter-spacing: 0.08em; text-transform: uppercase;
+    padding: 1px 3px; border-radius: 2px;
+    background: rgba(76,175,80,0.1);
+    border: 1px solid rgba(76,175,80,0.25);
+    color: rgba(76,175,80,0.7);
+    margin-left: 3px;
+    vertical-align: middle;
+  }
+  .usage-empty {
+    font-family: var(--mono); font-size: 9px;
+    color: rgba(255,255,255,0.13); font-style: italic;
+    padding: 2px 0;
+  }
 
   /* Jobs section — bottom half */
   .jobs-section {
@@ -330,11 +611,11 @@
     font-family: var(--font);
     font-size: 10px; font-weight: 700;
     letter-spacing: 0.18em; text-transform: uppercase;
-    color: var(--text-muted);
+    color: #cccccc;
   }
   .panel-meta {
     font-family: var(--mono);
-    font-size: 10px; color: var(--text-muted);
+    font-size: 10px; color: var(--text-2);
     letter-spacing: 0.04em;
   }
   .panel-body {
@@ -360,7 +641,7 @@
   }
   .objective-dot {
     width: 5px; height: 5px; border-radius: 50%;
-    transition: all 0.6s ease;
+    transition: all 0.6s ease; flex-shrink: 0;
   }
   .objective-dot.idle { background: var(--accent); animation: pulse-idle 2.5s ease-in-out infinite; }
   .objective-dot.thinking { background: var(--accent); animation: pulse-think 1s ease-in-out infinite; }
@@ -380,7 +661,7 @@
     flex-shrink: 0;
     display: flex; align-items: center; gap: 8px;
     font-family: var(--mono);
-    font-size: 11px; color: var(--text-3);
+    font-size: 11px; color: var(--text-2);
     min-height: 0;
   }
   .latest-step-dot {
@@ -388,7 +669,7 @@
     background: var(--accent); flex-shrink: 0;
     animation: pulse-idle 2.5s ease-in-out infinite;
   }
-  .latest-step-time { color: var(--text-muted); white-space: nowrap; flex-shrink: 0; }
+  .latest-step-time { color: var(--text-3); white-space: nowrap; flex-shrink: 0; }
   .latest-step-text { color: var(--text-2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .blink-cursor-inline {
     font-family: var(--mono);
@@ -400,98 +681,146 @@
   @keyframes blink-s { 0%,50%{opacity:0.4} 51%,100%{opacity:0} }
   @keyframes blink-f { 0%,50%{opacity:0.8} 51%,100%{opacity:0} }
 
+  /* TODAY'S JOBS — Perplexity Computer themed */
   /* ===== JOBS ===== */
-  .job-card {
-    padding: 14px 0;
-    border-bottom: 1px solid var(--border-light);
+
+  /* Panel header — teal accent on label */
+  .jobs-section .panel-header h2 {
+    color: #20B2AA;
+    letter-spacing: 0.18em;
   }
-  .job-card:last-child { border-bottom: none; }
-  .job-header {
+  .jobs-section .panel-meta {
+    color: #20B2AA;
+    opacity: 0.6;
+  }
+
+  /* Scrollbar — teal tint */
+  .jobs-section .panel-body::-webkit-scrollbar { width: 2px; }
+  .jobs-section .panel-body::-webkit-scrollbar-track { background: transparent; }
+  .jobs-section .panel-body::-webkit-scrollbar-thumb {
+    background: rgba(32,178,170,0.35);
+    border-radius: 2px;
+  }
+
+  /* Job cards — subtle border, slight bg tint, hover lift */
+  .jobs-section .job-card {
+    padding: 14px 12px;
+    margin-bottom: 6px;
+    background: rgba(32,178,170,0.03);
+    border: 1px solid rgba(32,178,170,0.12);
+    border-radius: 6px;
+    transition: background 0.2s ease, border-color 0.2s ease;
+  }
+  .jobs-section .job-card:last-child { margin-bottom: 0; }
+  .jobs-section .job-card:hover {
+    background: rgba(32,178,170,0.06);
+    border-color: rgba(32,178,170,0.22);
+  }
+
+  .jobs-section .job-header {
     display: flex; align-items: center; justify-content: space-between;
     margin-bottom: 6px;
   }
-  .job-name {
+
+  /* Job name — clean, prominent */
+  .jobs-section .job-name {
     font-family: var(--font);
-    font-size: 13px; font-weight: 600; color: var(--text);
+    font-size: 14px; font-weight: 600; color: #e8e8e8;
   }
-  .job-time {
+
+  /* Job time — teal mono */
+  .jobs-section .job-time {
     font-family: var(--mono);
-    font-size: 10px; color: var(--text-muted);
+    font-size: 10px; color: #20B2AA;
     margin-left: 8px;
   }
-  .badge {
+
+  /* Badges — pill style */
+  .jobs-section .badge {
     display: inline-block;
     font-family: var(--mono);
-    padding: 2px 8px; border-radius: 3px;
-    font-size: 9px; font-weight: 500;
-    letter-spacing: 0.06em; text-transform: uppercase;
+    padding: 2px 9px;
+    border-radius: 20px;
+    font-size: 9px; font-weight: 600;
+    letter-spacing: 0.08em; text-transform: uppercase;
   }
-  .badge-scheduled { background: var(--bg-alt); color: var(--text-muted); }
-  .badge-active, .badge-running { background: rgba(255,34,34,0.1); color: var(--accent); animation: badgePulse 2s ease-in-out infinite; }
-  .badge-completed { background: var(--green-soft); color: var(--green); }
-  .badge-missed { background: var(--amber-soft); color: var(--amber); }
-  .badge-failed { background: var(--red-soft); color: var(--red); }
-  @keyframes badgePulse { 0%,100% { opacity: 1; } 50% { opacity: 0.6; } }
+  .jobs-section .badge-scheduled {
+    background: rgba(255,255,255,0.04);
+    color: #888888;
+    border: 1px solid rgba(255,255,255,0.12);
+  }
+  .jobs-section .badge-active {
+    background: rgba(32,178,170,0.12);
+    color: #20B2AA;
+    border: 1px solid rgba(32,178,170,0.25);
+  }
+  .jobs-section .badge-completed {
+    background: rgba(34,197,94,0.1);
+    color: var(--green);
+    border: 1px solid rgba(34,197,94,0.2);
+  }
 
-  .progress-track {
+  /* Progress track — teal fill for active, green for done, muted for scheduled */
+  .jobs-section .progress-track {
     width: 100%; height: 2px;
-    background: var(--border-light);
+    background: rgba(255,255,255,0.05);
     border-radius: 1px; margin: 8px 0 6px; overflow: hidden;
   }
-  .progress-fill {
+  .jobs-section .progress-fill {
     height: 100%; border-radius: 1px;
-    background: var(--border);
+    background: rgba(255,255,255,0.08);
     transition: width 0.5s ease;
   }
-  .progress-fill-active { background: var(--accent); animation: progressPulse 2s ease-in-out infinite; }
-  .progress-fill-missed { background: var(--amber); opacity: 0.6; }
-  .progress-fill-failed { background: var(--red); }
-  @keyframes progressPulse { 0%,100% { opacity: 1; } 50% { opacity: 0.5; } }
-  .progress-fill-done { background: var(--green); }
-  .job-desc {
+  .jobs-section .progress-fill-active { background: #20B2AA; }
+  .jobs-section .progress-fill-done { background: var(--green); }
+
+  /* Description text */
+  .jobs-section .job-desc {
     font-family: var(--mono);
-    font-size: 11px; color: var(--text-muted);
+    font-size: 12px; color: #aaaaaa;
     line-height: 1.5;
   }
-  .job-subtasks {
+
+  /* Subtasks — indented, teal left border */
+  .jobs-section .job-subtasks {
     margin-top: 8px;
     padding: 0;
     list-style: none;
   }
-  .job-subtask {
+  .jobs-section .job-subtask {
     font-family: var(--mono);
-    font-size: 10px; color: var(--text-3);
+    font-size: 10px; color: #999999;
     line-height: 1.6;
     padding: 2px 0 2px 12px;
-    border-left: 1px solid var(--border);
-    margin-bottom: 1px;
+    border-left: 2px solid rgba(32,178,170,0.4);
+    margin-bottom: 2px;
+    transition: border-color 0.2s ease;
   }
-  .job-subtask .st-icon {
+  .jobs-section .job-card:hover .job-subtask {
+    border-left-color: rgba(32,178,170,0.5);
+  }
+  .jobs-section .job-subtask .st-icon {
     margin-right: 4px;
     font-size: 9px;
+    color: rgba(32,178,170,0.5);
   }
-  .job-subtask.st-done { color: var(--green); border-left-color: var(--green); }
-  .job-subtask.st-done .st-icon { color: var(--green); }
-  .job-subtask.st-skipped { color: var(--text-muted); text-decoration: line-through; opacity: 0.5; }
-  .job-subtask.st-failed { color: var(--red); border-left-color: var(--red); }
-  .job-subtask.st-failed .st-icon { color: var(--red); }
-  .job-subtask.st-running { color: var(--accent); border-left-color: var(--accent); }
-  .job-subtask.st-running .st-icon { color: var(--accent); animation: badgePulse 1.5s ease-in-out infinite; }
-  .job-strategy {
-    margin-top: 6px;
-    padding: 6px 10px;
-    background: var(--accent-soft);
-    border-radius: 3px;
+
+  /* Strategy box — teal left border, light teal text */
+  .jobs-section .job-strategy {
+    margin-top: 8px;
+    padding: 7px 10px;
+    background: rgba(32,178,170,0.08);
+    border-radius: 4px;
     font-family: var(--mono);
-    font-size: 10px; color: var(--accent);
-    line-height: 1.5;
-    border-left: 2px solid rgba(255, 34, 34, 0.3);
+    font-size: 10px; color: #b8f0ee;
+    line-height: 1.55;
+    border-left: 2px solid #20B2AA;
   }
-  .job-strategy-label {
+  .jobs-section .job-strategy-label {
     font-family: var(--font);
     font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
-    font-size: 8px; display: block; margin-bottom: 2px;
-    color: var(--accent); opacity: 0.6;
+    font-size: 8px; display: block; margin-bottom: 3px;
+    color: #20B2AA; opacity: 1;
   }
 
   /* ===== FEED ===== */
@@ -506,8 +835,8 @@
   }
   .ticker-bar::-webkit-scrollbar { height: 0; }
   .ticker-item { display: inline-flex; align-items: center; gap: 4px; }
-  .ticker-symbol { color: var(--text-2); font-weight: 600; }
-  .ticker-price { color: var(--text-3); }
+  .ticker-symbol { color: #cccccc; font-weight: 600; }
+  .ticker-price { color: #aaaaaa; }
   .ticker-change { font-weight: 500; }
   .ticker-up { color: var(--green); }
   .ticker-down { color: var(--red); }
@@ -519,7 +848,7 @@
     font-family: var(--font);
     font-size: 10px; font-weight: 700;
     letter-spacing: 0.18em; text-transform: uppercase;
-    color: var(--text-muted);
+    color: #20B2AA;
     margin-bottom: 12px;
     padding-bottom: 8px;
     border-bottom: 1px solid var(--border-light);
@@ -529,45 +858,38 @@
     padding: 6px 0;
     font-family: var(--mono);
     font-size: 12px; line-height: 1.65;
-    color: var(--text-3);
+    color: var(--text-2);
     border-bottom: 1px solid var(--border-light);
   }
   .feed-item:last-of-type { border-bottom: none; }
 
   .feed-item.signal-fire {
-    color: #e0e0e0;
+    color: #ffffff;
     padding: 8px 0 8px 14px;
-    border-left: 2px solid #e0e0e0;
+    border-left: 2px solid #20B2AA;
     border-bottom: none;
     margin-bottom: 4px;
     border-radius: 0;
   }
   .feed-item.signal-watch {
-    color: var(--text-2);
+    color: #cccccc;
     padding: 6px 0 6px 14px;
-    border-left: 2px solid var(--border);
+    border-left: 2px solid rgba(32,178,170,0.35);
     border-bottom: none;
     margin-bottom: 4px;
   }
   .feed-item.signal-noise {
-    color: var(--text-muted);
-    font-size: 11px;
-    padding: 4px 0 4px 14px;
-    border-left: 2px solid var(--border-light);
-    border-bottom: none;
-    margin-bottom: 2px;
-    opacity: 0.7;
+    display: none;
   }
-  .feed-item.signal-noise:hover { opacity: 1; color: #888888; }
 
   .signal-tag {
     font-size: 9px; font-weight: 600;
     letter-spacing: 0.12em; text-transform: uppercase;
     margin-right: 6px;
   }
-  .signal-tag.fire { color: #e0e0e0; }
-  .signal-tag.watch { color: var(--text-3); }
-  .signal-tag.noise { color: var(--text-muted); }
+  .signal-tag.fire { color: #20B2AA; }
+  .signal-tag.watch { color: #888888; }
+  .signal-tag.noise { color: var(--text-3); }
 
   .feed-item .ticker-ref { color: var(--accent); font-weight: 600; }
   .feed-item .entity-ref { color: #b0b0b0; font-weight: 600; }
@@ -575,17 +897,18 @@
   .my-take {
     margin: 8px 0 4px;
     padding: 10px 14px;
-    background: var(--bg-alt);
+    background: rgba(32,178,170,0.06);
+    border-left: 2px solid #20B2AA;
     border-radius: 4px;
     font-family: var(--mono);
     font-size: 12px; line-height: 1.65;
-    color: var(--text-2);
+    color: #d0f0ee;
   }
   .my-take-label {
     font-family: var(--font);
     font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase;
     font-size: 9px; display: block; margin-bottom: 4px;
-    color: var(--accent); opacity: 0.7;
+    color: #20B2AA; opacity: 1;
   }
 
   .fear-greed {
@@ -603,7 +926,7 @@
   .feed-date {
     font-family: var(--mono);
     font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase;
-    color: var(--text-muted);
+    color: #20B2AA;
     margin-bottom: 16px;
     padding-bottom: 8px;
     border-bottom: 1px solid var(--border-light);
@@ -644,101 +967,6 @@
   }
   .footer-attr a:hover { color: var(--text-3); }
 
-  /* ===== CREDITS WIDGET ===== */
-  .credits-panel {
-    display: flex; flex-direction: row; align-items: center;
-    gap: 10px; padding: 8px 16px 10px;
-    border-bottom: 1px solid var(--border);
-    flex-shrink: 0; flex-wrap: wrap;
-  }
-  .credits-label {
-    font-family: var(--font); font-size: 9px; font-weight: 700;
-    letter-spacing: 0.16em; text-transform: uppercase;
-    color: var(--text-muted); flex-shrink: 0;
-  }
-  .credit-pill {
-    display: flex; align-items: center; gap: 5px;
-    font-family: var(--mono); font-size: 10px;
-    padding: 3px 9px; border-radius: 20px;
-    border: 1px solid rgba(255,255,255,0.08);
-    background: rgba(255,255,255,0.03);
-    white-space: nowrap;
-  }
-  .credit-pill-dot {
-    width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0;
-  }
-  .credit-pill-name { color: rgba(255,255,255,0.45); }
-  .credit-pill-value { color: rgba(255,255,255,0.9); font-weight: 600; }
-  .credit-pill-value.low { color: #f87171; }
-  .credit-pill-value.ok  { color: #4ade80; }
-  .credit-pill-value.med { color: #fbbf24; }
-
-  /* ===== MODEL CHIPS & SUB-AGENTS (inline in brain hero) ===== */
-  /* Model roster — inline with Brain Feed title */
-  .model-roster {
-    display: flex; align-items: center; gap: 5px;
-    margin-left: 14px; flex-wrap: wrap;
-  }
-  .model-chip[data-model="whisper"] { display: none; }
-  .model-chip[data-model="whisper"].active { display: inline-block; }
-  .model-chip {
-    font-family: var(--mono);
-    font-size: 9px; font-weight: 500;
-    padding: 2px 7px; border-radius: 20px;
-    letter-spacing: 0.04em;
-    color: rgba(255,255,255,0.25);
-    border: 1px solid rgba(255,255,255,0.07);
-    background: transparent;
-    transition: all 0.3s ease;
-    white-space: nowrap;
-  }
-  .model-chip.active {
-    color: var(--m-color, #ff2222);
-    border-color: var(--m-border, rgba(255,34,34,0.4));
-    background: var(--m-glow, rgba(255,34,34,0.2));
-    box-shadow: 0 0 8px var(--m-glow, rgba(255,34,34,0.2));
-  }
-
-  /* Sub-agents panel — bottom of brain hero */
-  .brain-subagents {
-    flex-shrink: 0;
-    border-top: 1px solid var(--m-glow, rgba(255,34,34,0.2));
-    padding: 8px 16px 10px;
-    position: relative; z-index: 2;
-  }
-  .subagents-label {
-    font-family: var(--font);
-    font-size: 9px; font-weight: 700;
-    letter-spacing: 0.16em; text-transform: uppercase;
-    color: var(--m-border, rgba(255,34,34,0.4));
-    margin-bottom: 6px;
-  }
-  .subagent-row {
-    display: flex; align-items: center; gap: 8px;
-    padding: 4px 0;
-    border-bottom: 1px solid rgba(255,255,255,0.04);
-    font-family: var(--mono); font-size: 10px;
-  }
-  .subagent-row:last-child { border-bottom: none; }
-  .subagent-dot {
-    width: 5px; height: 5px; border-radius: 50%;
-    background: var(--m-color, #ff2222); flex-shrink: 0;
-    animation: laser-pulse 1.2s ease-in-out infinite;
-  }
-  .subagent-name { color: rgba(255,255,255,0.7); font-weight: 600; flex-shrink: 0; }
-  .subagent-task { color: rgba(255,255,255,0.35); flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .subagent-model { color: var(--m-color, #ff2222); flex-shrink: 0; font-size: 9px; opacity: 0.5; }
-  .subagents-empty { color: rgba(255,255,255,0.15); font-family: var(--mono); font-size: 10px; font-style: italic; }
-
-  /* Per-model conic-gradient overrides on brain hero */
-  .brain-hero.model-grok { background: linear-gradient(#0a0a0a,#0a0a0a) padding-box, conic-gradient(from var(--laser-angle),#ff2222 0deg,#ff5555 30deg,#cc0000 80deg,#ff2222 160deg,#990000 220deg,#ff2222 360deg) border-box; }
-  .brain-hero.model-sonnet { background: linear-gradient(#0a0a0a,#0a0a0a) padding-box, conic-gradient(from var(--laser-angle),#ff9500 0deg,#ffb347 30deg,#ff6600 80deg,#ff9500 160deg,#cc7700 220deg,#ff9500 360deg) border-box; }
-  .brain-hero.model-gemini { background: linear-gradient(#0a0a0a,#0a0a0a) padding-box, conic-gradient(from var(--laser-angle),#4285f4 0deg,#74a9f7 30deg,#1a6cf5 80deg,#4285f4 160deg,#2456b8 220deg,#4285f4 360deg) border-box; }
-  .brain-hero.model-deepseek { background: linear-gradient(#0a0a0a,#0a0a0a) padding-box, conic-gradient(from var(--laser-angle),#a855f7 0deg,#c084fc 30deg,#9333ea 80deg,#a855f7 160deg,#7c22ce 220deg,#a855f7 360deg) border-box; }
-  .brain-hero.model-llama { background: linear-gradient(#0a0a0a,#0a0a0a) padding-box, conic-gradient(from var(--laser-angle),#22c55e 0deg,#4ade80 30deg,#16a34a 80deg,#22c55e 160deg,#15803d 220deg,#22c55e 360deg) border-box; }
-  .brain-hero.model-whisper { background: linear-gradient(#0a0a0a,#0a0a0a) padding-box, conic-gradient(from var(--laser-angle),#eab308 0deg,#fde047 30deg,#ca8a04 80deg,#eab308 160deg,#a16207 220deg,#eab308 360deg) border-box; }
-  .brain-hero.model-default { background: linear-gradient(#0a0a0a,#0a0a0a) padding-box, conic-gradient(from var(--laser-angle),#ff4444 0deg,#ff6666 30deg,#cc0000 80deg,#ff4444 160deg,#990000 220deg,#ff4444 360deg) border-box; }
-
   @media (max-width: 1024px) {
     .dashboard { grid-template-columns: 1fr; grid-template-rows: auto; overflow-y: auto; height: auto; }
     .left-panel { grid-column: 1; grid-row: auto; border-right: none; min-height: 50vh; }
@@ -754,49 +982,14 @@
 
   /* Perplexity Computer: Teal accent for the right panel (Live Intelligence Feed) */
   .right-panel {
-    --accent: #20B2AA;
-    --accent-soft: rgba(32, 178, 170, 0.08);
-    --accent-glow: rgba(32, 178, 170, 0.15);
-    --accent-border: rgba(32, 178, 170, 0.25);
-    --accent-muted: rgba(32, 178, 170, 0.5);
-    --glass-bg: rgba(32, 178, 170, 0.03);
-    --glass-border: rgba(32, 178, 170, 0.08);
+    --accent: var(--m-color);
+    --accent-soft: var(--m-glow);
+    --accent-glow: var(--m-glow);
+    --accent-border: var(--m-border);
+    --accent-muted: var(--m-border);
+    --glass-bg: var(--m-glow);
+    --glass-border: var(--m-border);
   }
-
-  /* Perplexity Computer: Teal accent for the jobs section */
-  .jobs-section {
-    --accent: #20B2AA;
-    --accent-soft: rgba(32, 178, 170, 0.08);
-    --accent-glow: rgba(32, 178, 170, 0.15);
-    --accent-border: rgba(32, 178, 170, 0.25);
-    --accent-muted: rgba(32, 178, 170, 0.5);
-    --glass-bg: rgba(32, 178, 170, 0.03);
-    --glass-border: rgba(32, 178, 170, 0.08);
-  }
-
-  /* ===================================================================
-     J.AI.N edit (2026-03-14): Replaced Perplexity's always-on spinning
-     teal laser borders with a calm breathing glow — matches the
-     brain feed's idle aesthetic. Perplexity: see CONTRIBUTING.md.
-     =================================================================== */
-
-  @keyframes pplx-breathe {
-    0%, 100% { box-shadow: 0 0 5px 0px rgba(32,178,170,0.1), inset 0 0 6px rgba(32,178,170,0.02); border-color: rgba(32,178,170,0.2); }
-    50%       { box-shadow: 0 0 14px 2px rgba(32,178,170,0.22), inset 0 0 14px rgba(32,178,170,0.05); border-color: rgba(32,178,170,0.45); }
-  }
-
-  /* Jobs section — gentle teal breathe */
-  /* Jobs section — inset 14px 16px to match brain-hero-wrap padding */
-  .jobs-section {
-    position: relative;
-    border-radius: 12px;
-    border: 1.5px solid rgba(32,178,170,0.2);
-    box-shadow: 0 0 5px 0px rgba(32,178,170,0.1);
-    animation: pplx-breathe 4s ease-in-out infinite;
-    margin: 14px 16px 14px;
-  }
-  .jobs-section::before { display: none; }
-  .jobs-section::after { display: none; }
 
   /* Right panel (Intelligence Feed) — inset padding + gentle breathe, offset timing */
   .right-panel {
@@ -841,191 +1034,6 @@
   }
 
   /* ===================================================================
-     Perplexity Computer: TODAY'S JOBS — Enhanced styling
-     =================================================================== */
-
-  /* Perplexity Computer: Jobs panel header with teal accent line */
-  .jobs-section .panel-header {
-    padding: 18px 24px 14px;
-    border-bottom: 1px solid var(--glass-border);
-    position: relative;
-  }
-  .jobs-section .panel-header::after {
-    content: '';
-    position: absolute;
-    bottom: -1px;
-    left: 24px;
-    width: 48px;
-    height: 2px;
-    background: linear-gradient(90deg, var(--accent), transparent);
-    border-radius: 1px;
-  }
-
-  /* Perplexity Computer: Jobs header text with teal glow */
-  .jobs-section .panel-header h2 {
-    font-size: 10px;
-    font-weight: 700;
-    letter-spacing: 0.2em;
-    color: var(--text-muted);
-    transition: color 0.3s ease;
-  }
-  .jobs-section:hover .panel-header h2 {
-    color: var(--accent-muted);
-  }
-
-  /* Perplexity Computer: Job count meta with teal accent */
-  .jobs-section .panel-meta {
-    color: var(--accent-muted);
-    font-size: 10px;
-    letter-spacing: 0.06em;
-  }
-
-  /* Perplexity Computer: Glassmorphism job cards with smooth hover */
-  .jobs-section .job-card {
-    padding: 16px 16px;
-    margin-bottom: 8px;
-    border-bottom: none;
-    border-radius: 6px;
-    background: var(--glass-bg);
-    border: 1px solid var(--glass-border);
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    animation: pplx-fade-in 0.4s ease both;
-  }
-  .jobs-section .job-card:nth-child(1) { animation-delay: 0s; }
-  .jobs-section .job-card:nth-child(2) { animation-delay: 0.05s; }
-  .jobs-section .job-card:nth-child(3) { animation-delay: 0.1s; }
-  .jobs-section .job-card:nth-child(4) { animation-delay: 0.15s; }
-  .jobs-section .job-card:nth-child(5) { animation-delay: 0.2s; }
-  .jobs-section .job-card:nth-child(6) { animation-delay: 0.25s; }
-  .jobs-section .job-card:last-child { border-bottom: none; margin-bottom: 0; }
-
-  /* Perplexity Computer: Card hover — lift + glow */
-  .jobs-section .job-card:hover {
-    background: rgba(32, 178, 170, 0.05);
-    border-color: var(--accent-border);
-    box-shadow: 0 2px 12px rgba(32, 178, 170, 0.06), 0 0 1px rgba(32, 178, 170, 0.15);
-    transform: translateY(-1px);
-  }
-
-  /* Perplexity Computer: Job name typography refinement */
-  .jobs-section .job-name {
-    font-size: 13px;
-    font-weight: 600;
-    color: var(--text);
-    letter-spacing: -0.01em;
-    transition: color 0.2s ease;
-  }
-  .jobs-section .job-card:hover .job-name {
-    color: #e8e8e8;
-  }
-
-  /* Perplexity Computer: Job time styling */
-  .jobs-section .job-time {
-    font-size: 10px;
-    color: var(--text-muted);
-    transition: color 0.2s ease;
-  }
-  .jobs-section .job-card:hover .job-time {
-    color: var(--accent-muted);
-  }
-
-  /* Perplexity Computer: Refined badge styling with teal accents */
-  .jobs-section .badge {
-    padding: 3px 10px;
-    border-radius: 4px;
-    font-size: 9px;
-    font-weight: 600;
-    letter-spacing: 0.08em;
-    transition: all 0.3s ease;
-    backdrop-filter: blur(4px);
-    -webkit-backdrop-filter: blur(4px);
-  }
-  .jobs-section .badge-scheduled {
-    background: rgba(255, 255, 255, 0.04);
-    color: var(--text-muted);
-    border: 1px solid rgba(255, 255, 255, 0.06);
-  }
-  .jobs-section .badge-active {
-    background: rgba(32, 178, 170, 0.12);
-    color: var(--accent);
-    border: 1px solid rgba(32, 178, 170, 0.2);
-    animation: pplx-glow-pulse 2.5s ease-in-out infinite;
-  }
-  .jobs-section .badge-completed {
-    background: var(--green-soft);
-    color: var(--green);
-    border: 1px solid rgba(76, 175, 80, 0.15);
-  }
-
-  /* Perplexity Computer: Progress bar with teal fill */
-  .jobs-section .progress-track {
-    height: 2px;
-    background: rgba(255, 255, 255, 0.04);
-    border-radius: 2px;
-    margin: 10px 0 8px;
-    overflow: hidden;
-  }
-  .jobs-section .progress-fill-active {
-    background: linear-gradient(90deg, var(--accent), rgba(32, 178, 170, 0.6));
-    box-shadow: 0 0 6px rgba(32, 178, 170, 0.3);
-  }
-
-  /* Perplexity Computer: Description text refinement */
-  .jobs-section .job-desc {
-    font-size: 11px;
-    color: var(--text-3);
-    line-height: 1.6;
-    letter-spacing: 0.01em;
-  }
-
-  /* Perplexity Computer: Subtask list — teal left border */
-  .jobs-section .job-subtask {
-    font-size: 10px;
-    color: var(--text-3);
-    line-height: 1.7;
-    padding: 3px 0 3px 14px;
-    border-left: 1px solid var(--glass-border);
-    transition: all 0.2s ease;
-  }
-  .jobs-section .job-subtask:hover {
-    border-left-color: var(--accent-border);
-    color: var(--text-2);
-  }
-  .jobs-section .job-subtask .st-icon {
-    color: var(--accent-muted);
-    font-size: 9px;
-  }
-
-  /* Perplexity Computer: Strategy box with glassmorphism */
-  .jobs-section .job-strategy {
-    margin-top: 8px;
-    padding: 8px 12px;
-    background: var(--accent-soft);
-    border-radius: 4px;
-    border-left: 2px solid var(--accent-border);
-    color: var(--text-2);
-    font-size: 10px;
-    line-height: 1.6;
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
-  }
-  .jobs-section .job-strategy-label {
-    color: var(--accent);
-    opacity: 0.7;
-    font-size: 8px;
-    letter-spacing: 0.12em;
-  }
-
-  /* Perplexity Computer: Scrollbar styling for jobs panel */
-  .jobs-section .panel-body::-webkit-scrollbar-thumb {
-    background: rgba(32, 178, 170, 0.15);
-    border-radius: 2px;
-  }
-  .jobs-section .panel-body::-webkit-scrollbar-thumb:hover {
-    background: rgba(32, 178, 170, 0.25);
-  }
-
-  /* ===================================================================
      Perplexity Computer: LIVE INTELLIGENCE FEED — Enhanced styling
      =================================================================== */
 
@@ -1034,6 +1042,9 @@
     padding: 18px 24px 14px;
     border-bottom: 1px solid var(--glass-border);
     position: relative;
+  }
+  .right-panel .panel-header h2 {
+    color: #cccccc;
   }
   .right-panel .panel-header::after {
     content: '';
@@ -1063,20 +1074,32 @@
     -webkit-backdrop-filter: blur(4px);
   }
   .right-panel .ticker-symbol {
-    color: var(--text-2);
+    color: #c0c0c0;
     font-weight: 600;
     transition: color 0.2s ease;
   }
   .right-panel .ticker-item:hover .ticker-symbol {
     color: var(--accent);
   }
+  .right-panel .ticker-price {
+    color: #a0a0a0;
+  }
+  .right-panel .ticker-change {
+    font-weight: 600;
+  }
+  .right-panel .ticker-up {
+    color: #5ddb6b;
+  }
+  .right-panel .ticker-down {
+    color: #ff6b6b;
+  }
   .right-panel .ticker-sep {
-    color: rgba(32, 178, 170, 0.2);
+    color: rgba(32, 178, 170, 0.35);
   }
 
   /* Perplexity Computer: Feed date with teal accent */
   .right-panel .feed-date {
-    color: var(--accent-muted);
+    color: #20B2AA;
     font-size: 10px;
     letter-spacing: 0.14em;
     padding-bottom: 10px;
@@ -1084,12 +1107,13 @@
     margin-bottom: 20px;
   }
 
-  /* Perplexity Computer: Feed section headers — teal underline */
+  /* Perplexity Computer: Feed section headers — teal, clean separators */
   .right-panel .feed-section-header {
-    color: var(--text-muted);
+    color: #20B2AA;
     font-size: 10px;
     font-weight: 700;
     letter-spacing: 0.2em;
+    text-transform: uppercase;
     margin-bottom: 14px;
     padding-bottom: 8px;
     border-bottom: 1px solid var(--glass-border);
@@ -1103,7 +1127,7 @@
     left: 0;
     width: 32px;
     height: 1px;
-    background: var(--accent);
+    background: #20B2AA;
     border-radius: 1px;
     opacity: 0.6;
     transition: width 0.3s ease, opacity 0.3s ease;
@@ -1113,7 +1137,7 @@
     opacity: 1;
   }
   .right-panel .feed-section:hover .feed-section-header {
-    color: var(--accent-muted);
+    color: #20B2AA;
   }
 
   /* Perplexity Computer: Feed section spacing refinement */
@@ -1126,53 +1150,56 @@
   .right-panel .feed-section:nth-child(4) { animation-delay: 0.3s; }
   .right-panel .feed-section:nth-child(5) { animation-delay: 0.4s; }
 
-  /* Perplexity Computer: Signal-fire items — teal-accented left border */
+  /* Perplexity Computer: Signal-fire items — white text, teal left border */
   .right-panel .feed-item.signal-fire {
-    color: #e0e0e0;
+    color: #ffffff;
     padding: 10px 0 10px 16px;
-    border-left: 2px solid var(--accent);
+    border-left: 2px solid #20B2AA;
     margin-bottom: 6px;
     border-radius: 0 4px 4px 0;
-    background: linear-gradient(90deg, rgba(32, 178, 170, 0.04), transparent 60%);
+    background: linear-gradient(90deg, rgba(32, 178, 170, 0.06), transparent 60%);
     transition: all 0.3s ease;
+    font-size: 12.5px;
   }
   .right-panel .feed-item.signal-fire:hover {
-    border-left-color: var(--accent);
-    background: linear-gradient(90deg, rgba(32, 178, 170, 0.07), transparent 60%);
-    box-shadow: -2px 0 8px rgba(32, 178, 170, 0.08);
+    border-left-color: #20B2AA;
+    background: linear-gradient(90deg, rgba(32, 178, 170, 0.09), transparent 60%);
+    box-shadow: -2px 0 8px rgba(32, 178, 170, 0.1);
   }
 
-  /* Perplexity Computer: Signal tags — teal for fire */
+  /* Perplexity Computer: Signal tags — teal for fire, muted gray for watch */
   .right-panel .signal-tag.fire {
-    color: var(--accent);
+    color: #20B2AA;
     font-weight: 700;
+    font-size: 10px;
   }
 
-  /* Perplexity Computer: Signal-watch items — subtle teal border */
+  /* Perplexity Computer: Signal-watch items — #cccccc text */
   .right-panel .feed-item.signal-watch {
+    color: #cccccc;
     padding: 8px 0 8px 16px;
-    border-left: 2px solid rgba(32, 178, 170, 0.2);
+    border-left: 2px solid rgba(32, 178, 170, 0.35);
     margin-bottom: 4px;
     border-radius: 0 4px 4px 0;
     transition: all 0.3s ease;
+    font-size: 12px;
   }
   .right-panel .feed-item.signal-watch:hover {
-    border-left-color: rgba(32, 178, 170, 0.4);
-    background: linear-gradient(90deg, rgba(32, 178, 170, 0.03), transparent 40%);
+    border-left-color: rgba(32, 178, 170, 0.5);
+    background: linear-gradient(90deg, rgba(32, 178, 170, 0.04), transparent 40%);
   }
   .right-panel .signal-tag.watch {
-    color: var(--accent-muted);
+    color: #888888;
+    font-size: 9.5px;
+  }
+  .right-panel .signal-tag.noise {
+    color: #666666;
+    font-size: 9px;
   }
 
-  /* Perplexity Computer: Signal-noise items — refined hover */
+  /* Perplexity Computer: Signal-noise items — hidden entirely */
   .right-panel .feed-item.signal-noise {
-    transition: all 0.3s ease;
-    border-radius: 0 3px 3px 0;
-  }
-  .right-panel .feed-item.signal-noise:hover {
-    opacity: 1;
-    color: #888;
-    border-left-color: rgba(32, 178, 170, 0.15);
+    display: none;
   }
 
   /* Perplexity Computer: Ticker refs — teal color */
@@ -1187,50 +1214,54 @@
 
   /* Perplexity Computer: Entity refs — refined highlight */
   .right-panel .feed-item .entity-ref {
-    color: #c0c0c0;
+    color: #e0e0e0;
     font-weight: 600;
     transition: color 0.2s ease;
   }
   .right-panel .feed-item:hover .entity-ref {
-    color: #d4d4d4;
+    color: #f0f0f0;
   }
 
-  /* Perplexity Computer: Insight boxes — glassmorphism with teal accent */
+  /* Perplexity Computer: Insight boxes — teal border, premium analysis feel */
   .right-panel .my-take {
     margin: 10px 0 6px;
     padding: 12px 16px;
-    background: rgba(32, 178, 170, 0.04);
+    background: rgba(32, 178, 170, 0.06);
     border-radius: 6px;
-    border: 1px solid var(--glass-border);
-    font-size: 12px;
+    border-left: 2px solid #20B2AA;
+    border-top: 1px solid rgba(32, 178, 170, 0.14);
+    border-right: 1px solid rgba(32, 178, 170, 0.14);
+    border-bottom: 1px solid rgba(32, 178, 170, 0.14);
+    font-size: 12.5px;
     line-height: 1.7;
-    color: var(--text-2);
+    color: #d0f0ee;
     backdrop-filter: blur(8px);
     -webkit-backdrop-filter: blur(8px);
     transition: all 0.3s ease;
   }
   .right-panel .my-take:hover {
-    background: rgba(32, 178, 170, 0.06);
-    border-color: var(--accent-border);
-    box-shadow: 0 2px 12px rgba(32, 178, 170, 0.05);
+    background: rgba(32, 178, 170, 0.08);
+    border-left-color: #20B2AA;
+    box-shadow: 0 2px 12px rgba(32, 178, 170, 0.07);
   }
 
   /* Perplexity Computer: Insight label — teal */
   .right-panel .my-take-label {
-    color: var(--accent);
-    opacity: 0.8;
-    font-size: 9px;
+    color: #20B2AA;
+    opacity: 1;
+    font-size: 9.5px;
     letter-spacing: 0.14em;
     margin-bottom: 5px;
   }
 
   /* Perplexity Computer: Fear & Greed badge with glassmorphism */
   .right-panel .fear-greed {
-    background: rgba(239, 83, 80, 0.06);
-    color: var(--red);
-    border: 1px solid rgba(239, 83, 80, 0.12);
+    background: rgba(239, 83, 80, 0.08);
+    color: #ff7070;
+    border: 1px solid rgba(239, 83, 80, 0.18);
     border-radius: 4px;
     padding: 3px 10px;
+    font-weight: 700;
     backdrop-filter: blur(4px);
     -webkit-backdrop-filter: blur(4px);
     transition: all 0.2s ease;
@@ -1242,8 +1273,8 @@
 
   /* Perplexity Computer: LIVE badge — teal pulsing accent */
   .right-panel .panel-meta {
-    color: var(--accent);
-    font-weight: 500;
+    color: #3dd6ce;
+    font-weight: 600;
     letter-spacing: 0.08em;
     position: relative;
   }
@@ -1285,6 +1316,8 @@
         <div class="status-dot"></div>
         <span id="statusText">Online</span>
       </div>
+      <button class="sleep-btn" id="clearFeedBtn" title="Force-clear stuck working state">Clear</button>
+      <button class="sleep-btn" id="sleepBtn">Sleep</button>
       <div class="live-clock" id="liveClock">--:--:-- ET</div>
     </div>
   </div>
@@ -1294,54 +1327,40 @@
     <!-- LEFT: BRAIN FEED HERO (top 50%) + JOBS (bottom 50%) -->
     <div class="left-panel" id="leftPanel">
 
-      <!-- Credits & Usage Widget -->
-      <div class="credits-panel" id="creditsPanel">
-        <span class="credits-label">Credits &amp; Usage</span>
-        <div class="credit-pill">
-          <div class="credit-pill-dot" style="background:#ff9500;"></div>
-          <span class="credit-pill-name">Anthropic</span>
-          <span class="credit-pill-value" id="creditAnthropic">API key</span>
-        </div>
-        <div class="credit-pill">
-          <div class="credit-pill-dot" style="background:#ff2222;"></div>
-          <span class="credit-pill-name">xAI</span>
-          <span class="credit-pill-value" id="creditXai">API key</span>
-        </div>
-        <div class="credit-pill">
-          <div class="credit-pill-dot" style="background:#a855f7;"></div>
-          <span class="credit-pill-name">OpenRouter</span>
-          <span class="credit-pill-value" id="creditOpenRouter">—</span>
-        </div>
-        <div class="credit-pill" style="margin-left:auto;">
-          <div class="credit-pill-dot" style="background:rgba(255,255,255,0.25);"></div>
-          <span class="credit-pill-name">Session cost</span>
-          <span class="credit-pill-value" id="usageCost">—</span>
-        </div>
-        <div class="credit-pill">
-          <div class="credit-pill-dot" style="background:rgba(255,255,255,0.25);"></div>
-          <span class="credit-pill-name">Tokens out</span>
-          <span class="credit-pill-value" id="usageTokens">—</span>
-        </div>
-      </div>
-
       <!-- Brain Feed Hero -->
       <div class="brain-hero-wrap">
         <div class="brain-hero">
           <div class="brain-hero-header">
             <div class="objective-dot idle" id="objDot"></div>
-            <span class="brain-hero-label"><img src="openclaw-icon.png" alt="OpenClaw">Brain Feed
-              <span id="modelRouteIndicator" style="display:none;font-family:var(--mono);font-size:9px;padding:2px 6px;border-radius:10px;margin-left:6px;vertical-align:middle;background:rgba(255,255,255,0.07);color:rgba(255,255,255,0.45);border:1px solid rgba(255,255,255,0.12);letter-spacing:0.04em;font-weight:400;"></span>
+            <span class="brain-hero-label">
+              <svg viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg" style="width:20px;height:20px;flex-shrink:0;filter:drop-shadow(0 0 4px rgba(255,40,40,0.6))"><defs><linearGradient id="lg2" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#ff4d4d"/><stop offset="100%" stop-color="#991b1b"/></linearGradient></defs><path d="M60 10 C30 10 15 35 15 55 C15 75 30 95 45 100 L45 110 L55 110 L55 100 C55 100 60 102 65 100 L65 110 L75 110 L75 100 C90 95 105 75 105 55 C105 35 90 10 60 10Z" fill="url(#lg2)"/><path d="M20 45 C5 40 0 50 5 60 C10 70 20 65 25 55 C28 48 25 45 20 45Z" fill="url(#lg2)"/><path d="M100 45 C115 40 120 50 115 60 C110 70 100 65 95 55 C92 48 95 45 100 45Z" fill="url(#lg2)"/><path d="M45 15 Q35 5 30 8" stroke="#ff4d4d" stroke-width="3" stroke-linecap="round"/><path d="M75 15 Q85 5 90 8" stroke="#ff4d4d" stroke-width="3" stroke-linecap="round"/><circle cx="45" cy="35" r="6" fill="#050810"/><circle cx="75" cy="35" r="6" fill="#050810"/><circle cx="46" cy="34" r="2.5" fill="#00e5cc"/><circle cx="76" cy="34" r="2.5" fill="#00e5cc"/></svg>
+              Brain Feed
               <div class="model-roster" id="modelRoster">
-                <span class="model-chip" data-model="grok-4">grok-4</span>
+                <span class="model-chip active" data-model="grok-4">grok-4</span>
                 <span class="model-chip" data-model="claude-sonnet-4-6">sonnet</span>
                 <span class="model-chip" data-model="gemini-2.0-flash">gemini-flash</span>
                 <span class="model-chip" data-model="gemini-2.5-pro">gemini-pro</span>
-                <span class="model-chip" data-model="deepseek-chat">deepseek</span>
+                <span class="model-chip" data-model="deepseek-chat-v3-0324">deepseek-v3</span>
+                <span class="model-chip" data-model="gpt-4o">gpt-4o</span>
+                <span class="model-chip" data-model="gpt-4o-mini">gpt-4o-mini</span>
                 <span class="model-chip" data-model="whisper" style="display:none;">whisper</span>
               </div>
             </span>
-            <span class="brain-powered" style="margin-left:auto;">Powered by <span>OpenClaw</span></span>
-            <span style="font-family:var(--mono);font-size:9px;color:rgba(255,60,60,0.4);margin-left:10px;" id="brainLastUpdated"></span>
+            <span class="brain-powered" style="margin-left:auto;display:flex;align-items:center;gap:5px;">
+              <span class="or-model-badge badge-openclaw">OpenClaw</span>
+              <span class="or-model-badge badge-openrouter badge-openrouter-themed" id="orBadge">via OpenRouter</span>
+            </span>
+            <span style="font-family:var(--mono);font-size:8px;color:rgba(255,60,60,0.4);margin-left:4px;flex-shrink:0;white-space:nowrap;" id="brainLastUpdated"></span>
+          </div>
+          <!-- Model Usage Breakdown — compact inline strip -->
+          <div class="or-model-usage-wrap" id="orModelUsageWrap">
+            <span class="or-model-label">usage</span>
+            <div class="or-model-rows" id="orModelRows">
+              <div class="or-model-row">
+                <span class="or-model-dot" style="background:rgba(255,255,255,0.2)"></span>
+                <span class="or-model-name" style="opacity:0.3">loading…</span>
+              </div>
+            </div>
           </div>
           <div class="brain-hero-focus">
             <div class="brain-focus-text" id="brainFocus">Loading...</div>
@@ -1350,6 +1369,37 @@
           <div class="brain-subagents" id="subagentPanel">
             <div class="subagents-label">Active Sub-Agents</div>
             <div id="subagentList"><span class="subagents-empty">none running</span></div>
+          </div>
+
+          <!-- Usage Metrics Panel -->
+          <div class="usage-metrics-panel" id="usageMetricsPanel">
+            <div class="usage-metrics-header">
+              <div class="usage-metrics-label">
+                <div class="um-dot"></div>
+                Usage &amp; Cost
+              </div>
+              <span class="usage-metrics-refresh" id="usageRefreshLabel">loading...</span>
+            </div>
+            <div class="usage-cost-row" id="usageCostRow">
+              <div class="usage-cost-card">
+                <span class="usage-cost-card-label">Sess</span>
+                <span class="usage-cost-card-value" id="usageSessionCost">—</span>
+                <span class="usage-cost-card-sub" id="usageSessionSub">—</span>
+              </div>
+              <div class="usage-cost-card">
+                <span class="usage-cost-card-label">Day</span>
+                <span class="usage-cost-card-value" id="usageDailyCost">—</span>
+                <span class="usage-cost-card-sub" id="usageDailySub">est</span>
+              </div>
+              <div class="usage-cost-card" id="usageMonthlyCard" style="display:none;">
+                <span class="usage-cost-card-label">Mo</span>
+                <span class="usage-cost-card-value actual" id="usageMonthlyCost">—</span>
+                <span class="usage-cost-card-sub">OR</span>
+              </div>
+            </div>
+            <div class="usage-model-breakdown" id="usageModelBreakdown">
+              <div class="usage-empty">Collecting usage data...</div>
+            </div>
           </div>
         </div>
       </div>
@@ -1521,6 +1571,21 @@
   <a href="https://www.perplexity.ai/computer" target="_blank" rel="noopener noreferrer">Created with Perplexity Computer</a>
 </div>
 
+
+<style>
+@keyframes nightPulse { 0%,100%{opacity:1;text-shadow:0 0 80px rgba(160,0,0,0.2)} 50%{opacity:0.82;text-shadow:0 0 140px rgba(160,0,0,0.35)} }
+</style>
+<style>
+.night-clock-wrap { display:flex; flex-direction:column; align-items:center; justify-content:center; gap:0; will-change:transform; }
+#nightClock { font-variant-numeric: tabular-nums; }
+</style>
+<div id="nightMode" style="display:none;position:fixed;inset:0;background:#0a0000;z-index:99999;cursor:pointer;align-items:center;justify-content:center;">
+  <div class="night-clock-wrap">
+    <div id="nightClock" style="font-family:'Satoshi',-apple-system,sans-serif;font-size:25vw;font-weight:900;color:#cc0000;letter-spacing:-0.04em;line-height:1;text-align:center;font-variant-numeric:tabular-nums;"></div>
+    <div id="nightAmpm" style="font-family:'Satoshi',-apple-system,sans-serif;font-size:3.5vw;font-weight:200;color:rgba(180,0,0,0.5);letter-spacing:0.4em;text-align:center;margin-top:0.3vw;"></div>
+    <div id="nightDate" style="font-family:'JetBrains Mono',monospace;font-size:0.9vw;color:rgba(140,0,0,0.4);letter-spacing:0.35em;text-transform:uppercase;margin-top:2vw;"></div>
+  </div>
+  <div style="position:absolute;bottom:3vh;font-family:'JetBrains Mono',monospace;font-size:0.6vw;color:rgba(100,0,0,0.25);letter-spacing:0.35em;text-transform:uppercase;">click anywhere to wake</div>
 <script>
 (function() {
   // Tunnel-first polling:
@@ -1530,7 +1595,7 @@
   var tunnelUrl = null;
   var tunnelFailCount = 0;
   var TUNNEL_FAIL_LIMIT = 3;
-  var POLL_FAST = 3000;
+  var POLL_FAST = 1000;
   var POLL_SLOW = 15000;
   var pollTimer = null;
   var lastKnownState = null;
@@ -1573,38 +1638,36 @@
 
   function setModelTheme(model) {
     var themes = {
-      'grok':     { color: '#ff2222', glow: 'rgba(255,34,34,0.2)',   border: 'rgba(255,34,34,0.4)',   cls: 'model-grok' },
-      'sonnet':   { color: '#ff9500', glow: 'rgba(255,149,0,0.2)',   border: 'rgba(255,149,0,0.4)',   cls: 'model-sonnet' },
-      'gemini':   { color: '#4285f4', glow: 'rgba(66,133,244,0.2)',  border: 'rgba(66,133,244,0.4)',  cls: 'model-gemini' },
-      'deepseek': { color: '#a855f7', glow: 'rgba(168,85,247,0.2)',  border: 'rgba(168,85,247,0.4)',  cls: 'model-deepseek' },
-      'llama':    { color: '#22c55e', glow: 'rgba(34,197,94,0.2)',   border: 'rgba(34,197,94,0.4)',   cls: 'model-llama' },
-      'whisper':  { color: '#eab308', glow: 'rgba(234,179,8,0.2)',   border: 'rgba(234,179,8,0.4)',   cls: 'model-whisper' },
-      'default':  { color: '#ff4444', glow: 'rgba(255,68,68,0.2)',   border: 'rgba(255,68,68,0.4)',   cls: 'model-default' }
+      'grok': { color: '#ff2222', glow: 'rgba(255,34,34,0.2)', border: 'rgba(255,34,34,0.4)', cls: 'model-grok' },
+      'sonnet': { color: '#ff9500', glow: 'rgba(255,149,0,0.2)', border: 'rgba(255,149,0,0.4)', cls: 'model-sonnet' },
+      'gemini': { color: '#4285f4', glow: 'rgba(66,133,244,0.2)', border: 'rgba(66,133,244,0.4)', cls: 'model-gemini' },
+      'deepseek': { color: '#a855f7', glow: 'rgba(168,85,247,0.2)', border: 'rgba(168,85,247,0.4)', cls: 'model-deepseek' },
+      'llama': { color: '#22c55e', glow: 'rgba(34,197,94,0.2)', border: 'rgba(34,197,94,0.4)', cls: 'model-llama' },
+      'openai': { color: '#00A3FF', glow: 'rgba(0,163,255,0.2)', border: 'rgba(0,163,255,0.4)', cls: 'model-openai' },
+      'whisper': { color: '#e2e8f0', glow: 'rgba(226,232,240,0.15)', border: 'rgba(226,232,240,0.3)', cls: 'model-whisper' },
+      'default': { color: '#ff4444', glow: 'rgba(255,68,68,0.2)', border: 'rgba(255,68,68,0.4)', cls: 'model-default' }
     };
     var m = model ? model.toLowerCase() : '';
     var key = 'default';
-    if (m.indexOf('grok') > -1) key = 'grok';
-    else if (m.indexOf('sonnet') > -1 || m.indexOf('claude') > -1) key = 'sonnet';
-    else if (m.indexOf('gemini') > -1) key = 'gemini';
-    else if (m.indexOf('deepseek') > -1) key = 'deepseek';
-    else if (m.indexOf('llama') > -1) key = 'llama';
-    else if (m.indexOf('whisper') > -1) key = 'whisper';
+    if (m.includes('grok')) key = 'grok';
+    else if (m.includes('sonnet') || m.includes('claude')) key = 'sonnet';
+    else if (m.includes('gemini')) key = 'gemini';
+    else if (m.includes('deepseek')) key = 'deepseek';
+    else if (m.includes('gpt') || m.includes('openai')) key = 'openai';
+    else if (m.includes('llama')) key = 'llama';
+    else if (m.includes('whisper')) key = 'whisper';
     var t = themes[key];
     var root = document.documentElement;
-    root.style.setProperty('--m-color',  t.color);
-    root.style.setProperty('--m-glow',   t.glow);
+    root.style.setProperty('--m-color', t.color);
+    root.style.setProperty('--m-glow', t.glow);
     root.style.setProperty('--m-border', t.border);
-    root.style.setProperty('--accent',        t.color);
-    root.style.setProperty('--accent-soft',   t.glow);
-    root.style.setProperty('--accent-glow',   t.glow);
-    root.style.setProperty('--accent-border', t.border);
-    root.style.setProperty('--accent-muted',  t.border);
     var hero = document.querySelector('.brain-hero');
     if (hero) {
       hero.className = hero.className.replace(/\bmodel-\w+/g, '').trim() + ' ' + t.cls;
     }
+    // Show whisper chip only when active, hide otherwise
     var whisperChip = document.querySelector('.model-chip[data-model="whisper"]');
-    if (whisperChip) whisperChip.style.display = (key === 'whisper') ? '' : 'none';
+    if (whisperChip) whisperChip.style.display = key === 'whisper' ? '' : 'none';
   }
 
   function setMode(mode) {
@@ -1653,6 +1716,12 @@
       var focusEl = document.getElementById('brainFocus');
       if (focusEl) focusEl.textContent = data.brain.focus || 'Idle — monitoring for tasks';
 
+      var badgeEl = document.getElementById('brainModelBadge');
+      if (badgeEl && data.brain.model) badgeEl.textContent = shortModel(data.brain.model);
+
+      if (data.brain.model) setModelTheme(data.brain.model);
+      if (data.brain.mode === 'transcribing') setModelTheme('whisper');
+
       var updEl = document.getElementById('brainLastUpdated');
       if (updEl) updEl.textContent = relTime(data.updated_at);
 
@@ -1661,6 +1730,41 @@
 
       var focusTextEl = document.getElementById('brainFocus');
       if (focusTextEl) focusTextEl.className = 'brain-focus-text' + (isWorking ? ' working' : '');
+
+      // Model roster — highlight active model
+      var roster = document.getElementById('modelRoster');
+      if (roster && data.brain.model) {
+        var activeModel = shortModel(data.brain.model);
+        var chips = roster.querySelectorAll('.model-chip');
+        chips.forEach(function(c) {
+          var match = c.dataset.model === data.brain.model ||
+                      c.dataset.model === activeModel ||
+                      activeModel.indexOf(c.dataset.model) > -1 ||
+                      c.dataset.model.indexOf(activeModel) > -1;
+          c.className = 'model-chip' + (match ? ' active' : '');
+          if (match) c.textContent = activeModel;
+        });
+      }
+
+      // Sub-agents
+      var subList = document.getElementById('subagentList');
+      if (subList) {
+        var agents = (data.brain.subagents && data.brain.subagents.length > 0) ? data.brain.subagents : (data.brain.subagent ? [data.brain.subagent] : []);
+        if (agents.length === 0) {
+          subList.innerHTML = '<span class="subagents-empty">none running</span>';
+        } else {
+          var sh = '';
+          agents.forEach(function(a) {
+            sh += '<div class="subagent-row">'
+              + '<div class="subagent-dot"></div>'
+              + '<span class="subagent-name">' + escHtml(a.name || 'Agent') + '</span>'
+              + '<span class="subagent-task">' + escHtml(a.task || '') + '</span>'
+              + '<span class="subagent-model">' + escHtml(shortModel(a.model || '')) + '</span>'
+              + '</div>';
+          });
+          subList.innerHTML = sh;
+        }
+      }
 
       var stream = document.getElementById('brainStream');
       if (stream && data.brain.thoughts) {
@@ -1684,73 +1788,7 @@
       objEl.textContent = (data.brain && data.brain.focus) || data.objective || 'Awaiting directive...';
     }
 
-    // Model theming — setModelTheme updates CSS vars + hero class + chip roster
-    var currentModel = (data.brain && data.brain.currentModel) || (data.brain && data.brain.model) || null;
-    if (currentModel) setModelTheme(currentModel);
-    if (data.brain && data.brain.mode === 'transcribing') setModelTheme('whisper');
-
-    // Model roster — highlight active chip
-    var roster = document.getElementById('modelRoster');
-    if (roster && currentModel) {
-      var chips = roster.querySelectorAll('.model-chip');
-      var cm = currentModel.toLowerCase();
-      for (var ci = 0; ci < chips.length; ci++) {
-        var c = chips[ci];
-        var dm = (c.getAttribute('data-model') || '').toLowerCase();
-        // Match if: exact, chip key appears in model string, or model string contains chip key
-        // Strip openrouter/ prefix for matching
-        var cmStripped = cm.replace(/^openrouter\/[^/]+\//, '').replace(/^openrouter\//, '');
-        var match = cm === dm || cm.indexOf(dm) > -1 || dm.indexOf(cm) > -1
-                 || cmStripped.indexOf(dm) > -1 || dm.indexOf(cmStripped) > -1;
-        c.className = 'model-chip' + (match ? ' active' : '');
-      }
-    }
-
-    // Model route indicator — "via OpenRouter" or "direct"
-    var routeIndicator = document.getElementById('modelRouteIndicator');
-    if (routeIndicator && currentModel) {
-      var isOpenRouter = currentModel.toLowerCase().indexOf('openrouter/') === 0;
-      routeIndicator.textContent = isOpenRouter ? 'via OpenRouter' : 'direct';
-      routeIndicator.style.display = 'inline-block';
-    }
-
-    // Sub-agents — render in subagentList inside brain hero
-    var subList = document.getElementById('subagentList');
-    if (subList) {
-      var agents = [];
-      if (data.brain && data.brain.subagents && data.brain.subagents.length > 0) agents = data.brain.subagents;
-      else if (data.brain && data.brain.subagent) agents = [data.brain.subagent];
-      if (agents.length === 0) {
-        subList.innerHTML = '<span class="subagents-empty">none running</span>';
-      } else {
-        var saHtml = '';
-        for (var si = 0; si < agents.length; si++) {
-          var sa = agents[si];
-          saHtml += '<div class="subagent-row">'
-            + '<div class="subagent-dot"></div>'
-            + '<span class="subagent-name">' + escHtml(sa.name || 'Agent') + '</span>'
-            + '<span class="subagent-task">' + escHtml(sa.task || '') + '</span>'
-            + '<span class="subagent-model">' + escHtml(sa.model || '') + '</span>'
-            + '</div>';
-        }
-        subList.innerHTML = saHtml;
-      }
-    }
-
     if (data.steps && data.steps.length > 0) renderSteps(data.steps, true);
-
-    /* === Jobs: apply dynamic overrides from state.json === */
-    /* Merge jobs from any source that has them (tunnel or GitHub) */
-    if (data.jobs) {
-      for (var jk in data.jobs) {
-        if (data.jobs.hasOwnProperty(jk)) {
-          jobOverrides[jk] = data.jobs[jk];
-        }
-      }
-      if (typeof saveJobsToLocal === 'function') saveJobsToLocal();
-      renderJobs();
-    }
-
     lastKnownState = data;
   }
 
@@ -1797,215 +1835,464 @@
   pollTunnel();
   pollTimer = setInterval(pollTunnel, POLL_FAST);
 
-  // Jobs persistence: state.json jobs key may be overwritten by other agents
-  // Use localStorage as cache so job status survives between state.json pushes
-  function saveJobsToLocal() {
-    try {
-      var today = getETNow().toISOString().slice(0, 10);
-      localStorage.setItem('jain_jobs_date', today);
-      localStorage.setItem('jain_jobs', JSON.stringify(jobOverrides));
-    } catch(e) {}
-  }
-  function loadJobsFromLocal() {
-    try {
-      var today = getETNow().toISOString().slice(0, 10);
-      var stored = localStorage.getItem('jain_jobs_date');
-      if (stored === today) {
-        var data = JSON.parse(localStorage.getItem('jain_jobs') || '{}');
-        for (var k in data) { if (data.hasOwnProperty(k)) jobOverrides[k] = data[k]; }
-        renderJobs();
-      } else {
-        // New day: clear stale overrides
-        localStorage.removeItem('jain_jobs');
-        localStorage.removeItem('jain_jobs_date');
-      }
-    } catch(e) {}
-  }
-  loadJobsFromLocal(); // Restore immediately on page load
+  // ── OPENROUTER MODEL USAGE BREAKDOWN ────────────────────────────────────────
+  (function() {
+    var OR_MODEL_POLL_MS = 3 * 60 * 1000; // every 3 minutes
 
-  // Fetch jobs from GitHub (authoritative source for job status)
-  // Also checks tunnel state -- merges jobs from any source that has them
-  function fetchJobsFromGitHub() {
-    fetch(GITHUB_STATE_URL + '?t=' + Date.now(), { headers: { 'Accept': 'application/vnd.github.v3+json' } })
-      .then(function(r) { if (!r.ok) throw new Error('gh ' + r.status); return r.json(); })
-      .then(function(ghData) {
-        var raw = JSON.parse(atob(ghData.content.replace(/\n/g, '')));
-        if (raw.jobs) {
-          var changed = false;
-          for (var jk in raw.jobs) {
-            if (raw.jobs.hasOwnProperty(jk)) {
-              jobOverrides[jk] = raw.jobs[jk];
-              changed = true;
+    var MODEL_COLORS = {
+      'grok-4':              '#ff2222',
+      'claude-sonnet-4-6':   '#d4a76a',
+      'claude-sonnet-4-5':   '#d4a76a',
+      'gemini-2.5-pro':      '#4285f4',
+      'gemini-2.0-flash':    '#34a853',
+      'deepseek-v3':         '#ff6b35',
+      'deepseek-chat-v3-0324': '#ff6b35',
+      'gpt-4o':              '#00A3FF',
+      'gpt-4o-mini':         '#33b8ff',
+      'openrouter/openai/gpt-4o':      '#00A3FF',
+      'openrouter/openai/gpt-4o-mini': '#33b8ff'
+    };
+
+    function getModelColor(model) {
+      if (!model) return '#8888bb';
+      if (MODEL_COLORS[model]) return MODEL_COLORS[model];
+      // Normalize full openrouter path (e.g. openrouter/openai/gpt-4o → gpt-4o)
+      var k = model.toLowerCase();
+      var short = k.replace(/^openrouter\/[^/]+\//, '').replace(/^openrouter\//, '');
+      if (MODEL_COLORS[short]) return MODEL_COLORS[short];
+      // Fallback pattern matching
+      if (k.includes('gpt') || k.includes('openai')) return '#00A3FF';
+      if (k.includes('grok')) return '#ff2222';
+      if (k.includes('sonnet') || k.includes('claude')) return '#d4a76a';
+      if (k.includes('gemini')) return '#4285f4';
+      if (k.includes('deepseek')) return '#ff6b35';
+      if (k.includes('llama')) return '#22c55e';
+      return '#8888bb';
+    }
+
+    function renderModelUsage(models) {
+      var container = document.getElementById('orModelRows');
+      if (!container) return;
+      if (!models || models.length === 0) {
+        container.innerHTML = '<div class="or-model-row"><span class="or-model-name" style="opacity:0.3">no data</span></div>';
+        return;
+      }
+      var html = '';
+      var filtered = models.filter(function(m) { return m.model && m.model.toLowerCase() !== 'whisper'; });
+      var shown = filtered.slice(0, 6);
+      for (var i = 0; i < shown.length; i++) {
+        var m = shown[i];
+        var color = getModelColor(m.model);
+        var pct = m.pct || 0;
+        html += '<div class="or-model-row" title="' + m.model + ': ' + pct + '%">'
+          + '<span class="or-model-dot" style="background:' + color + ';box-shadow:0 0 4px ' + color + '88;"></span>'
+          + '<span class="or-model-name">' + m.model + '</span>'
+          + '<span class="or-model-pct">' + pct + '%</span>'
+          + '</div>';
+      }
+      container.innerHTML = html;
+    }
+
+    function fetchModelUsage() {
+      if (!tunnelUrl) { return; }
+      fetch(tunnelUrl + '/or-model-usage?t=' + Date.now())
+        .then(function(r) { if (!r.ok) throw new Error(r.status); return r.json(); })
+        .then(function(d) {
+          if (d.models && d.models.length > 0) renderModelUsage(d.models);
+        })
+        .catch(function() {
+          // Fallback: derive from last-known state's brain thoughts
+          if (lastKnownState && lastKnownState.brain && lastKnownState.brain.thoughts) {
+            var counts = {};
+            var thoughts = lastKnownState.brain.thoughts;
+            for (var i = 0; i < thoughts.length; i++) {
+              var m = thoughts[i].model;
+              if (!m || m === 'whisper') continue;
+              var name = m.replace(/^openrouter\/[^/]+\//, '').replace(/^openrouter\//, '');
+              var key = name.split('/').pop();
+              key = key.replace('deepseek-chat-v3-0324', 'deepseek-v3');
+              counts[key] = (counts[key] || 0) + 1;
+            }
+            var total = 0;
+            for (var k in counts) total += counts[k];
+            if (total > 0) {
+              var models = [];
+              for (var k in counts) {
+                models.push({ model: k, count: counts[k], pct: Math.round((counts[k] / total) * 100) });
+              }
+              models.sort(function(a, b) { return b.count - a.count; });
+              renderModelUsage(models);
             }
           }
-          if (changed) { saveJobsToLocal(); renderJobs(); }
-        }
-      })
-      .catch(function() { /* silent fail */ });
-  }
-  fetchJobsFromGitHub();
-  setInterval(fetchJobsFromGitHub, 30000); // Refresh job status every 30s from GitHub
-  // Refresh relative timestamps every 30s
+        });
+    }
+
+    fetchModelUsage();
+    setInterval(fetchModelUsage, OR_MODEL_POLL_MS);
+  })();
+
+  // ── SLEEP / NIGHT MODE ──────────────────────────────────────────────────────
+  (function() {
+    var nm = document.getElementById('nightMode');
+    var nc = document.getElementById('nightClock');
+    var nt = null;
+    var wasSleeping = false;
+
+    function updateNC() {
+      var d = new Date();
+      var h = d.getHours()%12||12, m = ('0'+d.getMinutes()).slice(-2);
+      nc.textContent = h+':'+m;
+      var na = document.getElementById('nightAmpm');
+      if (na) na.textContent = d.getHours()>=12?'PM':'AM';
+      var nd = document.getElementById('nightDate');
+      if (nd) {
+        var days=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+        var months=['January','February','March','April','May','June','July','August','September','October','November','December'];
+        nd.textContent = days[d.getDay()]+' · '+months[d.getMonth()]+' '+d.getDate();
+      }
+    }
+
+    function enterSleep() {
+      if (nm.style.display === 'flex') return;
+      nm.style.cssText = 'display:flex;position:fixed;inset:0;background:#0a0000;z-index:99999;cursor:pointer;align-items:center;justify-content:center;flex-direction:column;';
+      updateNC();
+      nt = setInterval(updateNC, 1000);
+    }
+
+    function exitSleep() {
+      nm.style.display = 'none';
+      if (nt) { clearInterval(nt); nt = null; }
+      // Tell server we woke
+      if (tunnelUrl) fetch(tunnelUrl + '/wake', { method: 'POST' }).catch(function(){});
+    }
+
+    // Clear Feed button — force-reset stuck working state via tunnel
+    var clearBtn = document.getElementById('clearFeedBtn');
+    if (clearBtn) {
+      ['click','touchend'].forEach(function(ev) {
+        clearBtn.addEventListener(ev, function(e) {
+          e.stopPropagation(); e.preventDefault();
+          if (tunnelUrl) {
+            fetch(tunnelUrl + '/clear-state', { method: 'POST' }).catch(function(){});
+          }
+          // Also immediately update local state display
+          if (lastKnownState && lastKnownState.brain) {
+            lastKnownState.brain.mode      = 'idle';
+            lastKnownState.brain.focus     = 'Cleared — awaiting next task';
+            lastKnownState.brain.subagent  = null;
+            lastKnownState.brain.subagents = [];
+            applyState(lastKnownState);
+          }
+        });
+      });
+    }
+
+    // Sleep button — POST to tunnel (desktop and mobile unified)
+    var btn = document.getElementById('sleepBtn');
+    if (btn) {
+      ['click','touchend'].forEach(function(ev) {
+        btn.addEventListener(ev, function(e) {
+          e.stopPropagation(); e.preventDefault();
+          if (tunnelUrl) {
+            fetch(tunnelUrl + '/sleep', { method: 'POST' }).catch(function(){});
+          }
+        });
+      });
+    }
+
+    // Dismiss on click or ESC
+    ['click','touchend'].forEach(function(ev) {
+      nm.addEventListener(ev, exitSleep);
+    });
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape' && nm.style.display !== 'none') exitSleep();
+    });
+
+    // Poll tunnel for sleep state — single source of truth
+    setInterval(function() {
+      if (!tunnelUrl) return;
+      fetch(tunnelUrl + '/sleep-state?t=' + Date.now())
+        .then(function(r) { return r.json(); })
+        .then(function(d) {
+          if (d.sleep && !wasSleeping) { wasSleeping = true; enterSleep(); }
+          else if (!d.sleep && wasSleeping) { wasSleeping = false; exitSleep(); }
+        }).catch(function(){});
+    }, 1000);
+  })();
+
+    // Refresh relative timestamps every 30s
   setInterval(function() { var u = document.getElementById('brainLastUpdated'); if (u && lastKnownState) u.textContent = relTime(lastKnownState.updated_at); }, 30000);
 
-  // Credits & Usage widget — poll tunnel /usage every 60s
-  function updateUsage() {
-    if (!tunnelUrl) return;
-    fetch(tunnelUrl + '/usage?t=' + Date.now())
-      .then(function(r) { return r.json(); })
-      .then(function(data) {
-        // OpenRouter balance
-        var orEl = document.getElementById('creditOpenRouter');
-        if (orEl) {
-          var or = data.credits && data.credits.openrouter;
-          if (or && or.remaining != null) {
-            var rem = parseFloat(or.remaining).toFixed(2);
-            orEl.textContent = '$' + rem;
-            orEl.className = 'credit-pill-value ' + (rem < 10 ? 'low' : rem < 30 ? 'med' : 'ok');
-          } else {
-            orEl.textContent = '—';
-            orEl.className = 'credit-pill-value';
+  // ── STALE-STATE WATCHDOG ─────────────────────────────────────────────────
+  // If mode=working but no update for 30s → force idle display.
+  // If mode=working for >2min → auto-reset to idle (matches server.js watchdog).
+  (function() {
+    var STALE_WORKING_MS  = 30 * 1000;    // 30s — force idle display
+    var MAX_WORKING_MS    = 2 * 60 * 1000; // 2min — hard auto-reset (matches server watchdog)
+    var staleShown = false; // prevent re-appending '(stale)' on every tick
+    setInterval(function() {
+      if (!lastKnownState || !lastKnownState.brain) return;
+      var mode = lastKnownState.brain.mode;
+      if (mode !== 'working' && mode !== 'thinking') { staleShown = false; return; }
+      var updAt = lastKnownState.updated_at;
+      if (!updAt) return;
+      var ageMs = Date.now() - new Date(updAt).getTime();
+      if (ageMs >= MAX_WORKING_MS) {
+        // Hard reset: mutate local state and re-render
+        lastKnownState.brain.mode   = 'idle';
+        lastKnownState.brain.focus  = 'No recent activity';
+        lastKnownState.brain.subagent  = null;
+        lastKnownState.brain.subagents = [];
+        staleShown = false;
+        applyState(lastKnownState);
+        console.warn('[watchdog] >2min working with no update — forced idle');
+      } else if (ageMs >= STALE_WORKING_MS) {
+        // Soft reset: only update UI visuals once (don't keep appending "(stale)")
+        if (!staleShown) {
+          staleShown = true;
+          var focusEl = document.getElementById('brainFocus');
+          if (focusEl && focusEl.textContent && !focusEl.textContent.includes('(stale)')) {
+            focusEl.textContent = focusEl.textContent + ' (stale)';
+          }
+          setMode('idle');
+          var subList = document.getElementById('subagentList');
+          if (subList) subList.innerHTML = '<span class="subagents-empty">none running</span>';
+          console.warn('[watchdog] >30s working with no update — showing stale state');
+        }
+      }
+    }, 5000); // check every 5s
+  })();
+
+  // ── USAGE METRICS ──────────────────────────────────────────────────────────
+  (function() {
+    var lastUsageFetch = 0;
+    var USAGE_POLL_MS = 60000; // 60s
+
+    var UM_COLORS = {
+      'grok-4':              '#ff2222',
+      'claude-sonnet-4-6':   '#ff9500',
+      'claude-sonnet-4-5':   '#ff9500',
+      'gemini-2.5-pro':      '#4285f4',
+      'gemini-2.0-flash':    '#34a853',
+      'deepseek-v3':         '#a855f7',
+      'deepseek-chat-v3-0324': '#a855f7',
+      'gpt-4o':              '#00A3FF',
+      'gpt-4o-mini':         '#33b8ff',
+      'openrouter/openai/gpt-4o':      '#00A3FF',
+      'openrouter/openai/gpt-4o-mini': '#33b8ff'
+    };
+    function umColor(model) {
+      if (!model) return '#8888bb';
+      var k = model.toLowerCase();
+      if (UM_COLORS[k]) return UM_COLORS[k];
+      // Normalize full openrouter path (e.g. openrouter/openai/gpt-4o → gpt-4o)
+      var short = k.replace(/^openrouter\/[^/]+\//, '').replace(/^openrouter\//, '');
+      if (UM_COLORS[short]) return UM_COLORS[short];
+      if (k.includes('grok')) return '#ff2222';
+      if (k.includes('sonnet') || k.includes('claude')) return '#ff9500';
+      if (k.includes('gemini')) return '#4285f4';
+      if (k.includes('deepseek')) return '#a855f7';
+      if (k.includes('gpt') || k.includes('openai')) return '#00A3FF';
+      if (k.includes('llama')) return '#22c55e';
+      return '#8888bb';
+    }
+
+    function fmtCost(val) {
+      if (val == null || isNaN(val)) return '—';
+      if (val < 0.01) return '$' + val.toFixed(4);
+      if (val < 1) return '$' + val.toFixed(3);
+      return '$' + val.toFixed(2);
+    }
+
+    function renderUsage(data) {
+      var refreshEl = document.getElementById('usageRefreshLabel');
+      if (refreshEl) {
+        refreshEl.textContent = 'updated just now';
+        refreshEl.className = 'usage-metrics-refresh';
+      }
+
+      // Session card
+      var sessEl = document.getElementById('usageSessionCost');
+      var sessSub = document.getElementById('usageSessionSub');
+      if (sessEl && data.session) {
+        sessEl.textContent = fmtCost(data.session.est_cost);
+        if (sessSub) sessSub.textContent = (data.session.pushes || 0) + 'p';
+      }
+
+      // Daily card
+      var dailyEl = document.getElementById('usageDailyCost');
+      var dailySub = document.getElementById('usageDailySub');
+      if (dailyEl && data.daily) {
+        var dailyVal = data.daily.actual_or != null ? data.daily.actual_or : data.daily.est_cost;
+        dailyEl.textContent = fmtCost(dailyVal);
+        if (dailySub) {
+          dailySub.innerHTML = data.daily.source === 'openrouter'
+            ? '<span class="usage-source-badge">OR</span>'
+            : 'est';
+        }
+      }
+
+      // Monthly card (show only if we have actual OR data)
+      var monthCard = document.getElementById('usageMonthlyCard');
+      var monthEl = document.getElementById('usageMonthlyCost');
+      if (monthCard && monthEl && data.monthly && data.monthly.actual_or != null) {
+        monthCard.style.display = '';
+        monthEl.textContent = fmtCost(data.monthly.actual_or);
+      }
+
+      // Model breakdown
+      var breakdownEl = document.getElementById('usageModelBreakdown');
+      if (breakdownEl) {
+        var models = (data.models || []).filter(function(m) { return !m.model || m.model.toLowerCase() !== 'whisper'; });
+        // Pinned models always appear (ordered: Grok 4, Claude Sonnet 4.6, GPT-4o)
+        var PINNED_MODELS = [
+          { model: 'grok-4', label: 'Grok 4' },
+          { model: 'claude-sonnet-4-6', label: 'Claude Sonnet 4.6' },
+          { model: 'gpt-4o', label: 'GPT-4o' }
+        ];
+        var modelNames = models.map(function(m) { return m.model; });
+        for (var pi = 0; pi < PINNED_MODELS.length; pi++) {
+          var pm = PINNED_MODELS[pi];
+          if (modelNames.indexOf(pm.model) === -1) {
+            models.push({ model: pm.model, count: 0, cost: 0, pct: 0 });
           }
         }
-        // Session cost
-        var costEl = document.getElementById('usageCost');
-        if (costEl && data.usage) {
-          var c = parseFloat(data.usage.totalCost || 0);
-          costEl.textContent = '$' + c.toFixed(3);
-          costEl.className = 'credit-pill-value ' + (c > 5 ? 'med' : 'ok');
+        // Sort: pinned models first (in defined order), then others by cost desc
+        models.sort(function(a, b) {
+          var pa = PINNED_MODELS.findIndex ? PINNED_MODELS.findIndex(function(p) { return p.model === a.model; }) : -1;
+          var pb = PINNED_MODELS.findIndex ? PINNED_MODELS.findIndex(function(p) { return p.model === b.model; }) : -1;
+          if (pa >= 0 && pb >= 0) return pa - pb;   // both pinned: preserve pinned order
+          if (pa >= 0) return -1;                    // a is pinned, a comes first
+          if (pb >= 0) return 1;                     // b is pinned, b comes first
+          return b.cost - a.cost;                    // neither pinned: sort by cost desc
+        });
+        var html = '';
+        // Compute maxCost for bar scale
+        var maxCost = 0;
+        for (var mi = 0; mi < models.length; mi++) {
+          if (models[mi].cost > maxCost) maxCost = models[mi].cost;
         }
-        // Output tokens
-        var tokEl = document.getElementById('usageTokens');
-        if (tokEl && data.usage) {
-          var t = data.usage.totalOutput || 0;
-          tokEl.textContent = t > 1000 ? Math.round(t/1000) + 'k' : t;
-          tokEl.className = 'credit-pill-value';
+        var shown = 0;
+        for (var i = 0; i < models.length && shown < 7; i++) {
+          var m = models[i];
+          if (m.model && m.model.toLowerCase() === 'whisper') continue;
+          var barPct = maxCost > 0 ? Math.round((m.cost / maxCost) * 100) : 3;
+          if (barPct < 3) barPct = 3; // minimum visible bar
+          var barColor = umColor(m.model);
+          var pinnedMatch = PINNED_MODELS.filter(function(p) { return p.model === m.model; });
+          var displayName = pinnedMatch.length > 0 ? pinnedMatch[0].label : m.model;
+          var costLabel = m.cost > 0 ? fmtCost(m.cost) : '—';
+          var pctLabel = m.pct > 0 ? m.pct + '%' : '—';
+          html += '<div class="usage-model-row">'
+            + '<span class="usage-model-name">' + escHtml(displayName) + '</span>'
+            + '<div class="usage-model-bar-wrap"><div class="usage-model-bar-fill" style="width:' + barPct + '%;background:' + barColor + ';box-shadow:0 0 4px ' + barColor + '66;opacity:' + (m.cost > 0 ? '1' : '0.3') + ';"></div></div>'
+            + '<span class="usage-model-cost">' + costLabel + '</span>'
+            + '<span class="usage-model-pct" style="color:' + barColor + '">' + pctLabel + '</span>'
+            + '</div>';
+          shown++;
         }
-      })
-      .catch(function() {});
-  }
-  updateUsage();
-  setInterval(updateUsage, 60000);
+        breakdownEl.innerHTML = html;
+      }
+    }
 
-  /* ===== JOBS ENGINE — Dynamic status from state.json ===== */
+    function fetchUsageMetrics() {
+      var now = Date.now();
+      if (now - lastUsageFetch < USAGE_POLL_MS - 2000) return; // debounce
+      lastUsageFetch = now;
+
+      var refreshEl = document.getElementById('usageRefreshLabel');
+      if (refreshEl) { refreshEl.textContent = 'updating...'; refreshEl.className = 'usage-metrics-refresh updating'; }
+
+      var url = tunnelUrl
+        ? tunnelUrl + '/or-cost-summary?t=' + now
+        : null;
+
+      if (!url) {
+        if (refreshEl) { refreshEl.textContent = 'no tunnel'; refreshEl.className = 'usage-metrics-refresh'; }
+        return;
+      }
+
+      fetch(url)
+        .then(function(r) { if (!r.ok) throw new Error('status ' + r.status); return r.json(); })
+        .then(function(data) { renderUsage(data); })
+        .catch(function(e) {
+          if (refreshEl) { refreshEl.textContent = 'offline'; refreshEl.className = 'usage-metrics-refresh'; }
+        });
+    }
+
+    // Initial fetch after a short delay (let tunnel bootstrap first)
+    setTimeout(fetchUsageMetrics, 3000);
+    setInterval(fetchUsageMetrics, USAGE_POLL_MS);
+
+    // Expose so pollTunnel success can trigger a refresh
+    window._fetchUsageMetrics = fetchUsageMetrics;
+  })();
+
   var jobs = [
-    { id: 'morning_brief', name: 'Morning Brief', time: '7:00 AM ET', scheduleHour: 7, scheduleMinute: 0, status: 'scheduled', desc: 'AI news digest, market movers, SEC filing scan', recurring: false, prevHour: 0, prevMinute: 0 },
-    { id: 'sorare_morning', name: 'Sorare Morning Picks', time: '11:00 AM ET', scheduleHour: 11, scheduleMinute: 0, status: 'scheduled', desc: 'Daily farming + missions + strategic picks', recurring: false, prevHour: 7, prevMinute: 0,
+    { name: 'Morning Brief', time: '7:00 AM ET', scheduleHour: 7, scheduleMinute: 0, status: 'scheduled', desc: 'AI news digest, market movers, SEC filing scan', recurring: false, prevHour: 0, prevMinute: 0 },
+    { name: 'Sorare Morning Picks', time: '11:00 AM ET', scheduleHour: 11, scheduleMinute: 0, status: 'active', desc: 'Daily farming + missions + strategic picks', recurring: false, prevHour: 7, prevMinute: 0,
       subtasks: [
-        { text: 'T1 Claim free WNTR pack \u2192 Open Daily Pack mission', id: 'wntr_pack' },
-        { text: 'T2 Spin Wheel (Golden Spin progress) \u2192 target 1 golden every 3-5 days', id: 'wheel' },
-        { text: 'T1 Quick Play \u2192 high-floor players, L10+5 target', id: 'quick_play' },
-        { text: 'T3 Daily Picker \u2192 pace-up matchups | Scorer Picker \u2192 guards L10 20-34', id: 'pickers' },
-        { text: 'T1 Hot Streak check \u2192 verify active streaks, guard threshold', id: 'hot_streak' },
-        { text: 'T2 Monitor: Collections + WNTR progress', id: 'collections' }
+        'Claim free WNTR pack \u2192 Open Daily Pack mission (+1 Wheel Ticket)',
+        'Spin Wheel (Golden Spin: 3/10) \u2192 target 1 golden spin every 3-5 days',
+        'Quick Play \u2192 high-variance players, L10+5 target, avoid B2Bs',
+        'Daily Picker \u2192 pace-up matchups | Scorer Picker \u2192 guards L10 20-34',
+        'WNTR Sprint \u2192 buy Bronze packs, quick-sell dupes, cycle board L1-L2',
+        'Monitor: Collections (35/36 NBA, 142/150 WNTR) + Hot Streaks'
       ],
-      strategy: 'T1 = cash lineups, T2 = collection growth, T3 = engagement. WNTR deadline Mar 22.'
+      strategy: 'WNTR deadline Mar 22 \u2014 spend ALL Essence on packs before conversion. Punt watch: Sabonis/Curry/Nurkic at L10=0, slot immediately on return.'
     },
-    { id: 'afternoon_brief', name: 'Afternoon Brief', time: '1:00 PM ET', scheduleHour: 13, scheduleMinute: 0, status: 'scheduled', desc: 'Midday market update, breaking AI announcements', recurring: false, prevHour: 11, prevMinute: 0 },
-    { id: 'sorare_evening', name: 'Sorare Evening Strategy', time: '5:00 PM ET', scheduleHour: 17, scheduleMinute: 0, status: 'scheduled', desc: 'Lineup optimization + catch-up for missed morning tasks', recurring: false, prevHour: 13, prevMinute: 0,
+    { name: 'Afternoon Brief', time: '1:00 PM ET', scheduleHour: 13, scheduleMinute: 0, status: 'scheduled', desc: 'Midday market update, breaking AI announcements', recurring: false, prevHour: 11, prevMinute: 0 },
+    { name: 'Sorare Evening Strategy', time: '5:00 PM ET', scheduleHour: 17, scheduleMinute: 0, status: 'scheduled', desc: 'Lineup optimization + catch-up for missed morning tasks', recurring: false, prevHour: 13, prevMinute: 0,
       subtasks: [
-        { text: 'Catch-up \u2192 verify pack/wheel/Quick Play/Picker all completed', id: 'catchup' },
-        { text: 'Injury re-check \u2192 swap OUT/DOUBTFUL players in all lineups', id: 'injury_check' },
-        { text: 'Re-optimize lineups \u2192 3 strong lineups per comp, floor 25+', id: 'lineup_optimize' },
-        { text: 'Hot Streak guard \u2192 only submit if projected 240+', id: 'hot_streak_guard' },
-        { text: 'Daily Pickup + Limited Contender + Common Champion', id: 'competitions' },
-        { text: 'Arena evaluation \u2192 enter if essence budget healthy', id: 'arena' }
+        'Catch-up \u2192 verify pack/wheel/Quick Play/Picker all completed',
+        'API auth \u2192 fetch collection (305 cards) \u2192 fetch open fixtures',
+        'Score cards: 30% form + 20% season + 15% matchup + 15% proj + 10% H/A + 10% power',
+        'Build 3-5 lineups per comp: Floor/Streak, Balanced, Ceiling, Correlation, Contrarian',
+        'Cap 120+MVP \u2192 Jokic permanent MVP (64.3), 4 slots under 120 cap',
+        'Daily Pickup + Limited Contender + Common Champion lineups',
+        'Hot Streak check \u2192 L1-L2: always submit | L3+: skip weak GWs'
       ],
-      strategy: 'MVP hierarchy: Jokic (64.3) > Bam (50.4) > Edwards (46.6) > KD (41.5). Protect L3+ streaks \u2014 skipping beats risking reset.'
+      strategy: 'MVP hierarchy: Jokic (64.3) > Bam (50.4) > Edwards (46.6) > KD (41.5) > Cade (41.3). Protect L3+ streaks \u2014 skipping beats risking $50-$1K reset.'
     },
-    { id: 'evening_brief', name: 'Evening Brief', time: '8:00 PM ET', scheduleHour: 20, scheduleMinute: 0, status: 'scheduled', desc: 'End of day wrap, after-hours moves, overnight preview', recurring: false, prevHour: 17, prevMinute: 0 },
-    { id: 'market_scan', name: 'Market Intelligence Scan', time: 'Every 4 hours', scheduleHour: -1, scheduleMinute: 0, status: 'active', desc: 'Continuous monitoring of AI value chain developments', recurring: true }
+    { name: 'Evening Brief', time: '8:00 PM ET', scheduleHour: 20, scheduleMinute: 0, status: 'scheduled', desc: 'End of day wrap, after-hours moves, overnight preview', recurring: false, prevHour: 17, prevMinute: 0 },
+    { name: 'Market Intelligence Scan', time: 'Every 4 hours', scheduleHour: -1, scheduleMinute: 0, status: 'active', desc: 'Continuous monitoring of AI value chain developments', recurring: true }
   ];
-
-  /* Track dynamic overrides from state.json */
-  var jobOverrides = {}; // { jobId: { status, completedAt, subtasks: { subtaskId: status } } }
-
   function getETNow() { return new Date(new Date().toLocaleString('en-US', { timeZone: 'America/New_York' })); }
-
   function calcProgress(job) {
     var now = getETNow(), cm = now.getHours()*60+now.getMinutes();
-    var override = jobOverrides[job.id];
-    /* If state.json says completed, progress is 100% */
-    if (override && override.status === 'completed') return 100;
-    if (override && override.status === 'running') {
-      /* Running: pulse between 40-80% */
-      return 40 + Math.round(Math.abs(Math.sin(Date.now() / 3000)) * 40);
-    }
-    if (override && override.status === 'failed') return 100;
-    /* Fallback: time-based but ONLY up to scheduled time, never auto-complete */
     if (job.recurring) return Math.min(100, Math.round((cm%240)/240*100));
     var t = job.scheduleHour*60+job.scheduleMinute, p = job.prevHour*60+job.prevMinute;
-    if (cm >= t) {
-      /* Past schedule time but no override = missed, show 100% bar but status handles color */
-      return 100;
-    }
+    if (cm >= t) return 100;
     var w = t-p; if (w<=0) w=60;
     var e = cm-p; if (e<0) return 0;
     return Math.min(100, Math.max(0, Math.round(e/w*100)));
   }
-
   function getStatusForJob(job) {
     var now = getETNow(), cm = now.getHours()*60+now.getMinutes(), t = job.scheduleHour*60+job.scheduleMinute;
-    var override = jobOverrides[job.id];
-    /* Dynamic override from state.json takes priority */
-    if (override && override.status) {
-      return override.status; // 'completed', 'running', 'failed', 'missed', 'scheduled'
-    }
-    /* No override: time-based logic */
     if (job.recurring) return job.status;
-    if (cm >= t) return 'missed'; // Past time + no state.json confirmation = missed
-    if (t - cm <= 30 && t - cm > 0) return 'scheduled'; // Upcoming
-    return 'scheduled';
+    if (cm >= t) return 'completed';
+    if (t-cm <= 30 && t-cm > 0) return 'active';
+    return job.status;
   }
-
-  function getSubtaskStatus(jobId, subtaskId) {
-    var override = jobOverrides[jobId];
-    if (override && override.subtasks && override.subtasks[subtaskId]) {
-      return override.subtasks[subtaskId]; // 'done', 'skipped', 'failed', 'pending'
-    }
-    return null;
-  }
-
   function renderJobs() {
     var c = document.getElementById('jobsContainer'), h = '';
     for (var i=0;i<jobs.length;i++) {
       var j=jobs[i], p=calcProgress(j), s=getStatusForJob(j);
       var fillClass = 'progress-fill';
-      if (s === 'running') fillClass += ' progress-fill-active';
+      if (s === 'active') fillClass += ' progress-fill-active';
       else if (s === 'completed') fillClass += ' progress-fill-done';
-      else if (s === 'failed') fillClass += ' progress-fill-failed';
-      else if (s === 'missed') fillClass += ' progress-fill-missed';
-      /* Badge label */
-      var badgeLabel = s.charAt(0).toUpperCase() + s.slice(1);
-      var override = jobOverrides[j.id];
-      if (override && override.completedAt && s === 'completed') {
-        badgeLabel = '\u2713 ' + override.completedAt;
-      }
-      if (s === 'missed') badgeLabel = 'Missed';
       var extra = '';
       if (j.subtasks) {
         extra += '<ul class="job-subtasks">';
-        for (var k=0;k<j.subtasks.length;k++) {
-          var st = j.subtasks[k];
-          var stText = typeof st === 'string' ? st : st.text;
-          var stId = typeof st === 'string' ? null : st.id;
-          var stStatus = stId ? getSubtaskStatus(j.id, stId) : null;
-          var stIcon = '\u25B8'; // default triangle
-          var stClass = 'job-subtask';
-          if (stStatus === 'done') { stIcon = '\u2713'; stClass += ' st-done'; }
-          else if (stStatus === 'skipped') { stIcon = '\u2014'; stClass += ' st-skipped'; }
-          else if (stStatus === 'failed') { stIcon = '\u2717'; stClass += ' st-failed'; }
-          else if (stStatus === 'running') { stIcon = '\u25CF'; stClass += ' st-running'; }
-          extra += '<li class="'+stClass+'"><span class="st-icon">'+stIcon+'</span>'+escHtml(stText)+'</li>';
-        }
+        for (var k=0;k<j.subtasks.length;k++) { extra += '<li class="job-subtask"><span class="st-icon">\u25B8</span>'+j.subtasks[k]+'</li>'; }
         extra += '</ul>';
       }
-      if (j.strategy) { extra += '<div class="job-strategy"><span class="job-strategy-label">Strategy</span>'+escHtml(j.strategy)+'</div>'; }
-      h += '<div class="job-card"><div class="job-header"><div><span class="job-name">'+escHtml(j.name)+'</span><span class="job-time">'+escHtml(j.time)+'</span></div><span class="badge badge-'+s+'">'+badgeLabel+'</span></div><div class="progress-track"><div class="'+fillClass+'" style="width:'+p+'%"></div></div><div class="job-desc">'+escHtml(j.desc)+'</div>'+extra+'</div>';
+      if (j.strategy) { extra += '<div class="job-strategy"><span class="job-strategy-label">Strategy</span>'+j.strategy+'</div>'; }
+      h += '<div class="job-card"><div class="job-header"><div><span class="job-name">'+j.name+'</span><span class="job-time">'+j.time+'</span></div><span class="badge badge-'+s+'">'+s.charAt(0).toUpperCase()+s.slice(1)+'</span></div><div class="progress-track"><div class="'+fillClass+'" style="width:'+p+'%"></div></div><div class="job-desc">'+j.desc+'</div>'+extra+'</div>';
     }
     c.innerHTML = h;
   }
-  renderJobs(); setInterval(renderJobs, 5000); // Faster refresh for running jobs
+  renderJobs(); setInterval(renderJobs, 30000);
 
   function updateFeedTime() {
     var n=getETNow(), h=n.getHours(), m=n.getMinutes(), a=h>=12?'PM':'AM';
@@ -2018,7 +2305,11 @@
   }
   updateFeedTime(); setInterval(updateFeedTime, 60000);
 
+
 })();
 </script>
+
+</div>
+
 </body>
-</html>
+</html><!-- cache bust Sun Mar 15 19:15 EDT 2026 -->
