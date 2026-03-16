@@ -3,8 +3,8 @@
   "status": "idle",
   "brain": {
     "mode": "working",
-    "focus": "\ud83c\udfa4 Voice message received",
-    "model": "whisper",
+    "focus": "Finding Sonny from iRobot voice match",
+    "model": "claude-sonnet-4-6",
     "thoughts": [
       {
         "time": "6:10 PM ET",
@@ -85,11 +85,11 @@
       "model": "claude-sonnet-4-6",
       "status": "running"
     },
-    "currentModel": "whisper",
+    "currentModel": "claude-sonnet-4-6",
     "subagents": []
   },
   "steps": [],
-  "updated_at": "2026-03-16T22:16:26Z",
+  "updated_at": "2026-03-16T22:16:43Z",
   "_tunnel_url": "https://charged-unique-architects-fusion.trycloudflare.com",
   "jobs": {
     "strategy_audit": {
