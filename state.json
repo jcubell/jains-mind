@@ -3,8 +3,8 @@
   "status": "idle",
   "brain": {
     "mode": "working",
-    "focus": "\ud83c\udfa4 Voice message received",
-    "model": "whisper",
+    "focus": "Transcribing voice message",
+    "model": "grok-4",
     "thoughts": [
       {
         "time": "2:16 AM ET",
@@ -85,11 +85,11 @@
       "model": "claude-sonnet-4-6",
       "status": "running"
     },
-    "currentModel": "whisper",
+    "currentModel": "grok-4",
     "subagents": []
   },
   "steps": [],
-  "updated_at": "2026-03-16T06:59:41Z",
+  "updated_at": "2026-03-16T06:59:46Z",
   "_tunnel_url": "https://charged-unique-architects-fusion.trycloudflare.com",
   "jobs": {
     "strategy_audit": {
