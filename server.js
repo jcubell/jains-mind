@@ -267,6 +267,24 @@ const server = http.createServer(async (req, res) => {
     return;
   }
 
+  // /cron-status — list openclaw scheduled jobs
+  if (urlPath === '/cron-status') {
+    const { exec } = require('child_process');
+    exec('openclaw cron list --json', (err, stdout, stderr) => {
+      res.setHeader('Access-Control-Allow-Origin', '*');
+      if (err) return res.end(JSON.stringify({ error: 'unavailable', jobs: [] }));
+      try {
+        const jobs = JSON.parse(stdout);
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ jobs }));
+      } catch(e) {
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ error: 'parse_error', jobs: [], raw: stdout.slice(0, 500) }));
+      }
+    });
+    return;
+  }
+
   res.writeHead(404); res.end('Not Found');
 });
 

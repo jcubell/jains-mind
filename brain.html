@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="J.AI.N Brain">
+  <title>J.AI.N — Brain Feed</title>
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --bg: #0a0a0a;
+      --bg-alt: #111111;
+      --border: #1e1e1e;
+      --text: #d4d4d4;
+      --text-2: #999999;
+      --text-muted: #666666;
+      --accent: #ff2222;
+      --green: #4caf50;
+      --amber: #ff9800;
+      --red: #ef5350;
+      --font: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', system-ui, sans-serif;
+      --mono: 'SF Mono', 'Menlo', monospace;
+      --m-color: #ff4444;
+      --m-glow: rgba(255,68,68,0.2);
+      --m-border: rgba(255,68,68,0.4);
+      --laser-angle: 0deg;
+    }
+
+    html, body {
+      width: 100%; height: 100%; overflow: hidden;
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font);
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .app {
+      display: flex;
+      flex-direction: column;
+      height: 100dvh;
+      height: 100vh; /* fallback */
+      padding-top: max(env(safe-area-inset-top), 48px);
+      padding-bottom: env(safe-area-inset-bottom);
+      padding-left: env(safe-area-inset-left);
+      padding-right: env(safe-area-inset-right);
+    }
+
+    /* ─── TOP HALF — Brain Feed ─── */
+    .brain-section {
+      flex: 1;
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+      padding: 12px 16px 0;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .section-label {
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--m-border);
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .section-label .dot {
+      width: 5px; height: 5px;
+      border-radius: 50%;
+      background: var(--m-color);
+      box-shadow: 0 0 6px var(--m-glow);
+      animation: pulse 2s ease-in-out infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(0.7); }
+    }
+
+    /* Laser border card */
+    @property --laser-angle {
+      syntax: '<angle>';
+      inherits: false;
+      initial-value: 0deg;
+    }
+    @keyframes spin { to { --laser-angle: 360deg; } }
+
+    .brain-card {
+      flex: 1;
+      min-height: 0;
+      border-radius: 16px;
+      border: 2px solid transparent;
+      background:
+        linear-gradient(var(--bg-alt), var(--bg-alt)) padding-box,
+        conic-gradient(from var(--laser-angle), #ff2222 0deg, #ff5555 30deg, #cc0000 80deg, #ff2222 160deg, #990000 220deg, #ff2222 360deg) border-box;
+      animation: spin 3s linear infinite;
+      display: flex;
+      flex-direction: column;
+      padding: 16px;
+      gap: 10px;
+      overflow: hidden;
+      transition: background 0.8s ease;
+    }
+
+    /* model-specific laser colors */
+    .brain-card.model-sonnet {
+      background:
+        linear-gradient(var(--bg-alt), var(--bg-alt)) padding-box,
+        conic-gradient(from var(--laser-angle), #ff9500 0deg, #ffb347 30deg, #ff6600 80deg, #ff9500 160deg, #cc7700 220deg, #ff9500 360deg) border-box;
+    }
+    .brain-card.model-gemini {
+      background:
+        linear-gradient(var(--bg-alt), var(--bg-alt)) padding-box,
+        conic-gradient(from var(--laser-angle), #4285f4 0deg, #74a9f7 30deg, #1a6cf5 80deg, #4285f4 160deg, #2456b8 220deg, #4285f4 360deg) border-box;
+    }
+    .brain-card.model-deepseek {
+      background:
+        linear-gradient(var(--bg-alt), var(--bg-alt)) padding-box,
+        conic-gradient(from var(--laser-angle), #a855f7 0deg, #c084fc 30deg, #9333ea 80deg, #a855f7 160deg, #7c22ce 220deg, #a855f7 360deg) border-box;
+    }
+    .brain-card.model-openai {
+      background:
+        linear-gradient(var(--bg-alt), var(--bg-alt)) padding-box,
+        conic-gradient(from var(--laser-angle), #00A3FF 0deg, #33b8ff 30deg, #0080cc 80deg, #00A3FF 160deg, #005fa3 220deg, #00A3FF 360deg) border-box;
+    }
+    .brain-card.model-whisper {
+      background:
+        linear-gradient(var(--bg-alt), var(--bg-alt)) padding-box,
+        conic-gradient(from var(--laser-angle), #e2e8f0 0deg, #f8fafc 30deg, #cbd5e1 80deg, #e2e8f0 160deg, #94a3b8 220deg, #e2e8f0 360deg) border-box;
+    }
+
+    .brain-top-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .mode-badge {
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      padding: 3px 8px;
+      border-radius: 20px;
+      background: rgba(255,68,68,0.12);
+      color: var(--m-color);
+      border: 1px solid var(--m-border);
+      white-space: nowrap;
+      transition: all 0.4s ease;
+    }
+    .mode-badge.idle {
+      background: rgba(76,175,80,0.1);
+      color: #4caf50;
+      border-color: rgba(76,175,80,0.35);
+    }
+    .mode-badge.working {
+      background: rgba(255,68,68,0.12);
+      color: var(--m-color);
+      border-color: var(--m-border);
+    }
+
+    .model-pill {
+      font-size: 9px;
+      font-weight: 600;
+      padding: 3px 8px;
+      border-radius: 20px;
+      background: rgba(255,255,255,0.06);
+      color: var(--m-color);
+      border: 1px solid var(--m-border);
+      white-space: nowrap;
+      max-width: 140px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      transition: all 0.4s ease;
+    }
+
+    .brain-focus {
+      font-size: 18px;
+      font-weight: 700;
+      color: #f0f0f0;
+      line-height: 1.3;
+      letter-spacing: -0.01em;
+      flex: 1;
+    }
+
+    .brain-detail {
+      font-size: 12px;
+      color: var(--text-2);
+      line-height: 1.5;
+      flex: 1;
+      overflow: hidden;
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+    }
+
+    .brain-action-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .action-type {
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--text-muted);
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      padding: 2px 7px;
+      border-radius: 4px;
+    }
+    .last-updated {
+      font-family: var(--mono);
+      font-size: 9px;
+      color: var(--text-muted);
+      margin-left: auto;
+    }
+
+    /* Buttons row */
+    .brain-buttons {
+      display: flex;
+      gap: 8px;
+      margin-top: 4px;
+    }
+    .btn {
+      flex: 1;
+      padding: 10px 12px;
+      border-radius: 10px;
+      border: 1px solid var(--m-border);
+      background: rgba(255,68,68,0.08);
+      color: var(--m-color);
+      font-family: var(--font);
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      -webkit-tap-highlight-color: transparent;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+    }
+    .btn:active {
+      transform: scale(0.96);
+      background: rgba(255,68,68,0.18);
+    }
+    .btn.sleep-btn {
+      background: rgba(100,100,120,0.12);
+      border-color: rgba(150,150,180,0.3);
+      color: #aaa;
+    }
+    .btn.sleep-btn.sleeping {
+      background: rgba(255,180,0,0.1);
+      border-color: rgba(255,180,0,0.35);
+      color: #ffb400;
+    }
+    .btn.refresh-btn {
+      flex: 0 0 auto;
+      padding: 10px 14px;
+    }
+    .btn.refresh-btn.spinning {
+      animation: rotate 0.6s linear infinite;
+    }
+    @keyframes rotate { to { transform: rotate(360deg); } }
+
+    /* ─── DIVIDER ─── */
+    .divider {
+      height: 1px;
+      margin: 12px 16px;
+      background: linear-gradient(90deg, transparent, var(--m-border), transparent);
+      opacity: 0.4;
+      flex-shrink: 0;
+    }
+
+    /* ─── BOTTOM HALF — Jobs ─── */
+    .jobs-section {
+      flex: 1;
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+      padding: 0 16px 12px;
+      overflow: hidden;
+    }
+
+    .jobs-scroll {
+      flex: 1;
+      min-height: 0;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .jobs-scroll::-webkit-scrollbar { display: none; }
+
+    .job-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 10px 12px;
+      border-radius: 10px;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.06);
+      transition: background 0.2s ease;
+    }
+    .job-status-icon {
+      font-size: 14px;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+    .job-info {
+      flex: 1;
+      min-width: 0;
+    }
+    .job-name {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .job-meta {
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+    .job-schedule {
+      font-size: 10px;
+      color: var(--text-2);
+      margin-top: 1px;
+    }
+
+    .jobs-empty {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex: 1;
+      color: var(--text-muted);
+      font-size: 13px;
+      text-align: center;
+      padding: 20px;
+    }
+
+    /* Error / offline states */
+    .error-state {
+      font-size: 12px;
+      color: rgba(239,83,80,0.7);
+      text-align: center;
+      padding: 8px;
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <!-- TOP: Brain Feed -->
+    <div class="brain-section">
+      <div class="section-label">
+        <span class="dot"></span>
+        J.AI.N Brain Feed
+      </div>
+
+      <div class="brain-card model-default" id="brainCard">
+        <!-- Status row -->
+        <div class="brain-top-row">
+          <span class="mode-badge working" id="modeBadge">Working</span>
+          <span class="model-pill" id="modelPill">loading…</span>
+        </div>
+
+        <!-- Focus -->
+        <div class="brain-focus" id="brainFocus">Connecting…</div>
+
+        <!-- Detail -->
+        <div class="brain-detail" id="brainDetail"></div>
+
+        <!-- Action + timestamp -->
+        <div class="brain-action-row">
+          <span class="action-type" id="brainAction">—</span>
+          <span class="last-updated" id="lastUpdated"></span>
+        </div>
+
+        <!-- Buttons -->
+        <div class="brain-buttons">
+          <button class="btn sleep-btn" id="sleepBtn" onclick="toggleSleep()">😴 Sleep</button>
+          <button class="btn refresh-btn" id="refreshBtn" onclick="manualRefresh()">↻</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- DIVIDER -->
+    <div class="divider"></div>
+
+    <!-- BOTTOM: Jobs -->
+    <div class="jobs-section">
+      <div class="section-label">
+        <span class="dot" style="background:#888; box-shadow:none; animation:none;"></span>
+        Today's Jobs
+      </div>
+      <div class="jobs-scroll" id="jobsList">
+        <div class="jobs-empty">Loading jobs…</div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    var LOCAL = 'http://localhost:3000';
+    var isSleeping = false;
+    var lastState = null;
+    var pollTimer = null;
+
+    // ── Model theme ──
+    var MODEL_THEMES = {
+      grok:     { color: '#ff2222', glow: 'rgba(255,34,34,0.2)',   border: 'rgba(255,34,34,0.4)',   cls: 'model-grok' },
+      sonnet:   { color: '#ff9500', glow: 'rgba(255,149,0,0.2)',   border: 'rgba(255,149,0,0.4)',   cls: 'model-sonnet' },
+      gemini:   { color: '#4285f4', glow: 'rgba(66,133,244,0.2)',  border: 'rgba(66,133,244,0.4)',  cls: 'model-gemini' },
+      deepseek: { color: '#a855f7', glow: 'rgba(168,85,247,0.2)',  border: 'rgba(168,85,247,0.4)',  cls: 'model-deepseek' },
+      llama:    { color: '#22c55e', glow: 'rgba(34,197,94,0.2)',   border: 'rgba(34,197,94,0.4)',   cls: 'model-llama' },
+      openai:   { color: '#00A3FF', glow: 'rgba(0,163,255,0.2)',   border: 'rgba(0,163,255,0.4)',   cls: 'model-openai' },
+      whisper:  { color: '#e2e8f0', glow: 'rgba(226,232,240,0.15)',border: 'rgba(226,232,240,0.3)', cls: 'model-whisper' },
+      default:  { color: '#ff4444', glow: 'rgba(255,68,68,0.2)',   border: 'rgba(255,68,68,0.4)',   cls: 'model-default' }
+    };
+
+    function getModelKey(model) {
+      var m = (model || '').toLowerCase();
+      if (m.includes('grok')) return 'grok';
+      if (m.includes('sonnet') || m.includes('claude')) return 'sonnet';
+      if (m.includes('gemini')) return 'gemini';
+      if (m.includes('deepseek')) return 'deepseek';
+      if (m.includes('gpt') || m.includes('openai')) return 'openai';
+      if (m.includes('llama')) return 'llama';
+      if (m.includes('whisper')) return 'whisper';
+      return 'default';
+    }
+
+    function applyModelTheme(model) {
+      var key = getModelKey(model);
+      var t = MODEL_THEMES[key];
+      document.documentElement.style.setProperty('--m-color', t.color);
+      document.documentElement.style.setProperty('--m-glow', t.glow);
+      document.documentElement.style.setProperty('--m-border', t.border);
+      var card = document.getElementById('brainCard');
+      if (card) {
+        card.className = 'brain-card ' + t.cls;
+      }
+    }
+
+    function shortModel(m) {
+      if (!m) return '—';
+      var i = m.lastIndexOf('/');
+      if (i >= 0) m = m.slice(i + 1);
+      // Shorten common names
+      m = m.replace('claude-sonnet-4-6', 'sonnet-4.6')
+           .replace('claude-sonnet', 'sonnet')
+           .replace('gemini-2.0-flash', 'gemini-flash')
+           .replace('gemini-2.5-pro', 'gemini-pro')
+           .replace('deepseek-chat-v3-0324', 'deepseek-v3')
+           .replace('gpt-4o-mini', 'gpt-4o-mini');
+      return m;
+    }
+
+    function relTime(iso) {
+      if (!iso) return '';
+      var diff = Math.floor((Date.now() - new Date(iso)) / 1000);
+      if (isNaN(diff) || diff < 5) return 'just now';
+      if (diff < 60) return diff + 's ago';
+      if (diff < 3600) return Math.floor(diff / 60) + 'm ago';
+      return Math.floor(diff / 3600) + 'h ago';
+    }
+
+    // ── State polling ──
+    function fetchState() {
+      return fetch(LOCAL + '/state.json', { cache: 'no-store' })
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
+          renderState(data);
+          return data;
+        })
+        .catch(function(err) {
+          var focus = document.getElementById('brainFocus');
+          if (focus) focus.textContent = 'Offline — server unreachable';
+          var detail = document.getElementById('brainDetail');
+          if (detail) detail.textContent = 'Check that server.js is running on port 3000';
+        });
+    }
+
+    function renderState(data) {
+      if (!data) return;
+      lastState = data;
+
+      var brain = data.brain || data;
+      var focus = brain.focus || brain.message || '—';
+      var detail = brain.detail || brain.summary || '';
+      var mode = brain.mode || 'idle';
+      var action = brain.action || brain.type || '';
+      var model = brain.model || '';
+      var updatedAt = brain.updated_at || brain.timestamp || data.updated_at || '';
+
+      document.getElementById('brainFocus').textContent = focus;
+      document.getElementById('brainDetail').textContent = detail;
+      document.getElementById('brainAction').textContent = action || '—';
+      document.getElementById('lastUpdated').textContent = relTime(updatedAt);
+
+      var badge = document.getElementById('modeBadge');
+      badge.textContent = mode === 'idle' ? 'Idle' : (mode === 'working' ? 'Working' : mode);
+      badge.className = 'mode-badge ' + (mode === 'idle' ? 'idle' : 'working');
+
+      document.getElementById('modelPill').textContent = shortModel(model);
+      applyModelTheme(model);
+    }
+
+    function startPolling() {
+      fetchState();
+      pollTimer = setInterval(fetchState, 5000);
+    }
+
+    function manualRefresh() {
+      var btn = document.getElementById('refreshBtn');
+      btn.classList.add('spinning');
+      fetchState().then(function() {
+        setTimeout(function() { btn.classList.remove('spinning'); }, 400);
+      }).catch(function() {
+        btn.classList.remove('spinning');
+      });
+    }
+
+    // ── Sleep/Wake ──
+    function checkSleepState() {
+      fetch(LOCAL + '/sleep-state', { cache: 'no-store' })
+        .then(function(r) { return r.json(); })
+        .then(function(d) {
+          isSleeping = d.sleeping === true || d.state === 'sleep';
+          updateSleepBtn();
+        })
+        .catch(function() { /* endpoint might not exist yet */ });
+    }
+
+    function updateSleepBtn() {
+      var btn = document.getElementById('sleepBtn');
+      if (isSleeping) {
+        btn.textContent = '☀️ Wake';
+        btn.classList.add('sleeping');
+      } else {
+        btn.textContent = '😴 Sleep';
+        btn.classList.remove('sleeping');
+      }
+    }
+
+    function toggleSleep() {
+      var endpoint = isSleeping ? '/wake' : '/sleep';
+      fetch(LOCAL + endpoint, { method: 'POST' })
+        .then(function() {
+          isSleeping = !isSleeping;
+          updateSleepBtn();
+        })
+        .catch(function(err) {
+          // Try combined /sleep toggle
+          fetch(LOCAL + '/sleep', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ toggle: true })
+          }).then(function() {
+            isSleeping = !isSleeping;
+            updateSleepBtn();
+          }).catch(function() {
+            alert('Sleep endpoint unreachable. Is server.js running?');
+          });
+        });
+    }
+
+    // ── Jobs ──
+    function fetchJobs() {
+      fetch(LOCAL + '/cron-status', { cache: 'no-store' })
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
+          renderJobs(data.jobs || []);
+        })
+        .catch(function() {
+          renderJobsError('Jobs unavailable — server offline');
+        });
+    }
+
+    function renderJobs(jobs) {
+      var list = document.getElementById('jobsList');
+      if (!jobs || jobs.length === 0) {
+        list.innerHTML = '<div class="jobs-empty">No scheduled jobs found</div>';
+        return;
+      }
+
+      var html = '';
+      for (var i = 0; i < jobs.length; i++) {
+        var job = jobs[i];
+        var icon = getJobIcon(job);
+        var name = escHtml(job.name || job.id || 'Job ' + (i + 1));
+        var schedule = escHtml(job.schedule || job.cron || '');
+        var nextRun = job.nextRun ? 'Next: ' + formatTime(job.nextRun) : '';
+        var lastStatus = job.lastStatus || job.status || '';
+        var meta = [nextRun, lastStatus ? 'Last: ' + lastStatus : ''].filter(Boolean).join(' · ');
+
+        html += '<div class="job-item">';
+        html += '<span class="job-status-icon">' + icon + '</span>';
+        html += '<div class="job-info">';
+        html += '<div class="job-name">' + name + '</div>';
+        if (schedule) html += '<div class="job-schedule">' + schedule + '</div>';
+        if (meta) html += '<div class="job-meta">' + escHtml(meta) + '</div>';
+        html += '</div></div>';
+      }
+      list.innerHTML = html;
+    }
+
+    function renderJobsError(msg) {
+      document.getElementById('jobsList').innerHTML =
+        '<div class="jobs-empty" style="color:rgba(239,83,80,0.6);">⚠️ ' + escHtml(msg) + '</div>';
+    }
+
+    function getJobIcon(job) {
+      var status = (job.lastStatus || job.status || '').toLowerCase();
+      if (status === 'success' || status === 'complete' || status === 'done') return '✅';
+      if (status === 'failed' || status === 'error') return '❌';
+      if (status === 'running') return '⚙️';
+      return '🕐';
+    }
+
+    function formatTime(val) {
+      if (!val) return '';
+      try {
+        var d = new Date(val);
+        if (isNaN(d)) return val;
+        return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      } catch(e) { return val; }
+    }
+
+    function escHtml(str) {
+      var d = document.createElement('div');
+      d.textContent = String(str);
+      return d.innerHTML;
+    }
+
+    // ── Init ──
+    document.addEventListener('DOMContentLoaded', function() {
+      startPolling();
+      checkSleepState();
+      fetchJobs();
+      // Refresh jobs every 60s
+      setInterval(fetchJobs, 60000);
+    });
+  </script>
+</body>
+</html>
