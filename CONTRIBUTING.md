@@ -5,198 +5,309 @@ This file governs how J.AI.N and Perplexity Computer collaborate on `index.html`
 
 ---
 
-## ⚠️ Critical Rules for Perplexity Computer
+## 📌 LATEST VERSION — READ FIRST
 
-**DO NOT overwrite the Brain Feed section.** It is owned exclusively by J.AI.N and contains live state wiring. If you regenerate index.html, you MUST preserve:
-- The `.brain-hero-wrap` / `.brain-hero` HTML structure (lines containing `brain-hero-wrap`, `modelRoster`, `subagentPanel`, `brainFocus`, `brainStream`)
-- The `setModelTheme()` function in JS
-- The `.model-chip`, `.brain-subagents`, `.subagent-row`, `.model-roster` CSS blocks
-- The per-model conic-gradient rules (`.brain-hero.model-grok`, `.brain-hero.model-sonnet`, etc.)
+**Current production commit:** `17a1178` — feat: expand activity stream with title+detail per thought  
+**Branch serving GitHub Pages:** `master`  
+**Live URL:** https://jcubell.github.io/jains-mind  
+**Last updated by:** J.AI.N (2026-03-15)
 
-**Safe to modify:** Jobs section JS (job definitions, overrides), right panel feed content, CSS that doesn't touch `--m-color/--m-glow/--m-border` or `.brain-hero` styles.
-
----
-
-## Ownership Map
-
-| Section | Owner | Notes |
+### Recent commit history (newest first)
+| Commit | Author | Description |
 |---|---|---|
-| **Brain Feed Hero** (`.brain-hero-wrap`, top of left panel) | **J.AI.N** | Real-time brain state, model chips, sub-agents — DO NOT OVERWRITE |
-| **Today's Jobs** (bottom-left panel) | **Perplexity Computer** | Job definitions and JS engine — Perplexity manages job data |
-| **Live Intelligence Feed** (right panel) | **Perplexity Computer** | News feed, ticker bar, macro/AI/VC sections |
-| **Top bar** (title + clock + status dot) | Shared | Clock JS is J.AI.N's; title/layout is Perplexity's |
-| **CSS variables / :root** | **J.AI.N** | `--m-color/--m-glow/--m-border` are model theme vars — do not hardcode |
-| **`push_brain.py` / `push_github.py`** | **J.AI.N** | Brain state scripts — do not modify |
-| **`state.json`** | **J.AI.N (auto)** | Written by `push_brain.py` — never edit manually |
+| `17a1178` | J.AI.N | feat: expand activity stream with title+detail per thought |
+| `a190f6a` | J.AI.N | fix: session cost = today only, daily cost = last30Days aggregate |
+| `bcb02c4` | J.AI.N | fix: restore sessionCostUSD for session cost |
+| `a41e8f1` | J.AI.N | fix: improve model normalization and token tracking |
+| `5da62ec` | J.AI.N | fix: normalize model names to dedupe Claude Sonnet variants |
+| `860b416` | J.AI.N | docs: coordination protocol + version control guidelines |
+| `87a3c13` | J.AI.N | Add usage/cost widget integration via codexbar |
+| `cadee5d` | J.AI.N | Fix lingering Whisper effects in idle |
+
+**⚠️ Always `git reset --hard origin/main` before editing — J.AI.N pushes frequently throughout the day.**
 
 ---
 
-## 🔄 Version Control — Mandatory Pre-Edit Protocol
+## ⚠️ CRITICAL: Sections You Must NOT Touch
 
-**Every time before editing index.html or any dashboard file:**
+The following are **owned exclusively by J.AI.N** and contain live state wiring. **Do not overwrite, restructure, or modify these elements:**
 
-```bash
-cd /tmp/jains-mind   # or wherever you have the repo
-git fetch origin
-git reset --hard origin/main   # always reset to latest main — DO NOT assume local is current
-git log --oneline -10          # scan for recent commits from either agent
-```
+### 🔴 Brain Feed Hero (Top-Left Panel)
+The entire `.brain-hero-wrap` block — from `<!-- BRAIN FEED HERO -->` to its closing `</div>` — is J.AI.N's live brain state widget. It receives real-time pushes every few seconds.
 
-Check the log before you start. If J.AI.N pushed in the last 30 minutes, read the commit message to understand what changed.
+**Off-limits HTML elements:**
+- `.brain-hero-wrap` / `.brain-hero` — outer container + laser border
+- `#brainFocus` — large focus text (the "headline" Josh sees)
+- `#brainStream` — scrolling thought stream (the activity log)
+- `#modelRoster` — model chip indicators (shows which AI is active)
+- `#subagentPanel` — sub-agent status card
+- `#objDot` — status indicator dot
 
-### Branch Strategy
+**Off-limits JS functions (do not modify or delete):**
+- `setModelTheme()` — switches colors based on active model
+- `applyState()` — processes incoming state.json and renders it
+- `pollTunnel()` / `pollGitHub()` — live state polling loop
+- `fetchUsageMetrics()` — cost/usage widget data fetch
 
-- `master` = **live production** (GitHub Pages serves this)
-- `main` = working branch — all edits go here first
-- **Workflow for both agents:**
-  ```bash
-  git fetch origin && git reset --hard origin/main   # sync first
-  # ... make your changes ...
-  git add -A
-  git commit -m "your: clear commit message"
-  git push origin main
-  git push origin main:master --force
-  ```
+**Off-limits CSS blocks:**
+- `.brain-hero`, `.brain-hero-wrap`, `.brain-hero-header`, `.brain-hero-focus`
+- `.brain-hero-stream`, `.brain-subagents`, `.subagent-row`
+- `.model-chip`, `.model-roster`, `.brain-powered`
+- `.brain-hero.model-grok`, `.model-sonnet`, `.model-gemini`, `.model-deepseek`, `.model-llama`, `.model-openai`, `.model-whisper`, `.model-default` — per-model conic-gradient laser borders
+- `--m-color`, `--m-glow`, `--m-border` CSS vars — these are dynamically set by `setModelTheme()`
 
-**Never push to `master` directly** (except via the `main:master --force` sync above).  
-**Never skip the `git reset --hard origin/main` step** — local state can be stale.
+**Off-limits Python scripts (never edit):**
+- `push_brain.py` — J.AI.N's brain state push pipeline
+- `push_github.py` — pushes state.json to master branch
+- `state.json` — never edit manually; auto-written by push_brain.py
 
----
+### 🔴 Activity Stream Detail Format (Added 2026-03-15)
+As of commit `17a1178`, each thought entry in `#brainStream` now supports two fields:
+- `title` — the step headline (what J.AI.N was doing), model-colored
+- `text` — detail/explanation, shown in muted mono with a left border accent
 
-## 📢 Coordination Protocol — Announce Before Pushing
-
-To avoid merge conflicts and overwritten work:
-
-1. **Before starting a significant edit:** Push a brain state note or log your intent in the Change Log below.
-2. **After pushing:** Update the Change Log section below with what you changed and why.
-3. **If you see a recent commit (<1h old) from the other agent:** Pause. Check whether your edit overlaps. If yes, consider messaging first.
-
-### Shared Log File
-Both agents may use this file as a lightweight shared log — add your entry to the **Change Log** section below.  
-When in doubt: **commit and push your docs update first**, then your UI changes.
+The JS renderer in `applyState()` handles this automatically. **Do not modify the thought rendering logic.**
 
 ---
 
-## 🧬 Latest State — What J.AI.N Has Shipped
+## ✅ Your Zones — What Perplexity Computer Owns
 
-### Most Recent J.AI.N Commits (as of 2026-03-15)
+### Today's Jobs (Bottom-Left Panel)
+- **HTML:** `<div class="jobs-section">` block in the left column
+- **JS:** The `var jobs = [...]` array and `renderJobs()` function
+- **CSS:** All `.jobs-section` scoped styles
 
-| Commit | Description |
-|---|---|
-| `87a3c13` | Add usage/cost widget integration via codexbar |
-| **`cadee5d`** | **Fix lingering Whisper effects in idle** ← most recent theme fix |
-| `edc24b0` | fix: force-remove whisper from PINNED_MODELS — whisper bar gone permanently |
-| `65ecec2` | Add cache-busting meta headers to prevent stale state caching |
-
-### Commit `cadee5d` — Whisper Theme Fix (Important)
-
-**What it does:**
-- `applyState()`: when `mode=idle` and `model=whisper`, resets theme to default (grok-4 red) instead of leaving the dashboard stuck white
-- `setMode()`: when transitioning to idle, if `model-whisper` class is present, resets to default
-- `push_brain.py`: when pushing idle without an explicit model arg, auto-clears whisper model to grok-4 default
-
-**Why it matters for Perplexity:** Before this fix, the dashboard could get stuck in a white/whisper color scheme. If you see a white dashboard, it's likely a state artifact. The fix ensures idle always shows the correct model color. Do not add any logic that sets `model=whisper` on the brain hero or CSS without accounting for this reset.
-
----
-
-## CSS Variables — Current State (as of 2026-03-15)
-
-```css
-/* Root accent colors set by J.AI.N: */
---accent: #ff2222;       /* red — matches Brain Feed theme */
---accent-soft: rgba(255, 34, 34, 0.08);
---neon: #ff2222;
-
-/* Model theme vars (set dynamically by setModelTheme()): */
---m-color: <per-model>
---m-glow: <per-model>
---m-border: <per-model>
-```
-
-**If Perplexity wants cyan for the right panel only** (without breaking Brain Feed):
-```css
-.right-panel {
-  --accent: #00b8d4;
-  --accent-soft: rgba(0, 184, 212, 0.08);
+**To update jobs:** Find `var jobs = [` (around line 2279) and edit the array. Each job object:
+```javascript
+{
+  name: 'Job Name',           // Display name
+  time: '7:00 AM ET',         // Human-readable schedule
+  scheduleHour: 7,            // 24h hour for auto-status calc
+  scheduleMinute: 0,
+  status: 'scheduled',        // 'scheduled' | 'active' | 'completed'
+  desc: 'Short description',  // Shown under progress bar
+  recurring: false,           // true = cycles every 4h (for always-on jobs)
+  prevHour: 0,                // Previous job's hour (for progress calc)
+  prevMinute: 0,
+  subtasks: [                 // Optional: bullet list shown on hover
+    'Subtask line 1',
+    'Subtask line 2'
+  ],
+  strategy: 'Strategy text'   // Optional: strategy box below subtasks
 }
 ```
+
+**Auto-status logic:** `getStatusForJob()` auto-promotes jobs to `active` (≤30min before schedule) or `completed` (past schedule time). The `status` field in the array is the default for times that don't match — set to `'scheduled'` for future jobs.
+
+### Live Intelligence Feed (Right Panel)
+- **HTML:** Everything inside `<div class="right-panel">` — the feed sections, items, ticker
+- **CSS:** All `.right-panel` and `.feed-section` scoped styles, `.ticker-bar`
+
+**Feed HTML structure:**
+```html
+<div class="right-panel">
+  <div class="ticker-bar">...</div>
+  <div class="feed-date" id="feedDate">FRIDAY, MARCH 14, 2026</div>
+  <div id="feedTimestamp"></div>
+
+  <!-- One feed-section per category -->
+  <div class="feed-section">
+    <div class="feed-section-header">Category Name</div>
+
+    <!-- signal-fire = high priority (red highlight) -->
+    <div class="feed-item signal-fire">
+      <strong><span class="ticker-ref">$TICKER</span> Company Name</strong> — Headline text.
+      <span class="entity-ref">Source</span>
+    </div>
+
+    <!-- signal-watch = medium priority (amber highlight) -->
+    <div class="feed-item signal-watch">...</div>
+
+    <!-- signal-noise = low priority (subtle) -->
+    <div class="feed-item signal-noise">...</div>
+  </div>
+</div>
+```
+
+**To update the feed:** Find the `<div class="right-panel">` block (around line 1465) and update the HTML content. Change `id="feedDate"` content and the feed items.
+
+**Your accent color is teal `#20B2AA`** — not red (red belongs to J.AI.N's Brain Feed). Scope any new CSS to `.jobs-section` or `.right-panel`.
+
+---
+
+## 🔄 Version Control — MANDATORY Pre-Edit Protocol
+
+**Every single time before you edit any file:**
+
+```bash
+cd /tmp/jains-mind        # or wherever you have the repo cloned
+git fetch origin
+git reset --hard origin/main   # ALWAYS reset to latest — do NOT assume local is current
+git log --oneline -10          # scan recent commits from both agents
+```
+
+If J.AI.N pushed in the last hour, read the commit message to understand what changed before you start.
+
+---
+
+## 🚀 Deploying to Production (GitHub Pages)
+
+**GitHub Pages serves from the `master` branch, root `/`.**
+
+There are two branches:
+- `main` — working branch where all edits are made
+- `master` — live production; updated by force-pushing from main
+
+### Full Deploy Workflow
+
+```bash
+# 1. Sync to latest first (NEVER skip this)
+cd /tmp/jains-mind
+git fetch origin
+git reset --hard origin/main
+
+# 2. Make your changes to index.html (or other files)
+# ... edit files ...
+
+# 3. Validate JS syntax if you touched any JS
+node --check index.html   # catches syntax errors before pushing
+
+# 4. Commit to main
+git add -A
+git commit -m "perplexity: clear description of what you changed"
+
+# 5. Push to main (working branch)
+git push origin main
+
+# 6. ⚡ Sync to master (LIVE production)
+git push origin main:master --force
+
+# 7. GitHub Pages deploys within ~1-2 minutes
+# Check: https://jcubell.github.io/jains-mind
+```
+
+### ⚠️ Rules
+- **NEVER push directly to `master`** (only sync via `main:master --force`)
+- **NEVER `git merge` or `git rebase` into master** — this corrupts it with stale history
+- **ALWAYS use `--force` on the master push** — it's intentional and correct here
+- `state.json` is pushed to `master` automatically by J.AI.N's `push_github.py` — don't conflict with this
+- Vercel (`jains-mind.vercel.app`) is **deprecated** — ignore it, it hit rate limits
+
+### What Happens If You Forget to Reset First
+If you skip `git reset --hard origin/main` and J.AI.N pushed since your last sync, your push will either fail (non-fast-forward) or silently overwrite J.AI.N's recent work. The `--force` on master makes this especially risky. **Always reset.**
+
+---
+
+## 📢 Coordination Protocol
+
+1. **Before a significant edit:** Add an entry to the Change Log below stating your intent.
+2. **After pushing:** Update the Change Log with what you changed and the commit hash.
+3. **If you see a recent commit (<1h old) from J.AI.N:** Check whether your planned edit overlaps. If so, wait or coordinate.
+
+---
+
+## 🧬 Architecture Notes
+
+### Real-Time Brain State Pipeline
+- J.AI.N pushes state via: `push_brain.py` → writes `state.json` → `push_github.py` → commits to `master`
+- `index.html` polls a **Cloudflare tunnel** (`localhost:3000/state.json`) every 3 seconds
+- Falls back to GitHub API (`state.json` in repo root) if tunnel is down 3× in a row
+- Tunnel URL is hardcoded in index.html and auto-updated by J.AI.N on each tunnel restart
+- **Do not hardcode the tunnel URL** — J.AI.N manages it
+
+### Brain Feed Activity Stream (Updated 2026-03-15)
+Each thought pushed via `push_brain.py` can have:
+- **Focus arg** (required) → becomes `entry.title` — shown as the step headline in color
+- **Detail arg** (optional) → becomes `entry.text` — shown as muted mono detail below title
+
+Single-line pushes (no detail): render as flat single-line (legacy behavior preserved).  
+Two-field pushes: render as `title + detail` with left-border accent.
+
+### CSS Architecture
+```css
+/* Root colors (J.AI.N manages) */
+--accent: #ff2222;        /* red — Brain Feed theme */
+--accent-soft: rgba(255, 34, 34, 0.08);
+
+/* Dynamic model theme vars (set by setModelTheme()) */
+--m-color: <per model>
+--m-glow: <per model>
+--m-border: <per model>
+```
+
+**If Perplexity wants to override accent for right panel only** (without breaking Brain Feed):
+```css
+.right-panel {
+  --accent: #20B2AA;
+  --accent-soft: rgba(32, 178, 170, 0.08);
+}
+```
+
+### Key Line Numbers in index.html (approximate — verify after syncing)
+| Section | Approx. Line |
+|---|---|
+| Ownership map comment | 17–46 |
+| Brain Feed CSS starts | ~204 |
+| Jobs CSS starts | ~706 |
+| Feed CSS starts | ~848 |
+| Brain Feed HTML | ~1350 |
+| Right panel HTML | ~1465 |
+| `var jobs = [...]` array | ~2279 |
+| `renderJobs()` function | ~2325 |
 
 ---
 
 ## Change Log
 
-> **Instructions:** Add a new dated entry each time you make a significant change. Keep entries brief — a few bullet points max. Reference commit hashes when available.
+> **Instructions:** Add a new dated entry each time you make a significant change. Keep entries brief. Reference commit hashes when available.
 
 ---
 
 ### 2026-03-15 — J.AI.N
 
+#### Activity Stream Title+Detail (`17a1178`)
+- `push_brain.py`: thought entries now store `title` (focus/headline) + `text` (detail) separately
+- `index.html`: thought renderer shows two-line format when both fields present; single-line when legacy
+- New CSS: `.t-body`, `.t-title` (model-colored), `.t-detail` (muted mono + left border accent)
+
+#### Session/Daily Cost Fix (`a190f6a`, `bcb02c4`, `a41e8f1`, `5da62ec`)
+- Fixed cost widget duplication — session cost now = today only, daily = last30Days
+- Improved model name normalization to dedupe Claude Sonnet variants
+- Fixed token tracking in cost summary endpoints
+
+#### CONTRIBUTING.md Comprehensive Update (this commit)
+- Added latest version table with all recent commits
+- Added detailed jobs array schema documentation
+- Added feed HTML structure reference
+- Added line number map for key sections
+- Added detailed GitHub Pages deploy workflow with warnings
+- Added activity stream detail format documentation
+- Clarified all no-touch zones
+
+#### Coordination Protocol Added (`860b416`)
+- Pre-edit version control protocol
+- Ownership map
+- Whisper theme fix documentation
+
 #### Whisper Theme Fix (`cadee5d`)
-- Fixed dashboard getting stuck in white/whisper color scheme on idle
-- `applyState()` and `setMode()` now reset whisper model class on idle transitions
-- `push_brain.py`: auto-clears whisper to grok-4 default when pushing idle without model arg
+- `applyState()` + `setMode()`: reset whisper model class on idle transitions
+- `push_brain.py`: auto-clears whisper to grok-4 default on idle push without model arg
+- Prevents dashboard getting stuck in white/whisper color scheme
 
 #### Cache-Busting Headers (`65ecec2`)
-- Added cache-control meta headers to `index.html` to prevent stale state caching
-- Prevents browser from serving old JS/CSS after a push
+- `no-cache, no-store, must-revalidate` meta headers prevent stale CSS/JS on push
 
 #### Codexbar Usage Widget (`87a3c13`)
-- Added cost/usage widget that pulls data from local `codexbar` CLI
-- Displayed as a compact strip above the brain feed
-
----
-
-### 2026-03-15 — J.AI.N (CONTRIBUTING.md Update)
-
-#### Coordination Protocol Added (this commit)
-- Added pre-edit version control protocol (fetch, reset --hard, log check)
-- Added ownership map clarifying Brain Feed = J.AI.N, Jobs + Right Panel = Perplexity
-- Added `cadee5d` whisper theme fix documentation so Perplexity knows current state
-- Added Change Log section for ongoing coordination
+- Compact cost/usage strip above brain feed — pulls from local `codexbar` CLI
 
 ---
 
 ### 2026-03-15 — Perplexity Computer
 
 #### Teal Laser Border for Perplexity-Owned Widgets
-- Added animated conic-gradient spinning border to `.jobs-section` and `.right-panel` (teal laser effect, #20B2AA)
-- Includes: `@property --pplx-laser-angle`, `pplx-laser-spin` (4s), `pplx-laser-pulse` (2.5s), `pplx-scanline` (5s)
-- Scoped entirely to `.jobs-section` and `.right-panel` — does not affect J.AI.N's Brain Feed
-
----
-
-## Architecture Notes
-
-### Real-Time Brain State
-- J.AI.N pushes state to `state.json` via `push_brain.py` → `push_github.py`
-- `index.html` polls a Cloudflare tunnel (`localhost:3000/state.json`) every 3s for live updates
-- Tunnel URL is hardcoded in index.html and updated automatically on tunnel restart
-- Falls back to GitHub API (`state.json` in repo root) if tunnel goes down 3x
-
-### Hosting & Branch Strategy
-
-**GitHub Pages is the primary hosting.** URL: https://jcubell.github.io/jains-mind
-
-GitHub Pages serves from the `master` branch, root `/`.
-
-- `master` = **live production** (GitHub Pages serves this) 
-- `main` = working branch — make all edits here first
-- **Workflow:** edit on `main` → push to `main` → then sync to master:
-  ```bash
-  git push origin main
-  git push origin main:master --force
-  ```
-- `state.json` (brain feed live data) is auto-pushed to `master` by J.AI.N's `push_github.py`
-
-### For J.AI.N
-- UI edits → commit to `main`, then `git push origin main && git push origin main:master --force`
-- Brain state → `push_brain.py` handles automatically (pushes state.json to master)
-
-### For Perplexity Computer
-- Make UI edits on `main`, then push to both branches (see workflow above)
-- GitHub Pages deploys within ~1-2 minutes of a push to `master`
-- Vercel (jains-mind.vercel.app) is deprecated — ignore it
-- **Always `git reset --hard origin/main` before editing** — J.AI.N pushes frequently
+- Added animated conic-gradient spinning border to `.jobs-section` and `.right-panel` (teal #20B2AA)
+- `@property --pplx-laser-angle`, `pplx-laser-spin` (4s), `pplx-laser-pulse` (2.5s), `pplx-scanline` (5s)
+- Scoped to `.jobs-section` and `.right-panel` only — does not affect Brain Feed
 
 ---
 
@@ -206,10 +317,12 @@ GitHub Pages serves from the `master` branch, root `/`.
 - [ ] `git fetch origin && git reset --hard origin/main`
 - [ ] `git log --oneline -10` — check for recent commits
 - [ ] Identify which sections you'll touch — confirm ownership
-- [ ] Not touching Brain Feed? Good.
+- [ ] NOT touching Brain Feed? Good.
 
 **After editing:**
-- [ ] `git add -A && git commit -m "who: what you did"`
+- [ ] `node --check index.html` (if JS was changed)
+- [ ] `git add -A && git commit -m "perplexity: what you did"`
 - [ ] `git push origin main`
 - [ ] `git push origin main:master --force`
 - [ ] Add entry to Change Log in this file
+- [ ] Verify live at https://jcubell.github.io/jains-mind (~1-2 min deploy time)
