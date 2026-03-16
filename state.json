@@ -2,8 +2,8 @@
   "objective": "",
   "status": "idle",
   "brain": {
-    "mode": "idle",
-    "focus": "Done \u2014 voice use cases pitched",
+    "mode": "working",
+    "focus": "Testing TLDR voice read pipeline",
     "model": "claude-sonnet-4-6",
     "thoughts": [
       {
@@ -89,7 +89,7 @@
     "subagents": []
   },
   "steps": [],
-  "updated_at": "2026-03-16T22:20:09Z",
+  "updated_at": "2026-03-16T22:21:07Z",
   "_tunnel_url": "https://charged-unique-architects-fusion.trycloudflare.com",
   "jobs": {
     "strategy_audit": {
