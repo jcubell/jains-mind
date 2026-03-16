@@ -476,53 +476,7 @@ html, body {
   margin-top: 6px;
 }
 
-/* ===== NIGHT MODE OVERLAY ===== */
-#nightMode {
-  display: none;
-  position: fixed; inset: 0;
-  background: #0a0000;
-  z-index: 99999;
-  align-items: center; justify-content: center;
-  flex-direction: column;
-}
-#nightMode.active { display: flex; }
-#nightClock {
-  font-family: var(--font);
-  font-size: 28vw; font-weight: 900;
-  color: #cc0000;
-  letter-spacing: -0.04em;
-  line-height: 1;
-  text-align: center;
-  animation: nightPulse 4s ease-in-out infinite;
-  font-variant-numeric: tabular-nums;
-}
-#nightAmpm {
-  font-family: var(--font);
-  font-size: 4.5vw; font-weight: 200;
-  color: rgba(180,0,0,0.5);
-  letter-spacing: 0.4em;
-  text-align: center;
-  margin-top: 1vw;
-}
-#nightDate {
-  font-family: var(--mono);
-  font-size: 3vw;
-  color: rgba(140,0,0,0.4);
-  letter-spacing: 0.3em; text-transform: uppercase;
-  margin-top: 4vw;
-}
-.night-tap-hint {
-  position: absolute;
-  bottom: calc(var(--safe-bottom) + 20px);
-  font-family: var(--mono);
-  font-size: 10px;
-  color: rgba(100,0,0,0.3);
-  letter-spacing: 0.3em; text-transform: uppercase;
-}
-@keyframes nightPulse {
-  0%,100%{opacity:1;text-shadow:0 0 80px rgba(200,0,0,0.3)}
-  50%{opacity:0.8;text-shadow:0 0 140px rgba(200,0,0,0.5)}
-}
+/* Night mode removed — sleep only applies to desktop */
 
 /* Toast notification */
 .toast {
@@ -578,14 +532,6 @@ html, body {
     <button class="action-btn refresh-btn" id="refreshBtn" title="Hard refresh desktop"><span class="refresh-icon">&#8635;</span> Refresh</button>
     <button class="action-btn sleep-btn" id="sleepBtn" title="Sleep / Night mode">&#9790; Sleep</button>
   </div>
-</div>
-
-<!-- Night Mode Overlay -->
-<div id="nightMode">
-  <div id="nightClock">00:00</div>
-  <div id="nightAmpm">AM</div>
-  <div id="nightDate"></div>
-  <div class="night-tap-hint">tap to wake</div>
 </div>
 
 <!-- Toast -->
@@ -877,41 +823,7 @@ html, body {
   updateClock();
   setInterval(updateClock, 1000);
 
-  // ── NIGHT MODE ──────────────────────────────────────────────────────────────
-  var nm = document.getElementById('nightMode');
-  var nc = document.getElementById('nightClock');
-  var nightTimer = null;
-  var wasSleeping = false;
-
-  function updateNightClock() {
-    var d = new Date();
-    var h = d.getHours() % 12 || 12;
-    var m = ('0' + d.getMinutes()).slice(-2);
-    if (nc) nc.textContent = h + ':' + m;
-    var na = document.getElementById('nightAmpm');
-    if (na) na.textContent = d.getHours() >= 12 ? 'PM' : 'AM';
-    var nd = document.getElementById('nightDate');
-    if (nd) {
-      var days = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
-      var months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
-      nd.textContent = days[d.getDay()] + ' · ' + months[d.getMonth()] + ' ' + d.getDate();
-    }
-  }
-
-  function enterSleep() {
-    if (nm.classList.contains('active')) return;
-    nm.classList.add('active');
-    updateNightClock();
-    nightTimer = setInterval(updateNightClock, 1000);
-  }
-
-  function exitSleep() {
-    nm.classList.remove('active');
-    if (nightTimer) { clearInterval(nightTimer); nightTimer = null; }
-    if (tunnelUrl) fetch(tunnelUrl + '/wake', { method: 'POST' }).catch(function(){});
-  }
-
-  // Sleep button — POST to tunnel only (desktop sleeps, PWA stays awake)
+  // Sleep button — sends signal to desktop only, PWA stays fully awake
   var sleepBtn = document.getElementById('sleepBtn');
   if (sleepBtn) {
     sleepBtn.addEventListener('click', function(e) {
