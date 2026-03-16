@@ -171,11 +171,28 @@ const server = http.createServer(async (req, res) => {
         const byokDaily   = d.byok_usage_daily   || 0;
         const byokWeekly  = d.byok_usage_weekly  || 0;
         const byokMonthly = d.byok_usage_monthly || 0;
-        // Total = OR credits + BYOK
-        dailyCost   = orDaily   + byokDaily;
-        weeklyCost  = orWeekly  + byokWeekly;
-        monthlyCost = orMonthly + byokMonthly;
-        // Session cost: use daily total (best proxy for "today's session")
+        // Raw totals
+        const rawDaily   = orDaily   + byokDaily;
+        const rawWeekly  = orWeekly  + byokWeekly;
+        const rawMonthly = orMonthly + byokMonthly;
+
+        // === Baseline delta: subtract snapshot if cost_baseline.json exists ===
+        let baseline = null;
+        try {
+          const fs2 = require('fs');
+          baseline = JSON.parse(fs2.readFileSync('/Users/jc_agent/.openclaw/workspace/dashboard/cost_baseline.json', 'utf8'));
+        } catch(e) { baseline = null; }
+
+        if (baseline) {
+          dailyCost   = Math.max(0, rawDaily   - (baseline.total_daily   || 0));
+          monthlyCost = Math.max(0, rawMonthly - (baseline.total_monthly || 0));
+          weeklyCost  = Math.max(0, rawWeekly  - ((baseline.usage_weekly || 0) + (baseline.byok_usage_weekly || 0)));
+        } else {
+          dailyCost   = rawDaily;
+          weeklyCost  = rawWeekly;
+          monthlyCost = rawMonthly;
+        }
+        // Session cost = delta since baseline (same as daily delta when baseline is same-day)
         sessionCost = dailyCost;
         orSource = 'openrouter';
       }
