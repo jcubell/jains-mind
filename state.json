@@ -2,10 +2,16 @@
   "objective": "",
   "status": "idle",
   "brain": {
-    "mode": "idle",
-    "focus": "New session \u2014 ready",
+    "mode": "working",
+    "focus": "Fantasy baseball draft prep \u2014 research + Tandem",
     "model": "claude-sonnet-4-6",
     "thoughts": [
+      {
+        "time": "3:15 PM ET",
+        "type": "action",
+        "text": "Learning ESPN draft workflow + spring training intel",
+        "title": "Fantasy baseball draft prep \u2014 research + Tandem"
+      },
       {
         "time": "3:05 PM ET",
         "type": "complete",
@@ -71,12 +77,6 @@
         "type": "complete",
         "text": "hooks/wake working, Tandem config updated with secret",
         "title": "Done \u2014 Tandem webhook wired up to OpenClaw"
-      },
-      {
-        "time": "12:23 PM ET",
-        "type": "action",
-        "text": "Registering Tandem token in OpenClaw config",
-        "title": "Wiring Tandem \u2192 OpenClaw webhook"
       }
     ],
     "subagent": {
@@ -89,7 +89,7 @@
     "subagents": []
   },
   "steps": [],
-  "updated_at": "2026-03-16T19:05:36Z",
+  "updated_at": "2026-03-16T19:15:12Z",
   "_tunnel_url": "https://charged-unique-architects-fusion.trycloudflare.com",
   "jobs": {
     "strategy_audit": {
