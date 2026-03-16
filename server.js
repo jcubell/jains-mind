@@ -128,9 +128,6 @@ const server = http.createServer((req, res) => {
       let dailyCost = 0;    // last30Days aggregate (all sessions)
       let totalTokens = 0;
 
-      // Today's date in YYYY-MM-DD (local time)
-      const todayStr = new Date().toISOString().slice(0, 10);
-
       const codexbarBin = '/opt/homebrew/bin/codexbar';
       for (const provider of ['codex', 'claude']) {
         let raw;
@@ -143,19 +140,14 @@ const server = http.createServer((req, res) => {
         try { parsed = JSON.parse(raw); } catch(e) { continue; }
         const entries = Array.isArray(parsed) ? parsed : [parsed];
         for (const entry of entries) {
-          // Daily (aggregate) cost = last30DaysCostUSD — the full OR spend across all sessions
+          // Session cost = most recent session (as reported by codexbar)
+          if (entry.sessionCostUSD) sessionCost += entry.sessionCostUSD;
+          // Daily (aggregate) cost = last30DaysCostUSD — the full spend across all sessions
           if (entry.last30DaysCostUSD) dailyCost += entry.last30DaysCostUSD;
+          // Token total = session tokens
+          if (entry.sessionTokens) totalTokens += entry.sessionTokens;
 
           const daily = entry.daily || [];
-
-          // Session cost = sum of today's daily entries only
-          // (distinct from daily aggregate which includes all historical sessions)
-          for (const day of daily) {
-            if (day.date === todayStr) {
-              sessionCost += day.totalCost || 0;
-              totalTokens += day.totalTokens || 0;
-            }
-          }
 
           // Per-model breakdown from all daily entries (for model breakdown widget)
           for (const day of daily) {
