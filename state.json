@@ -3,7 +3,7 @@
   "status": "idle",
   "brain": {
     "mode": "working",
-    "focus": "Diagnosing brain.html \u2014 localhost:3000 unreachable from iPhone",
+    "focus": "Patching brain.html to use tunnel URL instead of localhost",
     "model": "claude-sonnet-4-6",
     "thoughts": [
       {
@@ -84,6 +84,6 @@
     "subagents": []
   },
   "steps": [],
-  "updated_at": "2026-03-16T04:13:01Z",
+  "updated_at": "2026-03-16T04:13:19Z",
   "_tunnel_url": "https://charged-unique-architects-fusion.trycloudflare.com"
 }
