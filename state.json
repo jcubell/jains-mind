@@ -2,8 +2,8 @@
   "objective": "",
   "status": "idle",
   "brain": {
-    "mode": "working",
-    "focus": "Reading message...",
+    "mode": "idle",
+    "focus": "Done \u2014 next news update in 2 min",
     "model": "claude-sonnet-4-6",
     "thoughts": [
       {
@@ -89,7 +89,7 @@
     "subagents": []
   },
   "steps": [],
-  "updated_at": "2026-03-17T23:58:11Z",
+  "updated_at": "2026-03-17T23:58:17Z",
   "_tunnel_url": "https://charged-unique-architects-fusion.trycloudflare.com",
   "jobs": {
     "strategy_audit": {
