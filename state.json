@@ -2,10 +2,16 @@
   "objective": "",
   "status": "idle",
   "brain": {
-    "mode": "working",
-    "focus": "Executing all capability upgrades",
+    "mode": "idle",
+    "focus": "Done \u2014 all upgrades complete",
     "model": "claude-sonnet-4-6",
     "thoughts": [
+      {
+        "time": "8:22 PM ET",
+        "type": "complete",
+        "text": "Tandem fixed (port 8765), ical-buddy/yt-dlp/terminal-notifier installed, calendar readable",
+        "title": "Done \u2014 all upgrades complete"
+      },
       {
         "time": "7:45 PM ET",
         "type": "complete",
@@ -71,12 +77,6 @@
         "type": "complete",
         "text": "Both #1 and #4 already working",
         "title": "Done \u2014 Tandem live, gh write access confirmed"
-      },
-      {
-        "time": "6:41 PM ET",
-        "type": "action",
-        "text": "Transcribed via Whisper",
-        "title": "Voice: install sag/xurl/summarize + explain sag"
       }
     ],
     "subagent": {
@@ -90,7 +90,7 @@
     "subagents": []
   },
   "steps": [],
-  "updated_at": "2026-03-17T00:17:58Z",
+  "updated_at": "2026-03-17T00:22:01Z",
   "_tunnel_url": "https://charged-unique-architects-fusion.trycloudflare.com",
   "jobs": {
     "strategy_audit": {
