@@ -2,9 +2,9 @@
   "objective": "",
   "status": "idle",
   "brain": {
-    "mode": "idle",
-    "focus": "Done: X deep dive on agent upgrades complete",
-    "model": "openrouter/x-ai/grok-4",
+    "mode": "working",
+    "focus": "Waiting for Grok X research sub-agent",
+    "model": "claude-sonnet-4-6",
     "thoughts": [
       {
         "time": "8:29 PM ET",
@@ -86,11 +86,11 @@
       "started_at": "2026-03-16T22:55:00Z",
       "status": "running"
     },
-    "currentModel": "openrouter/x-ai/grok-4",
+    "currentModel": "claude-sonnet-4-6",
     "subagents": []
   },
   "steps": [],
-  "updated_at": "2026-03-17T00:29:06Z",
+  "updated_at": "2026-03-17T00:29:15Z",
   "_tunnel_url": "https://charged-unique-architects-fusion.trycloudflare.com",
   "jobs": {
     "strategy_audit": {
