@@ -3,7 +3,7 @@
   "status": "idle",
   "brain": {
     "mode": "working",
-    "focus": "Reading message...",
+    "focus": "Adding fetch_geopolitical_news() + fixing Brave query",
     "model": "claude-sonnet-4-6",
     "thoughts": [
       {
@@ -89,7 +89,7 @@
     "subagents": []
   },
   "steps": [],
-  "updated_at": "2026-03-17T21:04:22Z",
+  "updated_at": "2026-03-17T21:04:36Z",
   "_tunnel_url": "https://charged-unique-architects-fusion.trycloudflare.com",
   "jobs": {
     "strategy_audit": {
