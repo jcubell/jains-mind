@@ -3,7 +3,7 @@
   "status": "idle",
   "brain": {
     "mode": "working",
-    "focus": "Continuing capability upgrades \u2014 round 2",
+    "focus": "Wiring Weaviate memory + LangFuse + updating routing",
     "model": "claude-sonnet-4-6",
     "thoughts": [
       {
@@ -90,7 +90,7 @@
     "subagents": []
   },
   "steps": [],
-  "updated_at": "2026-03-17T00:39:18Z",
+  "updated_at": "2026-03-17T00:39:43Z",
   "_tunnel_url": "https://charged-unique-architects-fusion.trycloudflare.com",
   "jobs": {
     "strategy_audit": {
