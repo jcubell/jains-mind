@@ -3,7 +3,7 @@
   "status": "idle",
   "brain": {
     "mode": "working",
-    "focus": "Checking NemoClaw install status and capabilities",
+    "focus": "Assessing NemoClaw \u2014 early preview, Mac M-series limitation",
     "model": "claude-sonnet-4-6",
     "thoughts": [
       {
@@ -90,7 +90,7 @@
     "subagents": []
   },
   "steps": [],
-  "updated_at": "2026-03-17T00:51:15Z",
+  "updated_at": "2026-03-17T00:51:43Z",
   "_tunnel_url": "https://charged-unique-architects-fusion.trycloudflare.com",
   "jobs": {
     "strategy_audit": {
