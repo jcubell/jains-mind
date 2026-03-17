@@ -3,8 +3,8 @@
   "status": "idle",
   "brain": {
     "mode": "working",
-    "focus": "\ud83c\udfa4 Voice message received \u2014 no transcription injected",
-    "model": "whisper",
+    "focus": "Transcribing voice message with Whisper",
+    "model": "claude-sonnet-4-6",
     "thoughts": [
       {
         "time": "8:51 PM ET",
@@ -86,11 +86,11 @@
       "started_at": "2026-03-16T22:55:00Z",
       "status": "running"
     },
-    "currentModel": "whisper",
+    "currentModel": "claude-sonnet-4-6",
     "subagents": []
   },
   "steps": [],
-  "updated_at": "2026-03-17T01:39:51Z",
+  "updated_at": "2026-03-17T01:39:54Z",
   "_tunnel_url": "https://charged-unique-architects-fusion.trycloudflare.com",
   "jobs": {
     "strategy_audit": {
