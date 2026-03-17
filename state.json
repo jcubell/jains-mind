@@ -92,25 +92,33 @@
   "updated_at": "2026-03-17T16:43:06Z",
   "_tunnel_url": "https://charged-unique-architects-fusion.trycloudflare.com",
   "jobs": {
-    "strategy_audit": {
-      "status": "completed",
-      "completedAt": "1:43 AM",
-      "subtasks": {
-        "research": "done",
-        "cron_refresh": "done",
-        "skill_update": "done",
-        "account_audit": "done",
-        "rare_card_research": "done",
-        "wntr_check": "done"
-      }
+    "feed_refresh_9": {
+      "status": "done",
+      "timestamp": "2026-03-17T12:43:00-04:00",
+      "commit": "52a72bc",
+      "note": "7 categories updated, 15 tickers, F&G 23"
     },
-    "sorare_morning": {
-      "status": "scheduled",
-      "scheduledAt": "11:00 AM"
-    },
-    "sorare_evening": {
-      "status": "scheduled",
-      "scheduledAt": "5:00 PM"
+    "sorare_morning_2": {
+      "status": "done",
+      "timestamp": "2026-03-17T11:03:00-04:00",
+      "tasks": {
+        "login": "done",
+        "wheel": "skipped (0 tickets)",
+        "wntr_pack": "skipped (none available)",
+        "quick_play": "skipped (White locked, BOS off)",
+        "gw42_lc1": "done (Jokic MVP, White, Zion, Jabari, Murray)",
+        "gw42_lc2": "done (SGA MVP, Thompson, Sensabaugh, Christie, Dunn)",
+        "daily_pickup": "done (Cade MVP, McNeeley, Keldon, Miller, Jones)",
+        "missions": "done (Daily Picker + Block Picker)",
+        "essence_check": "skipped",
+        "duplicate_scrap": "skipped"
+      },
+      "flags": [
+        "Bam GTD - monitor evening",
+        "WNTR 141/150, 5 days to deadline",
+        "Hot Streak status unknown"
+      ]
     }
-  }
+  },
+  "last_updated": "2026-03-17T12:43:00-04:00"
 }
