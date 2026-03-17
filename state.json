@@ -3,7 +3,7 @@
   "status": "idle",
   "brain": {
     "mode": "working",
-    "focus": "Tackling: kill ESPN cron + wire Stagehand + Temporal + morning brief + Weaviate seeding",
+    "focus": "Spawning Sonnet sub-agent \u2014 Stagehand + Temporal + morning brief + Weaviate seeding",
     "model": "grok-4",
     "thoughts": [
       {
@@ -80,17 +80,17 @@
       }
     ],
     "subagent": {
-      "name": "FantasyBaseballAgent",
-      "task": "Fantasy baseball strategy Google Sheet with spring training data, ADP analysis, Red Sox section, sleeper tracker, positional draft strategy",
+      "name": "WireUp",
+      "task": "Stagehand test, Temporal setup, morning brief cron, Weaviate seed",
       "model": "claude-sonnet-4-6",
-      "started_at": "2026-03-16T22:55:00Z",
+      "started_at": "2026-03-17T02:40:00Z",
       "status": "running"
     },
     "currentModel": "grok-4",
     "subagents": []
   },
   "steps": [],
-  "updated_at": "2026-03-17T02:38:54Z",
+  "updated_at": "2026-03-17T02:39:33Z",
   "_tunnel_url": "https://charged-unique-architects-fusion.trycloudflare.com",
   "jobs": {
     "strategy_audit": {
