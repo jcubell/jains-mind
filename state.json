@@ -2,10 +2,16 @@
   "objective": "",
   "status": "idle",
   "brain": {
-    "mode": "working",
-    "focus": "Waiting for 2 DeepSeek sub-agents (batch1 + batch2)",
-    "model": "claude-sonnet-4-6",
+    "mode": "idle",
+    "focus": "Done: new data sources wired",
+    "model": "openrouter/deepseek/deepseek-chat-v3-0324",
     "thoughts": [
+      {
+        "time": "11:08 AM ET",
+        "type": "complete",
+        "text": "Coinbase, Whoop, SEC, HuggingFace, DeFiLlama added",
+        "title": "Done: new data sources wired"
+      },
       {
         "time": "11:08 AM ET",
         "type": "action",
@@ -71,20 +77,14 @@
         "type": "complete",
         "text": "cost check not due yet (2.6h < 4h)",
         "title": "Done \u2014 heartbeat ack"
-      },
-      {
-        "time": "9:25 AM ET",
-        "type": "complete",
-        "text": "cost check not due yet (2.1h < 4h)",
-        "title": "Done \u2014 heartbeat ack"
       }
     ],
     "subagent": null,
-    "currentModel": "claude-sonnet-4-6",
+    "currentModel": "openrouter/deepseek/deepseek-chat-v3-0324",
     "subagents": []
   },
   "steps": [],
-  "updated_at": "2026-03-17T15:08:16Z",
+  "updated_at": "2026-03-17T15:08:42Z",
   "_tunnel_url": "https://charged-unique-architects-fusion.trycloudflare.com",
   "jobs": {
     "strategy_audit": {
