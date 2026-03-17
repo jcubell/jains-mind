@@ -3,7 +3,7 @@
   "status": "idle",
   "brain": {
     "mode": "idle",
-    "focus": "Done \u2014 F&G-only MARKET PULSE, BTC moved to Crypto, market vibe moved to Nasdaq",
+    "focus": "Done \u2014 SIGNAL bullets now tagged with section labels",
     "model": "claude-sonnet-4-6",
     "thoughts": [
       {
@@ -89,7 +89,7 @@
     "subagents": []
   },
   "steps": [],
-  "updated_at": "2026-03-17T21:10:18Z",
+  "updated_at": "2026-03-17T21:10:54Z",
   "_tunnel_url": "https://charged-unique-architects-fusion.trycloudflare.com",
   "jobs": {
     "strategy_audit": {
