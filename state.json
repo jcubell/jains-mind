@@ -3,8 +3,8 @@
   "status": "idle",
   "brain": {
     "mode": "working",
-    "focus": "Launching Grok to research X for agent upgrades",
-    "model": "claude-sonnet-4-6",
+    "focus": "Starting: X research for agent capability upgrades",
+    "model": "openrouter/x-ai/grok-4",
     "thoughts": [
       {
         "time": "8:22 PM ET",
@@ -86,11 +86,11 @@
       "started_at": "2026-03-16T22:55:00Z",
       "status": "running"
     },
-    "currentModel": "claude-sonnet-4-6",
+    "currentModel": "openrouter/x-ai/grok-4",
     "subagents": []
   },
   "steps": [],
-  "updated_at": "2026-03-17T00:25:33Z",
+  "updated_at": "2026-03-17T00:26:32Z",
   "_tunnel_url": "https://charged-unique-architects-fusion.trycloudflare.com",
   "jobs": {
     "strategy_audit": {
