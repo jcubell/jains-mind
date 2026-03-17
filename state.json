@@ -2,8 +2,8 @@
   "objective": "",
   "status": "idle",
   "brain": {
-    "mode": "idle",
-    "focus": "Done \u2014 strategic expansion brief delivered",
+    "mode": "working",
+    "focus": "Wiring new data sources \u2014 checking news_bot structure",
     "model": "claude-sonnet-4-6",
     "thoughts": [
       {
@@ -84,7 +84,7 @@
     "subagents": []
   },
   "steps": [],
-  "updated_at": "2026-03-17T15:04:33Z",
+  "updated_at": "2026-03-17T15:04:59Z",
   "_tunnel_url": "https://charged-unique-architects-fusion.trycloudflare.com",
   "jobs": {
     "strategy_audit": {
