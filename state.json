@@ -3,7 +3,7 @@
   "status": "idle",
   "brain": {
     "mode": "idle",
-    "focus": "Done \u2014 F&G plain line at top, formatting starts at TLDR",
+    "focus": "Done \u2014 freshness + dedup fixes across all news sources",
     "model": "claude-sonnet-4-6",
     "thoughts": [
       {
@@ -89,7 +89,7 @@
     "subagents": []
   },
   "steps": [],
-  "updated_at": "2026-03-17T21:11:24Z",
+  "updated_at": "2026-03-17T21:12:40Z",
   "_tunnel_url": "https://charged-unique-architects-fusion.trycloudflare.com",
   "jobs": {
     "strategy_audit": {
