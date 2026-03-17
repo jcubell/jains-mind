@@ -112,6 +112,20 @@
     "sorare_evening": {
       "status": "scheduled",
       "scheduledAt": "5:00 PM"
+    },
+    "feed_refresh": {
+      "status": "completed",
+      "completedAt": "9:34 PM",
+      "run": 6,
+      "commit": "9da8583",
+      "subtasks": {
+        "research": "done",
+        "market_data": "done",
+        "ticker_update": "done",
+        "tldr_update": "done",
+        "feed_sections": "done",
+        "push": "done"
+      }
     }
   }
 }
