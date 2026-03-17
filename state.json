@@ -3,8 +3,8 @@
   "status": "idle",
   "brain": {
     "mode": "working",
-    "focus": "\ud83c\udfa4 Voice message received",
-    "model": "whisper",
+    "focus": "Voice: checking for transcription",
+    "model": "grok-4",
     "thoughts": [
       {
         "time": "7:45 PM ET",
@@ -86,11 +86,11 @@
       "started_at": "2026-03-16T22:55:00Z",
       "status": "running"
     },
-    "currentModel": "whisper",
+    "currentModel": "grok-4",
     "subagents": []
   },
   "steps": [],
-  "updated_at": "2026-03-17T00:17:23Z",
+  "updated_at": "2026-03-17T00:17:26Z",
   "_tunnel_url": "https://charged-unique-architects-fusion.trycloudflare.com",
   "jobs": {
     "strategy_audit": {
