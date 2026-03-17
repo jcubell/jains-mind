@@ -3,8 +3,8 @@
   "status": "idle",
   "brain": {
     "mode": "working",
-    "focus": "Spawning Sonnet sub-agent \u2014 Stagehand + Temporal + morning brief + Weaviate seeding",
-    "model": "grok-4",
+    "focus": "Starting: wiring Stagehand + Temporal + morning brief + Weaviate seed",
+    "model": "claude-sonnet-4-6",
     "thoughts": [
       {
         "time": "8:51 PM ET",
@@ -86,11 +86,11 @@
       "started_at": "2026-03-17T02:40:00Z",
       "status": "running"
     },
-    "currentModel": "grok-4",
+    "currentModel": "claude-sonnet-4-6",
     "subagents": []
   },
   "steps": [],
-  "updated_at": "2026-03-17T02:39:33Z",
+  "updated_at": "2026-03-17T02:40:44Z",
   "_tunnel_url": "https://charged-unique-architects-fusion.trycloudflare.com",
   "jobs": {
     "strategy_audit": {
