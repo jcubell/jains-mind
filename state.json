@@ -3,7 +3,7 @@
   "status": "idle",
   "brain": {
     "mode": "working",
-    "focus": "Waiting for news_bot rebuild",
+    "focus": "Starting: rebuild news_bot.py",
     "model": "claude-sonnet-4-6",
     "thoughts": [
       {
