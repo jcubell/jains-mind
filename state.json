@@ -3,7 +3,7 @@
   "status": "idle",
   "brain": {
     "mode": "idle",
-    "focus": "Done \u2014 added geopolitical news source to all slots",
+    "focus": "Done \u2014 AI provider news wired into all slots",
     "model": "claude-sonnet-4-6",
     "thoughts": [
       {
@@ -89,7 +89,7 @@
     "subagents": []
   },
   "steps": [],
-  "updated_at": "2026-03-17T21:06:00Z",
+  "updated_at": "2026-03-17T21:08:53Z",
   "_tunnel_url": "https://charged-unique-architects-fusion.trycloudflare.com",
   "jobs": {
     "strategy_audit": {
@@ -109,19 +109,8 @@
       "scheduledAt": "11:00 AM"
     },
     "sorare_evening": {
-      "status": "completed",
-      "completedAt": "5:06 PM",
-      "run_number": 2,
-      "runtime_minutes": 4,
-      "subtasks": {
-        "injury_crossref": "done",
-        "lineup_swaps": "skipped \u2014 all healthy",
-        "quick_play": "skipped \u2014 no eligible cards",
-        "wheel": "skipped \u2014 0 tickets",
-        "wntr": "skipped \u2014 none available",
-        "missions": "skipped \u2014 already submitted",
-        "browser_phase": "skipped \u2014 not needed"
-      }
+      "status": "scheduled",
+      "scheduledAt": "5:00 PM"
     }
   }
 }
