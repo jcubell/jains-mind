@@ -3,8 +3,8 @@
   "status": "idle",
   "brain": {
     "mode": "working",
-    "focus": "Spawning DeepSeek to wire 5 new data sources",
-    "model": "claude-sonnet-4-6",
+    "focus": "Starting: wiring new news bot data sources",
+    "model": "openrouter/deepseek/deepseek-chat-v3-0324",
     "thoughts": [
       {
         "time": "11:05 AM ET",
@@ -80,11 +80,11 @@
       }
     ],
     "subagent": null,
-    "currentModel": "claude-sonnet-4-6",
+    "currentModel": "openrouter/deepseek/deepseek-chat-v3-0324",
     "subagents": []
   },
   "steps": [],
-  "updated_at": "2026-03-17T15:05:19Z",
+  "updated_at": "2026-03-17T15:06:12Z",
   "_tunnel_url": "https://charged-unique-architects-fusion.trycloudflare.com",
   "jobs": {
     "strategy_audit": {
