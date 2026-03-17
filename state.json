@@ -3,9 +3,15 @@
   "status": "idle",
   "brain": {
     "mode": "working",
-    "focus": "Redesigning news brief format \u2014 reading current templates",
+    "focus": "Batch 2 complete \u2014 running full test suite",
     "model": "claude-sonnet-4-6",
     "thoughts": [
+      {
+        "time": "11:14 AM ET",
+        "type": "action",
+        "text": "14 new sources wired, testing now",
+        "title": "Batch 2 complete \u2014 running full test suite"
+      },
       {
         "time": "11:09 AM ET",
         "type": "action",
@@ -71,12 +77,6 @@
         "type": "action",
         "text": "7 fetchers + gmail + grok_structured_brief patch",
         "title": "Reading existing news_bot.py, planning fetchers"
-      },
-      {
-        "time": "10:16 AM ET",
-        "type": "action",
-        "text": "CoinGecko + Alpha Vantage + Finnhub + FRED + Gmail newsletters",
-        "title": "Spawning sub-agent: news bot data source upgrade"
       }
     ],
     "subagent": null,
@@ -84,7 +84,7 @@
     "subagents": []
   },
   "steps": [],
-  "updated_at": "2026-03-17T15:10:55Z",
+  "updated_at": "2026-03-17T15:14:22Z",
   "_tunnel_url": "https://charged-unique-architects-fusion.trycloudflare.com",
   "jobs": {
     "strategy_audit": {
