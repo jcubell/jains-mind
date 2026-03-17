@@ -3,7 +3,7 @@
   "status": "idle",
   "brain": {
     "mode": "working",
-    "focus": "Transcribing voice message with Whisper",
+    "focus": "Checking jcubellagent@gmail.com for chiro appointment email",
     "model": "claude-sonnet-4-6",
     "thoughts": [
       {
@@ -90,7 +90,7 @@
     "subagents": []
   },
   "steps": [],
-  "updated_at": "2026-03-17T01:39:54Z",
+  "updated_at": "2026-03-17T01:40:13Z",
   "_tunnel_url": "https://charged-unique-architects-fusion.trycloudflare.com",
   "jobs": {
     "strategy_audit": {
@@ -112,20 +112,6 @@
     "sorare_evening": {
       "status": "scheduled",
       "scheduledAt": "5:00 PM"
-    },
-    "feed_refresh": {
-      "status": "completed",
-      "completedAt": "9:34 PM",
-      "run": 6,
-      "commit": "9da8583",
-      "subtasks": {
-        "research": "done",
-        "market_data": "done",
-        "ticker_update": "done",
-        "tldr_update": "done",
-        "feed_sections": "done",
-        "push": "done"
-      }
     }
   }
 }
