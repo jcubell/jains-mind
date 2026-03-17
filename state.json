@@ -2,10 +2,16 @@
   "objective": "",
   "status": "idle",
   "brain": {
-    "mode": "idle",
-    "focus": "Done: new data sources wired",
-    "model": "openrouter/deepseek/deepseek-chat-v3-0324",
+    "mode": "working",
+    "focus": "Batch 1 complete \u2014 waiting for batch 2",
+    "model": "claude-sonnet-4-6",
     "thoughts": [
+      {
+        "time": "11:09 AM ET",
+        "type": "action",
+        "text": "5/14 sources wired",
+        "title": "Batch 1 complete \u2014 waiting for batch 2"
+      },
       {
         "time": "11:08 AM ET",
         "type": "complete",
@@ -71,20 +77,14 @@
         "type": "action",
         "text": "CoinGecko + Alpha Vantage + Finnhub + FRED + Gmail newsletters",
         "title": "Spawning sub-agent: news bot data source upgrade"
-      },
-      {
-        "time": "9:55 AM ET",
-        "type": "complete",
-        "text": "cost check not due yet (2.6h < 4h)",
-        "title": "Done \u2014 heartbeat ack"
       }
     ],
     "subagent": null,
-    "currentModel": "openrouter/deepseek/deepseek-chat-v3-0324",
+    "currentModel": "claude-sonnet-4-6",
     "subagents": []
   },
   "steps": [],
-  "updated_at": "2026-03-17T15:08:42Z",
+  "updated_at": "2026-03-17T15:09:00Z",
   "_tunnel_url": "https://charged-unique-architects-fusion.trycloudflare.com",
   "jobs": {
     "strategy_audit": {
