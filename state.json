@@ -3,8 +3,8 @@
   "status": "idle",
   "brain": {
     "mode": "working",
-    "focus": "Generating news logo via Grok image API",
-    "model": "grok-4",
+    "focus": "Heartbeat + v2 logo ready to send",
+    "model": "claude-sonnet-4-6",
     "thoughts": [
       {
         "time": "10:54 PM ET",
@@ -86,11 +86,11 @@
       "started_at": "2026-03-17T02:48:00Z",
       "status": "running"
     },
-    "currentModel": "grok-4",
+    "currentModel": "claude-sonnet-4-6",
     "subagents": []
   },
   "steps": [],
-  "updated_at": "2026-03-17T03:18:48Z",
+  "updated_at": "2026-03-17T03:29:41Z",
   "_tunnel_url": "https://charged-unique-architects-fusion.trycloudflare.com",
   "jobs": {
     "strategy_audit": {
