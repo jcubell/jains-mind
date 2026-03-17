@@ -2,9 +2,9 @@
   "objective": "",
   "status": "idle",
   "brain": {
-    "mode": "idle",
-    "focus": "Done \u2014 heartbeat OK",
-    "model": "claude-sonnet-4-6",
+    "mode": "working",
+    "focus": "Answering: different Telegram bot for morning brief",
+    "model": "grok-4",
     "thoughts": [
       {
         "time": "10:40 PM ET",
@@ -86,11 +86,11 @@
       "started_at": "2026-03-17T02:40:00Z",
       "status": "running"
     },
-    "currentModel": "claude-sonnet-4-6",
+    "currentModel": "grok-4",
     "subagents": []
   },
   "steps": [],
-  "updated_at": "2026-03-17T02:41:17Z",
+  "updated_at": "2026-03-17T02:41:48Z",
   "_tunnel_url": "https://charged-unique-architects-fusion.trycloudflare.com",
   "jobs": {
     "strategy_audit": {
