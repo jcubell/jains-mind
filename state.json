@@ -9,6 +9,12 @@
       {
         "time": "10:22 AM ET",
         "type": "complete",
+        "text": "6/7 sources live, Gmail needs re-auth",
+        "title": "Done: news bot upgraded with live data sources"
+      },
+      {
+        "time": "10:22 AM ET",
+        "type": "complete",
         "text": "CoinGecko+AlphaVantage+Finnhub+FRED+Gmail",
         "title": "Done: news bot upgraded with live data sources"
       },
@@ -71,25 +77,14 @@
         "type": "action",
         "text": "7 standardized sections per slot",
         "title": "Spawning DeepSeek to rewrite news_bot with structured format"
-      },
-      {
-        "time": "7:46 AM ET",
-        "type": "complete",
-        "text": "All 7 slots now include LIVE INTEL block",
-        "title": "Done \u2014 news_bot.py wired with Grok live intel"
       }
     ],
-    "subagent": {
-      "name": "NewsBotUpgrade",
-      "task": "Wire 7 live data sources into news_bot.py",
-      "model": "claude-sonnet-4-6",
-      "status": "running"
-    },
+    "subagent": null,
     "currentModel": "claude-sonnet-4-6",
     "subagents": []
   },
   "steps": [],
-  "updated_at": "2026-03-17T14:22:00Z",
+  "updated_at": "2026-03-17T14:22:18Z",
   "_tunnel_url": "https://charged-unique-architects-fusion.trycloudflare.com",
   "jobs": {
     "strategy_audit": {
