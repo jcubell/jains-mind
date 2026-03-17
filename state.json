@@ -90,7 +90,7 @@
     "subagents": []
   },
   "steps": [],
-  "updated_at": "2026-03-17T10:34:11Z",
+  "updated_at": "2026-03-17T10:35:00Z",
   "_tunnel_url": "https://charged-unique-architects-fusion.trycloudflare.com",
   "jobs": {
     "strategy_audit": {
@@ -112,6 +112,18 @@
     "sorare_evening": {
       "status": "scheduled",
       "scheduledAt": "5:00 PM"
+    },
+    "feed_refresh": {
+      "status": "completed",
+      "completedAt": "6:35 AM EDT",
+      "run": 7,
+      "subtasks": {
+        "research": "done",
+        "market_data": "done",
+        "fear_greed": "done",
+        "html_build": "done",
+        "git_push": "done"
+      }
     }
   }
 }
