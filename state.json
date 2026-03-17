@@ -2,8 +2,8 @@
   "objective": "",
   "status": "idle",
   "brain": {
-    "mode": "working",
-    "focus": "Reading message...",
+    "mode": "idle",
+    "focus": "Done \u2014 fixed news bot API errors (CoinStats\u2192AltMe/CoinGecko, Kalshi silenced)",
     "model": "claude-sonnet-4-6",
     "thoughts": [
       {
@@ -89,7 +89,7 @@
     "subagents": []
   },
   "steps": [],
-  "updated_at": "2026-03-17T18:02:54Z",
+  "updated_at": "2026-03-17T18:05:45Z",
   "_tunnel_url": "https://charged-unique-architects-fusion.trycloudflare.com",
   "jobs": {
     "strategy_audit": {
