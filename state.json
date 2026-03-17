@@ -111,6 +111,13 @@
     "sorare_evening": {
       "status": "scheduled",
       "scheduledAt": "5:00 PM"
+    },
+    "feed_refresh_10": {
+      "status": "done",
+      "timestamp": "2026-03-17T15:35:00-04:00",
+      "commit": "de9e7c7",
+      "note": "7 categories, 15 tickers, F&G 22, live market data from finance API"
     }
-  }
+  },
+  "last_updated": "2026-03-17T15:35:00-04:00"
 }
