@@ -2,8 +2,8 @@
   "objective": "",
   "status": "idle",
   "brain": {
-    "mode": "working",
-    "focus": "Rewriting full system prompt with all 7 visual upgrades + F&G header",
+    "mode": "idle",
+    "focus": "Done \u2014 full visual upgrade shipped: F&G bar, sentiment dots, circled numbers, heat tag, flags, verdict tags, mood lines",
     "model": "claude-sonnet-4-6",
     "thoughts": [
       {
@@ -89,7 +89,7 @@
     "subagents": []
   },
   "steps": [],
-  "updated_at": "2026-03-17T19:59:17Z",
+  "updated_at": "2026-03-17T20:02:32Z",
   "_tunnel_url": "https://charged-unique-architects-fusion.trycloudflare.com",
   "jobs": {
     "strategy_audit": {
