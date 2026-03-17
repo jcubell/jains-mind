@@ -2,8 +2,8 @@
   "objective": "",
   "status": "idle",
   "brain": {
-    "mode": "idle",
-    "focus": "Done \u2014 heartbeat ok",
+    "mode": "working",
+    "focus": "Reading message...",
     "model": "claude-sonnet-4-6",
     "thoughts": [
       {
@@ -89,7 +89,7 @@
     "subagents": []
   },
   "steps": [],
-  "updated_at": "2026-03-17T19:24:33Z",
+  "updated_at": "2026-03-17T19:54:29Z",
   "_tunnel_url": "https://charged-unique-architects-fusion.trycloudflare.com",
   "jobs": {
     "strategy_audit": {
@@ -111,13 +111,6 @@
     "sorare_evening": {
       "status": "scheduled",
       "scheduledAt": "5:00 PM"
-    },
-    "feed_refresh_10": {
-      "status": "done",
-      "timestamp": "2026-03-17T15:35:00-04:00",
-      "commit": "de9e7c7",
-      "note": "7 categories, 15 tickers, F&G 22, live market data from finance API"
     }
-  },
-  "last_updated": "2026-03-17T15:35:00-04:00"
+  }
 }
