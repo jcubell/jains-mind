@@ -3,9 +3,15 @@
   "status": "idle",
   "brain": {
     "mode": "working",
-    "focus": "Reading existing news_bot.py, planning fetchers",
+    "focus": "Waiting for NewsBot upgrade sub-agent",
     "model": "claude-sonnet-4-6",
     "thoughts": [
+      {
+        "time": "10:18 AM ET",
+        "type": "action",
+        "text": "Wiring CoinGecko+AlphaVantage+Finnhub+FRED+NewsAPI+Kalshi+Gmail",
+        "title": "Waiting for NewsBot upgrade sub-agent"
+      },
       {
         "time": "10:18 AM ET",
         "type": "action",
@@ -71,19 +77,12 @@
         "type": "complete",
         "text": "6am quiet hours",
         "title": "Done \u2014 heartbeat ack"
-      },
-      {
-        "time": "5:34 AM ET",
-        "type": "complete",
-        "text": "5:34am quiet hours",
-        "title": "Done \u2014 heartbeat ack"
       }
     ],
     "subagent": {
-      "name": "NewsPipeline",
-      "task": "Build 7-slot daily news crons for @Jain_win_news_bot",
-      "model": "openrouter/deepseek/deepseek-chat-v3-0324",
-      "started_at": "2026-03-17T02:48:00Z",
+      "name": "NewsBotUpgrade",
+      "task": "Wire 7 live data sources into news_bot.py",
+      "model": "claude-sonnet-4-6",
       "status": "running"
     },
     "currentModel": "claude-sonnet-4-6",
