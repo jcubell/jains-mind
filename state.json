@@ -2,9 +2,9 @@
   "objective": "",
   "status": "idle",
   "brain": {
-    "mode": "idle",
-    "focus": "Done \u2014 tweet posted @steipete @openclaw @nvidia GTC",
-    "model": "claude-sonnet-4-6",
+    "mode": "working",
+    "focus": "\ud83c\udfa4 Voice message received \u2014 no transcription injected",
+    "model": "whisper",
     "thoughts": [
       {
         "time": "8:51 PM ET",
@@ -86,11 +86,11 @@
       "started_at": "2026-03-16T22:55:00Z",
       "status": "running"
     },
-    "currentModel": "claude-sonnet-4-6",
+    "currentModel": "whisper",
     "subagents": []
   },
   "steps": [],
-  "updated_at": "2026-03-17T01:35:51Z",
+  "updated_at": "2026-03-17T01:39:51Z",
   "_tunnel_url": "https://charged-unique-architects-fusion.trycloudflare.com",
   "jobs": {
     "strategy_audit": {
