@@ -249,27 +249,44 @@ const server = http.createServer(async (req, res) => {
           allModels[name].days += 1;
         }
 
-        // 2. Add main session model from state.json (always active today)
-        let stateData = null;
-        try { stateData = JSON.parse(fs.readFileSync(STATE_PATH, 'utf8')); } catch(e) {}
-        const mainModel = normalizeModelName(
-          ((stateData && stateData.brain && stateData.brain.model) || 'claude-sonnet-4-6')
-            .replace(/^openrouter\/[^/]+\//, '').replace(/^openrouter\//, '')
-        );
-        if (mainModel) {
-          if (!allModels[mainModel]) allModels[mainModel] = { model: mainModel, cost: 0, tokens: 0, days: 0 };
-          // Main session cost = total daily - sum of sub-agent costs (rough estimate)
-          const subagentCostTotal = Object.values(allModels).reduce((s, m) => s + m.cost, 0);
-          const mainSessionEst = Math.max(0, dailyCost - subagentCostTotal);
-          allModels[mainModel].cost += mainSessionEst;
-          allModels[mainModel].days += 1;
+        // 2. Read model_usage_log.json — accurate per-model call counts from push_brain.py
+        //    This replaces the old state.json single-model + hardcoded newsbot approach
+        const LOG_FILE = path.join(__dirname, 'model_usage_log.json');
+        let logData = null;
+        try { logData = JSON.parse(fs.readFileSync(LOG_FILE, 'utf8')); } catch(e) {}
+        if (logData) {
+          // ET date key (UTC-4)
+          const etNow = new Date(Date.now() - 4 * 3600 * 1000);
+          const todayKey = etNow.toISOString().slice(0, 10);
+          const todayCounts = logData[todayKey] || {};
+          const totalCalls = Object.values(todayCounts).reduce((s, v) => s + v, 0);
+          const subagentCostSoFar = Object.values(allModels).reduce((s, m) => s + m.cost, 0);
+          const remainingCost = Math.max(0, dailyCost - subagentCostSoFar);
+          for (const [model, count] of Object.entries(todayCounts)) {
+            if (!allModels[model]) allModels[model] = { model, cost: 0, tokens: 0, days: 0 };
+            allModels[model].days = count;
+            // Distribute remaining daily cost proportionally by call count
+            allModels[model].cost += totalCalls > 0 ? remainingCost * (count / totalCalls) : 0;
+          }
+        } else {
+          // Fallback: use current state.json model + hardcoded newsbot
+          let stateData = null;
+          try { stateData = JSON.parse(fs.readFileSync(STATE_PATH, 'utf8')); } catch(e) {}
+          const mainModel = normalizeModelName(
+            ((stateData && stateData.brain && stateData.brain.model) || 'claude-sonnet-4-6')
+              .replace(/^openrouter\/[^/]+\//, '').replace(/^openrouter\//, '')
+          );
+          if (mainModel) {
+            if (!allModels[mainModel]) allModels[mainModel] = { model: mainModel, cost: 0, tokens: 0, days: 0 };
+            const subagentCostTotal = Object.values(allModels).reduce((s, m) => s + m.cost, 0);
+            allModels[mainModel].cost += Math.max(0, dailyCost - subagentCostTotal);
+            allModels[mainModel].days += 1;
+          }
+          const newsModel = 'gemini-2.0-flash';
+          if (!allModels[newsModel]) allModels[newsModel] = { model: newsModel, cost: 0, tokens: 0, days: 0 };
+          allModels[newsModel].cost += 0.006;
+          allModels[newsModel].days += 7;
         }
-
-        // 3. Add news bot (gemini-2.0-flash) as known background model — $0.006 est
-        const newsModel = 'gemini-2.0-flash';
-        if (!allModels[newsModel]) allModels[newsModel] = { model: newsModel, cost: 0, tokens: 0, days: 0 };
-        allModels[newsModel].cost += 0.006;
-        allModels[newsModel].days += 7; // 7 briefs per day
 
       } catch(e) {
         // Silently fall through — model breakdown will be empty

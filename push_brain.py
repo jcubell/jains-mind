@@ -111,6 +111,52 @@ def push(focus, thought_text=None, thought_type="action", mode="working",
     with open(STATE_FILE, "w") as f:
         json.dump(state, f, indent=2, ensure_ascii=True)
 
+    # 1b. Append to rolling model usage log (accurate per-model breakdown for dashboard)
+    if model:
+        try:
+            log_file = os.path.join(os.path.dirname(STATE_FILE), "model_usage_log.json")
+            from datetime import timezone, timedelta
+            et = timezone(timedelta(hours=-4))
+            today_str = datetime.datetime.now(et).strftime("%Y-%m-%d")
+            log = {}
+            if os.path.exists(log_file):
+                try:
+                    with open(log_file) as lf:
+                        log = json.load(lf)
+                except Exception:
+                    log = {}
+            if today_str not in log:
+                log[today_str] = {}
+            # Normalize model name to canonical dashboard key
+            norm = model.lower().replace("openrouter/", "")
+            if "/" in norm:
+                norm = norm.split("/")[-1]
+            norm_map = {
+                "claude-sonnet-4.6":    "claude-sonnet-4-6",
+                "claude-sonnet-4-5":    "claude-sonnet-4-6",
+                "claude-sonnet-4-6":    "claude-sonnet-4-6",
+                "gemini-2.0-flash-001": "gemini-2.0-flash",
+                "gemini-2.0-flash":     "gemini-2.0-flash",
+                "gemini-2.5-pro":       "gemini-2.5-pro",
+                "grok-4":               "grok-4",
+                "grok-4-fast":          "grok-4-fast",
+                "grok-4.1-fast":        "grok-4-fast",
+                "deepseek-chat-v3-0324":"deepseek-chat-v3-0324",
+                "deepseek-r1":          "deepseek-r1",
+                "gpt-4o":               "gpt-4o",
+                "gpt-4o-mini":          "gpt-4o-mini",
+            }
+            canon = norm_map.get(norm, norm)
+            if canon and canon != "whisper":
+                log[today_str][canon] = log[today_str].get(canon, 0) + 1
+            # Keep only last 7 days
+            sorted_days = sorted(log.keys(), reverse=True)
+            log = {d: log[d] for d in sorted_days[:7]}
+            with open(log_file, "w") as lf:
+                json.dump(log, lf, indent=2)
+        except Exception:
+            pass  # never block push_brain for logging errors
+
     # 2. Fire-and-forget: push to GitHub (background, never blocks response)
     try:
         subprocess.Popen(
