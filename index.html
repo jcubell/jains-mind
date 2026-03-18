@@ -1478,12 +1478,18 @@
   }
   .brief-sec-icon { font-size: 13px; line-height: 1; }
   .brief-sec-title { opacity: 0.9; }
+  .signal-section-hdr {
+    font-size: 11px !important;
+    letter-spacing: 0.18em;
+    padding-bottom: 6px;
+    border-bottom: 1px solid rgba(245,158,11,0.25) !important;
+  }
 
   /* ── Divider ── */
   .brief-divider {
     height: 1px;
     background: rgba(255,255,255,0.06);
-    margin: 8px 0;
+    margin: 6px 0;
     border: none;
   }
   .brief-spacer { height: 3px; }
@@ -1498,8 +1504,8 @@
 
   /* ── Mood ── */
   .brief-mood {
-    font-size: 10.5px;
-    color: #999;
+    font-size: 11px;
+    color: #b0b0b0;
     font-style: italic;
     padding: 2px 0 4px;
   }
@@ -1526,6 +1532,31 @@
   .signal-bullet {
     border-left-color: rgba(255,255,255,0.1);
   }
+  /* Signal rank tiers — visual hierarchy for top/mid/low items */
+  .signal-rank-top {
+    border-left-color: rgba(245,158,11,0.5);
+    background: rgba(245,158,11,0.04);
+  }
+  .signal-rank-top .bullet-body {
+    color: #fff0cc;
+    font-weight: 500;
+  }
+  .signal-rank-mid {
+    border-left-color: rgba(32,178,170,0.25);
+    background: transparent;
+  }
+  .signal-rank-mid .bullet-body {
+    color: #c8d8d8;
+  }
+  .signal-rank-low {
+    border-left-color: rgba(255,255,255,0.06);
+    background: transparent;
+    opacity: 0.65;
+  }
+  .signal-rank-low .bullet-body {
+    color: #888;
+    font-size: 10.5px;
+  }
   .bullet-num {
     flex-shrink: 0;
     font-size: 10px; font-weight: 700;
@@ -1539,9 +1570,15 @@
   /* Hot bullet (🔥) */
   .bullet-hot {
     border-left-color: #ef4444 !important;
-    background: rgba(239,68,68,0.06);
+    background: rgba(239,68,68,0.09);
+    box-shadow: inset 0 0 0 1px rgba(239,68,68,0.15);
+    border-radius: 5px;
   }
-  .bullet-hot .bullet-body { color: #ffffff; font-weight: 600; }
+  .bullet-hot .bullet-body {
+    color: #ffffff;
+    font-weight: 600;
+    text-shadow: 0 0 12px rgba(239,68,68,0.4);
+  }
 
   /* Sentiment bullets */
   .bullet-dot {
@@ -1591,6 +1628,11 @@
     min-width: 0;
   }
   .bullet-body strong { color: #fff; }
+  .bullet-body i, .bullet-body em {
+    color: #555;
+    font-style: italic;
+    font-size: 9.5px;
+  }
 
   /* Inline code in news feed */
   .news-feed-item-body .inline-code {
@@ -2168,7 +2210,10 @@
               else if (tl.includes('nasdaq') || tl.includes('capital') || tl.includes('markets')) scolor = '#4ade80';
               else if (tl.includes('crypto')) scolor = '#fb923c';
               else if (tl.includes('predict') || tl.includes('hot take')) scolor = '#c084fc';
-              out.push('<div class="brief-section-header" style="color:' + scolor + '">'
+              var sectionTitle = title;
+              var isSignalSec = icon === '⚡' || sectionTitle.toUpperCase().includes('SIGNAL');
+              var signalHdrClass = isSignalSec ? ' signal-section-hdr' : '';
+              out.push('<div class="brief-section-header' + signalHdrClass + '" style="color:' + scolor + '">'
                 + (icon ? '<span class="brief-sec-icon">' + icon + '</span>' : '')
                 + '<span class="brief-sec-title">' + title + '</span>'
                 + '</div>');
@@ -2206,10 +2251,16 @@
               else if (tag === 'INFRA') tagColor = '#00BCD4';
               else if (tag === 'CAPITAL') tagColor = '#7C4DFF';
               var bodyContent = tagMatch ? content.slice(tagMatch[0].length) : content;
-              var hotClass = isHot ? ' bullet-hot' : '';
+              var numInt = parseInt(num, 10);
+              // Rank tiers: 1-3 = top (gold/amber), 4-6 = mid (teal/dim), 7-10 = low (grey/muted)
+              var rankTier = numInt <= 3 ? 'top' : numInt <= 6 ? 'mid' : 'low';
+              var rankClass = ' signal-rank-' + rankTier;
+              var hotClass = isHot ? ' bullet-hot' : rankClass;
               var tagHtml = tag ? '<span class="bullet-tag" style="color:' + tagColor + ';border-color:' + tagColor + '44">' + tag + '</span>' : '';
+              // Number badge — color by rank, fire icon for hot
+              var numStyle = isHot ? 'color:#ef4444' : (rankTier === 'top' ? 'color:#f59e0b' : rankTier === 'mid' ? 'color:#20B2AA' : 'color:#444');
               out.push('<div class="brief-bullet signal-bullet' + hotClass + '">'
-                + '<span class="bullet-num" style="' + (isHot ? 'color:#ef4444' : '') + '">' + (isHot ? '🔥' : num) + '</span>'
+                + '<span class="bullet-num" style="' + numStyle + '">' + (isHot ? '🔥' : num) + '</span>'
                 + '<span class="bullet-body">' + tagHtml + bodyContent + '</span>'
                 + '</div>');
               continue;
