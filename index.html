@@ -1441,6 +1441,61 @@
     background: rgba(32, 178, 170, 0.22);
   }
 
+  /* ── Live News Feed (J.AI.N owned) ── */
+  .news-feed-container {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+  .news-feed-item {
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    padding: 14px 0;
+    animation: feedFadeIn 0.4s ease;
+  }
+  .news-feed-item:last-child { border-bottom: none; }
+  @keyframes feedFadeIn {
+    from { opacity: 0; transform: translateY(4px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .news-feed-item-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+  }
+  .news-feed-slot-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    color: #20B2AA;
+    text-transform: uppercase;
+  }
+  .news-feed-slot-time {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--text-muted);
+    margin-left: auto;
+  }
+  .news-feed-item-body {
+    font-family: var(--mono);
+    font-size: 11px;
+    line-height: 1.65;
+    color: #c8c8c8;
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+  /* Strip HTML tags from Telegram HTML — show clean text */
+  .news-feed-item-body b,
+  .news-feed-item-body strong { color: #ffffff; font-weight: 600; }
+  .news-feed-empty {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--text-muted);
+    padding: 24px 0;
+    text-align: center;
+  }
+
   /* Perplexity Computer: Footer attribution — teal hover */
   .footer-attr a:hover {
     color: var(--accent);
@@ -1564,281 +1619,84 @@
       <div class="panel-header">
         <h2>Live Intelligence Feed</h2>
         <div style="display: flex; align-items: center; gap: 12px;">
-          <div class="fear-greed"><div class="fg-dot"></div>Fear &amp; Greed: 21</div>
+          <div class="fear-greed"><div class="fg-dot"></div>Fear &amp; Greed: 20</div>
           <span class="panel-meta" id="feedTimestamp">LIVE</span>
         </div>
       </div>
 
       <div class="ticker-bar" id="tickerBar">
-                <div class="ticker-track">
-          <div class="ticker-item"><span class="ticker-symbol">SPY</span><span class="ticker-price">$670.79</span><span class="ticker-change ticker-up">+0.26%</span></div>
-          <span class="ticker-sep">&middot;</span>
-          <div class="ticker-item"><span class="ticker-symbol">NASDAQ</span><span class="ticker-price">22,480</span><span class="ticker-change ticker-up">+0.47%</span></div>
-          <span class="ticker-sep">&middot;</span>
-          <div class="ticker-item"><span class="ticker-symbol">DOW</span><span class="ticker-price">46,993</span><span class="ticker-change ticker-up">+0.10%</span></div>
-          <span class="ticker-sep">&middot;</span>
-          <div class="ticker-item"><span class="ticker-symbol">$NVDA</span><span class="ticker-price">$181.93</span><span class="ticker-change ticker-down">-0.70%</span></div>
-          <span class="ticker-sep">&middot;</span>
-          <div class="ticker-item"><span class="ticker-symbol">$TSLA</span><span class="ticker-price">$399.27</span><span class="ticker-change ticker-up">+0.94%</span></div>
-          <span class="ticker-sep">&middot;</span>
-          <div class="ticker-item"><span class="ticker-symbol">$MSFT</span><span class="ticker-price">$399.41</span><span class="ticker-change ticker-down">-0.14%</span></div>
-          <span class="ticker-sep">&middot;</span>
-          <div class="ticker-item"><span class="ticker-symbol">$GOOGL</span><span class="ticker-price">$310.92</span><span class="ticker-change ticker-up">+1.75%</span></div>
-          <span class="ticker-sep">&middot;</span>
-          <div class="ticker-item"><span class="ticker-symbol">$AMZN</span><span class="ticker-price">$215.20</span><span class="ticker-change ticker-up">+1.63%</span></div>
-          <span class="ticker-sep">&middot;</span>
-          <div class="ticker-item"><span class="ticker-symbol">BTC</span><span class="ticker-price">$74,226</span><span class="ticker-change ticker-down">-0.88%</span></div>
-          <span class="ticker-sep">&middot;</span>
-          <div class="ticker-item"><span class="ticker-symbol">ETH</span><span class="ticker-price">$2,326</span><span class="ticker-change ticker-down">-1.16%</span></div>
-          <span class="ticker-sep">&middot;</span>
-          <div class="ticker-item"><span class="ticker-symbol">GOLD</span><span class="ticker-price">$5,006</span><span class="ticker-change ticker-up">+0.07%</span></div>
-          <span class="ticker-sep">&middot;</span>
-          <div class="ticker-item"><span class="ticker-symbol">OIL</span><span class="ticker-price">$94.58</span><span class="ticker-change ticker-up">+1.16%</span></div>
-          <span class="ticker-sep">&middot;</span>
-          <div class="ticker-item"><span class="ticker-symbol">VIX</span><span class="ticker-price">22.37</span><span class="ticker-change ticker-down">-4.85%</span></div>
-          <span class="ticker-sep">&middot;</span>
-          <div class="ticker-item"><span class="ticker-symbol">DXY</span><span class="ticker-price">99.56</span><span class="ticker-change ticker-down">-0.15%</span></div>
-          <span class="ticker-sep">&middot;</span>
-          <div class="ticker-item"><span class="ticker-symbol">10Y</span><span class="ticker-price">4.20%</span><span class="ticker-change ticker-down">-2bp</span></div>
-          <span class="ticker-sep">&middot;</span>
+        <div class="ticker-track">
+          <div class="ticker-item"><span class="ticker-symbol">SPY</span><span class="ticker-price">$662</span><span class="ticker-change ticker-down">-0.57%</span></div>
+          <span class="ticker-sep">·</span>
+          <div class="ticker-item"><span class="ticker-symbol">NASDAQ</span><span class="ticker-price">22,105</span><span class="ticker-change ticker-down">-0.93%</span></div>
+          <span class="ticker-sep">·</span>
+          <div class="ticker-item"><span class="ticker-symbol">DOW</span><span class="ticker-price">46,558</span><span class="ticker-change ticker-down">-0.26%</span></div>
+          <span class="ticker-sep">·</span>
+          <div class="ticker-item"><span class="ticker-symbol">$NVDA</span><span class="ticker-price">$180</span><span class="ticker-change ticker-down">-1.59%</span></div>
+          <span class="ticker-sep">·</span>
+          <div class="ticker-item"><span class="ticker-symbol">$TSLA</span><span class="ticker-price">$391</span><span class="ticker-change ticker-down">-0.96%</span></div>
+          <span class="ticker-sep">·</span>
+          <div class="ticker-item"><span class="ticker-symbol">$MSFT</span><span class="ticker-price">$408</span><span class="ticker-change ticker-down">-0.82%</span></div>
+          <span class="ticker-sep">·</span>
+          <div class="ticker-item"><span class="ticker-symbol">$GOOGL</span><span class="ticker-price">$171</span><span class="ticker-change ticker-down">-1.12%</span></div>
+          <span class="ticker-sep">·</span>
+          <div class="ticker-item"><span class="ticker-symbol">$AMZN</span><span class="ticker-price">$198</span><span class="ticker-change ticker-down">-0.74%</span></div>
+          <span class="ticker-sep">·</span>
+          <div class="ticker-item"><span class="ticker-symbol">BTC</span><span class="ticker-price">$72,520</span><span class="ticker-change ticker-down">-0.43%</span></div>
+          <span class="ticker-sep">·</span>
+          <div class="ticker-item"><span class="ticker-symbol">ETH</span><span class="ticker-price">$2,179</span><span class="ticker-change">flat</span></div>
+          <span class="ticker-sep">·</span>
+          <div class="ticker-item"><span class="ticker-symbol">GOLD</span><span class="ticker-price">$5,007</span><span class="ticker-change ticker-down">-1.08%</span></div>
+          <span class="ticker-sep">·</span>
+          <div class="ticker-item"><span class="ticker-symbol">OIL</span><span class="ticker-price">$99.27</span><span class="ticker-change ticker-up">+0.57%</span></div>
+          <span class="ticker-sep">·</span>
+          <div class="ticker-item"><span class="ticker-symbol">VIX</span><span class="ticker-price">22.4</span><span class="ticker-change ticker-up">+8.6%</span></div>
+          <span class="ticker-sep">·</span>
+          <div class="ticker-item"><span class="ticker-symbol">DXY</span><span class="ticker-price">103.8</span><span class="ticker-change ticker-down">-0.31%</span></div>
+          <span class="ticker-sep">·</span>
+          <div class="ticker-item"><span class="ticker-symbol">10Y</span><span class="ticker-price">4.28%</span><span class="ticker-change ticker-up">+2bp</span></div>
+          <span class="ticker-sep">·</span>
           <!-- duplicate for seamless loop -->
-          <div class="ticker-item"><span class="ticker-symbol">SPY</span><span class="ticker-price">$670.79</span><span class="ticker-change ticker-up">+0.26%</span></div>
-          <span class="ticker-sep">&middot;</span>
-          <div class="ticker-item"><span class="ticker-symbol">NASDAQ</span><span class="ticker-price">22,480</span><span class="ticker-change ticker-up">+0.47%</span></div>
-          <span class="ticker-sep">&middot;</span>
-          <div class="ticker-item"><span class="ticker-symbol">DOW</span><span class="ticker-price">46,993</span><span class="ticker-change ticker-up">+0.10%</span></div>
-          <span class="ticker-sep">&middot;</span>
-          <div class="ticker-item"><span class="ticker-symbol">$NVDA</span><span class="ticker-price">$181.93</span><span class="ticker-change ticker-down">-0.70%</span></div>
-          <span class="ticker-sep">&middot;</span>
-          <div class="ticker-item"><span class="ticker-symbol">$TSLA</span><span class="ticker-price">$399.27</span><span class="ticker-change ticker-up">+0.94%</span></div>
-          <span class="ticker-sep">&middot;</span>
-          <div class="ticker-item"><span class="ticker-symbol">$MSFT</span><span class="ticker-price">$399.41</span><span class="ticker-change ticker-down">-0.14%</span></div>
-          <span class="ticker-sep">&middot;</span>
-          <div class="ticker-item"><span class="ticker-symbol">$GOOGL</span><span class="ticker-price">$310.92</span><span class="ticker-change ticker-up">+1.75%</span></div>
-          <span class="ticker-sep">&middot;</span>
-          <div class="ticker-item"><span class="ticker-symbol">$AMZN</span><span class="ticker-price">$215.20</span><span class="ticker-change ticker-up">+1.63%</span></div>
-          <span class="ticker-sep">&middot;</span>
-          <div class="ticker-item"><span class="ticker-symbol">BTC</span><span class="ticker-price">$74,226</span><span class="ticker-change ticker-down">-0.88%</span></div>
-          <span class="ticker-sep">&middot;</span>
-          <div class="ticker-item"><span class="ticker-symbol">ETH</span><span class="ticker-price">$2,326</span><span class="ticker-change ticker-down">-1.16%</span></div>
-          <span class="ticker-sep">&middot;</span>
-          <div class="ticker-item"><span class="ticker-symbol">GOLD</span><span class="ticker-price">$5,006</span><span class="ticker-change ticker-up">+0.07%</span></div>
-          <span class="ticker-sep">&middot;</span>
-          <div class="ticker-item"><span class="ticker-symbol">OIL</span><span class="ticker-price">$94.58</span><span class="ticker-change ticker-up">+1.16%</span></div>
-          <span class="ticker-sep">&middot;</span>
-          <div class="ticker-item"><span class="ticker-symbol">VIX</span><span class="ticker-price">22.37</span><span class="ticker-change ticker-down">-4.85%</span></div>
-          <span class="ticker-sep">&middot;</span>
-          <div class="ticker-item"><span class="ticker-symbol">DXY</span><span class="ticker-price">99.56</span><span class="ticker-change ticker-down">-0.15%</span></div>
-          <span class="ticker-sep">&middot;</span>
-          <div class="ticker-item"><span class="ticker-symbol">10Y</span><span class="ticker-price">4.20%</span><span class="ticker-change ticker-down">-2bp</span></div>
-          <span class="ticker-sep">&middot;</span>
+          <div class="ticker-item"><span class="ticker-symbol">SPY</span><span class="ticker-price">$662</span><span class="ticker-change ticker-down">-0.57%</span></div>
+          <span class="ticker-sep">·</span>
+          <div class="ticker-item"><span class="ticker-symbol">NASDAQ</span><span class="ticker-price">22,105</span><span class="ticker-change ticker-down">-0.93%</span></div>
+          <span class="ticker-sep">·</span>
+          <div class="ticker-item"><span class="ticker-symbol">DOW</span><span class="ticker-price">46,558</span><span class="ticker-change ticker-down">-0.26%</span></div>
+          <span class="ticker-sep">·</span>
+          <div class="ticker-item"><span class="ticker-symbol">$NVDA</span><span class="ticker-price">$180</span><span class="ticker-change ticker-down">-1.59%</span></div>
+          <span class="ticker-sep">·</span>
+          <div class="ticker-item"><span class="ticker-symbol">$TSLA</span><span class="ticker-price">$391</span><span class="ticker-change ticker-down">-0.96%</span></div>
+          <span class="ticker-sep">·</span>
+          <div class="ticker-item"><span class="ticker-symbol">$MSFT</span><span class="ticker-price">$408</span><span class="ticker-change ticker-down">-0.82%</span></div>
+          <span class="ticker-sep">·</span>
+          <div class="ticker-item"><span class="ticker-symbol">$GOOGL</span><span class="ticker-price">$171</span><span class="ticker-change ticker-down">-1.12%</span></div>
+          <span class="ticker-sep">·</span>
+          <div class="ticker-item"><span class="ticker-symbol">$AMZN</span><span class="ticker-price">$198</span><span class="ticker-change ticker-down">-0.74%</span></div>
+          <span class="ticker-sep">·</span>
+          <div class="ticker-item"><span class="ticker-symbol">BTC</span><span class="ticker-price">$72,520</span><span class="ticker-change ticker-down">-0.43%</span></div>
+          <span class="ticker-sep">·</span>
+          <div class="ticker-item"><span class="ticker-symbol">ETH</span><span class="ticker-price">$2,179</span><span class="ticker-change">flat</span></div>
+          <span class="ticker-sep">·</span>
+          <div class="ticker-item"><span class="ticker-symbol">GOLD</span><span class="ticker-price">$5,007</span><span class="ticker-change ticker-down">-1.08%</span></div>
+          <span class="ticker-sep">·</span>
+          <div class="ticker-item"><span class="ticker-symbol">OIL</span><span class="ticker-price">$99.27</span><span class="ticker-change ticker-up">+0.57%</span></div>
+          <span class="ticker-sep">·</span>
+          <div class="ticker-item"><span class="ticker-symbol">VIX</span><span class="ticker-price">22.4</span><span class="ticker-change ticker-up">+8.6%</span></div>
+          <span class="ticker-sep">·</span>
+          <div class="ticker-item"><span class="ticker-symbol">DXY</span><span class="ticker-price">103.8</span><span class="ticker-change ticker-down">-0.31%</span></div>
+          <span class="ticker-sep">·</span>
+          <div class="ticker-item"><span class="ticker-symbol">10Y</span><span class="ticker-price">4.28%</span><span class="ticker-change ticker-up">+2bp</span></div>
+          <span class="ticker-sep">·</span>
         </div>
       </div>
 
       <div class="panel-body">
 
-        <div class="feed-date" id="feedDate">TUESDAY, MARCH 17, 2026 &mdash; 6:35 PM EDT</div>
-
-        <!-- TLDR: Pure signal across all 7 categories -->
-        <div id="tldrSection">
-          <div class="tldr-item" data-cat="macro" data-target="section-macro"><span class="tldr-tag tag-macro">MACRO</span>Iran Day 17 escalation: UAE Shah gas field hit, Fujairah fire, tanker struck near Hormuz. Brent $103, WTI $94.58 (+1.2%). US diesel $5/gal first time since 2022. Israel killed Iran&rsquo;s top security chief in Tehran. Trump rejects NATO help for Hormuz. Fed FOMC Day 1 underway, hold certain. Wednesday dot plot is the volatility catalyst. Fear &amp; Greed: 21 (Extreme Fear).</div>
-          <div class="tldr-item" data-cat="ai" data-target="section-ai"><span class="tldr-tag tag-ai">AI</span>NVIDIA GTC Day 2: NCP ecosystem hits 1M+ GPUs deployed (1.7 GW), doubled YoY. AWS deploying 1M+ NVIDIA GPUs starting 2026. DGX Station launched &mdash; 20 PFLOPS deskside supercomputer for 1T-param models. Feynman architecture revealed. Space-1 module for orbital data centers. Google/OpenAI employees back Anthropic in Pentagon lawsuit.</div>
-          <div class="tldr-item" data-cat="enterprise" data-target="section-enterprise"><span class="tldr-tag tag-enterprise">ENTERPRISE</span>&ldquo;SaaSpocalypse&rdquo;: per-seat pricing collapsed from 21% to 15%. Atlassian first-ever enterprise seat decline. Adobe -30% from 52-week high. Workday cuts 8.5%. NVIDIA Agent Toolkit launched at GTC with Adobe, Salesforce, SAP. Microsoft Copilot Cowork live with Anthropic Claude.</div>
-          <div class="tldr-item" data-cat="infra" data-target="section-infra"><span class="tldr-tag tag-infra">INFRA</span>NVIDIA doubles AI infra revenue target to $1T through 2027. Vera Rubin NVL72 live on Azure. CoreWeave 2026 compute &ldquo;broadly sold out.&rdquo; AWS first to deploy 1M+ GPUs. SK Hynix: wafer shortage through 2030. HBM market to hit $54.6B (+58% YoY).</div>
-          <div class="tldr-item" data-cat="finserv" data-target="section-finserv"><span class="tldr-tag tag-finserv">FINSERV</span>Fed FOMC Day 1: 99% hold at 3.50-3.75%. Wednesday dot plot is the event. Oil up 40% since conflict began. Goldman/Barclays push first cut to September. Physical crude premium at $38 &mdash; largest in modern history. Vice Chair Barr: AI could push neutral rate higher.</div>
-          <div class="tldr-item" data-cat="vc" data-target="section-vc"><span class="tldr-tag tag-vc">VC&amp;M&amp;A</span>Global AI funding wave: Nscale $2B, AMI Labs $1.03B, Nexthop AI $500M, Mind Robotics $500M, Replit $400M at $9B. 17 US AI companies raised $100M+ in 2026. IPO window shut on Iran/Fed uncertainty. ~40 new unicorns YTD.</div>
-          <div class="tldr-item" data-cat="regulation" data-target="section-regulation"><span class="tldr-tag tag-regulation">REGULATION</span>Google/OpenAI employees file amicus brief backing Anthropic Pentagon lawsuit &mdash; could redefine military AI obligations. EU AI Act high-risk deadline Aug 2026 approaching. Colorado AI Act June 30. California SB 53 + AB 2013 in force. SEC + FTC dual enforcement on &ldquo;AI washing.&rdquo;</div>
+        <div class="feed-date" id="feedDate"><!-- updated by JS --></div>
+        <div id="newsFeedContainer" class="news-feed-container">
+          <div class="news-feed-empty">Waiting for next update...</div>
         </div>
-
-<!-- ========== SECTION: AI PROVIDERS ========== -->
-        <div class="feed-section" data-cat="ai" id="section-ai">
-          <div class="feed-section-header">AI Providers</div>
-          <div class="feed-item signal-fire">
-            <span class="signal-tag fire">FIRE</span>
-            <span class="entity-ref">NVIDIA</span> GTC Day 2: NCP ecosystem doubled AI factory footprint YoY to 1M+ GPUs deployed (1.7 GW). <span class="entity-ref">AWS</span> deploying 1M+ NVIDIA GPUs across global regions this year. DGX Station launched &mdash; GB300 Grace Blackwell Ultra deskside supercomputer with 748 GB coherent memory, 20 PFLOPS, runs 1T-param models locally. Feynman architecture revealed: Rosa CPU + LP40 LPU + BlueField-5 + CX10. <span class="ticker-ref">$NVDA</span> -0.70% to $181.93.
-          </div>
-          <div class="feed-item signal-fire">
-            <span class="signal-tag fire">FIRE</span>
-            <span class="entity-ref">NVIDIA</span> Space-1 Vera Rubin module &mdash; 25x more AI compute than H100 for orbital data centers. IGX Thor now GA for industrial edge. RTX PRO 4500 Blackwell Server Edition: 100x vision AI vs CPU-only. NemoClaw open-source agent platform for local enterprise deployment.
-          </div>
-          <div class="feed-item signal-fire">
-            <span class="signal-tag fire">FIRE</span>
-            <span class="entity-ref">Anthropic</span> Pentagon lawsuit gains momentum &mdash; <span class="entity-ref">Google</span> and <span class="entity-ref">OpenAI</span> employees filed amicus brief. Pentagon still using Claude during Iran war. Trump: &ldquo;I fired Anthropic&hellip; like dogs.&rdquo; Claude #1 app in 16 countries. On track $19B revenue (doubled YoY).
-          </div>
-          <div class="feed-item signal-watch">
-            <span class="signal-tag watch">WATCH</span>
-            DGX Station supports frontier open models: <span class="entity-ref">OpenAI</span> gpt-oss-120b, <span class="entity-ref">Google</span> Gemma 3, Qwen3, Kimi K2.5, <span class="entity-ref">Mistral</span> Large 3, <span class="entity-ref">DeepSeek</span> V3.2, NVIDIA Nemotron. First deskside system to run all major open-weight families locally.
-          </div>
-          <div class="feed-item signal-watch">
-            <span class="signal-tag watch">WATCH</span>
-            <span class="entity-ref">Anthropic</span> targeting IPO before <span class="entity-ref">OpenAI</span>. Both racing to go public. OpenAI at 900M+ users and $25B+ projected annual revenue.
-          </div>
-          <div class="my-take">
-            <div class="my-take-label">INSIGHT</div>
-            NVIDIA&rsquo;s GTC Day 2 reveals the real moat: not chips alone but the full-stack ecosystem. 1M+ GPUs across NCP partners = CUDA lock-in at infrastructure scale. DGX Station + Feynman roadmap signals every enterprise will need local AI compute. The Anthropic-Pentagon saga reshapes AI contractor landscape &mdash; cross-company employee solidarity is unprecedented.
-          </div>
-        </div>
-
-<!-- ========== SECTION: AI INFRASTRUCTURE ========== -->
-        <div class="feed-section" data-cat="infra" id="section-infra">
-          <div class="feed-section-header">AI Infrastructure</div>
-          <div class="feed-item signal-fire">
-            <span class="signal-tag fire">FIRE</span>
-            <span class="entity-ref">NVIDIA</span> GTC: AI infrastructure revenue target $1T through 2027 (doubled prior). Vera Rubin NVL72 live on <span class="entity-ref">Microsoft</span> Azure. <span class="entity-ref">Oracle</span> OCI Supercluster with Vera Rubin. Every major cloud committed to multi-gen NVIDIA roadmap.
-          </div>
-          <div class="feed-item signal-fire">
-            <span class="signal-tag fire">FIRE</span>
-            <span class="entity-ref">AWS</span> to deploy 1M+ NVIDIA GPUs starting 2026. <span class="entity-ref">Microsoft</span> deployed hundreds of thousands of liquid-cooled Grace Blackwell GPUs in under a year. NCP program 2x to 1.7 GW &mdash; power of a mid-size city.
-          </div>
-          <div class="feed-item signal-fire">
-            <span class="signal-tag fire">FIRE</span>
-            <span class="entity-ref">CoreWeave</span> 2026 compute &ldquo;broadly sold out.&rdquo; 43 active sites. 5-6 year take-or-pay contracts. NVIDIA $2B investment. Software stack licensing as margin expansion.
-          </div>
-          <div class="feed-item signal-watch">
-            <span class="signal-tag watch">WATCH</span>
-            <span class="entity-ref">SK Hynix</span>: wafer shortage through 2030. HBM market $54.6B (+58% YoY). ASIC HBM demand +82% as <span class="entity-ref">Google</span>/AWS expand custom silicon.
-          </div>
-          <div class="feed-item signal-watch">
-            <span class="signal-tag watch">WATCH</span>
-            <span class="entity-ref">AMD</span> Helios (MI400): 2.9 EXAFLOPS FP4. <span class="entity-ref">OpenAI</span>&rsquo;s Brockman endorsed for agentic workflows on HBM4 density. NVIDIA countering with Vera Rubin full-stack.
-          </div>
-          <div class="my-take">
-            <div class="my-take-label">INSIGHT</div>
-            Infrastructure race moved beyond chips to physical substrate: power, cooling, real estate. CoreWeave sold out, NVIDIA $1T target, wafer shortage through 2030 = supply-constrained for the foreseeable future. Every GW of capacity has buyers lined up years in advance.
-          </div>
-        </div>
-
-<!-- ========== SECTION: ENTERPRISE AI ========== -->
-        <div class="feed-section" data-cat="enterprise" id="section-enterprise">
-          <div class="feed-section-header">Enterprise AI</div>
-          <div class="feed-item signal-fire">
-            <span class="signal-tag fire">FIRE</span>
-            &ldquo;SaaSpocalypse&rdquo;: per-seat pricing collapsed 21% to 15% in 12 months. <span class="entity-ref">Atlassian</span> first-ever enterprise seat decline. <span class="entity-ref">Adobe</span> -30% from 52-week high. <span class="entity-ref">Workday</span> cut 8.5% workforce. Only 14% of CFOs report measurable ROI from third-party AI.
-          </div>
-          <div class="feed-item signal-fire">
-            <span class="signal-tag fire">FIRE</span>
-            <span class="entity-ref">NVIDIA</span> Agent Toolkit at GTC: <span class="entity-ref">Adobe</span>, <span class="entity-ref">Salesforce</span>, <span class="entity-ref">SAP</span> + 14 partners. NemoClaw + OpenShell for secure on-prem agents. NVIDIA&rsquo;s play to own the enterprise AI agent platform.
-          </div>
-          <div class="feed-item signal-fire">
-            <span class="signal-tag fire">FIRE</span>
-            <span class="entity-ref">Microsoft</span> Copilot Wave 3: Cowork live with <span class="entity-ref">Anthropic</span> Claude for multi-step agentic tasks. Agent 365 GA. M365 E7 = E5 + Copilot + Agent 365 + Security at $99/user/month. Azure first Vera Rubin NVL72.
-          </div>
-          <div class="feed-item signal-watch">
-            <span class="signal-tag watch">WATCH</span>
-            &ldquo;Shadow Code&rdquo; risk: AI agents generating unversioned logic inside SaaS. Fortune 500 CFOs pulling back on embedded AI for internal control planes.
-          </div>
-          <div class="my-take">
-            <div class="my-take-label">INSIGHT</div>
-            SaaS pricing model breaking in real time. NVIDIA Agent Toolkit captures value regardless of SaaS survival. Microsoft Cowork is the first enterprise agentic product that executes multi-step work. Next 12 months separate AI-transformed from AI-disrupted.
-          </div>
-        </div>
-
-<!-- ========== SECTION: AI IN FINANCIAL SERVICES ========== -->
-        <div class="feed-section" data-cat="finserv" id="section-finserv">
-          <div class="feed-section-header">AI in Financial Services</div>
-          <div class="feed-item signal-fire">
-            <span class="signal-tag fire">FIRE</span>
-            Fed FOMC Day 1 underway. 99% hold at 3.50-3.75%. Wednesday dot plot = first projections in 3 months. Oil up ~40% since Feb 28, core PCE 0.4% MoM. Waller/Miran dissented for cuts. Vice Chair Barr: AI pushing neutral rate higher. Powell 2:30 PM ET Wednesday.
-          </div>
-          <div class="feed-item signal-fire">
-            <span class="signal-tag fire">FIRE</span>
-            <span class="entity-ref">Goldman Sachs</span>/<span class="entity-ref">Barclays</span> pushed first cut to September. Physical crude premium $38 &mdash; largest in modern history. <span class="entity-ref">JPMorgan</span> forecasts record $1.81T US IG bond issuance on AI infra spend.
-          </div>
-          <div class="feed-item signal-watch">
-            <span class="signal-tag watch">WATCH</span>
-            <span class="entity-ref">JPMorgan</span>&rsquo;s Jhamna: GenAI &ldquo;set to transform&rdquo; credit trading &mdash; &ldquo;last frontier&rdquo; for automation. Unstructured data uniquely suited for GenAI.
-          </div>
-          <div class="feed-item signal-watch">
-            <span class="signal-tag watch">WATCH</span>
-            SEC 2026 Exam Priorities target AI disclosures. FTC parallel enforcement. &ldquo;AI washing&rdquo; is a regulatory surface after Delphia/Global Predictions settlements.
-          </div>
-          <div class="my-take">
-            <div class="my-take-label">INSIGHT</div>
-            Wednesday dot plot is the true volatility event. Fed caught: oil argues hawkish, labor argues dovish. $38 physical crude premium = paper not pricing real supply risk. Hawkish dots trigger selling + yield spikes. September cut consensus could shift to &ldquo;no cuts in 2026&rdquo; if Iran escalates.
-          </div>
-        </div>
-
-<!-- ========== SECTION: VC / PE / M&A ========== -->
-        <div class="feed-section" data-cat="vc" id="section-vc">
-          <div class="feed-section-header">VC / PE / M&amp;A</div>
-          <div class="feed-item signal-fire">
-            <span class="signal-tag fire">FIRE</span>
-            AI infrastructure funding wave: <span class="entity-ref">Nscale</span> $2B (UK), AMI Labs $1.03B (Paris), <span class="entity-ref">Nexthop AI</span> $500M (a16z), <span class="entity-ref">Mind Robotics</span> $500M, <span class="entity-ref">Replit</span> $400M at $9B (3x in 6 months). Capital flowing to infra over application-layer.
-          </div>
-          <div class="feed-item signal-fire">
-            <span class="signal-tag fire">FIRE</span>
-            17 US AI companies raised $100M+ in 2026. <span class="entity-ref">OpenAI</span> $110B mega-round. Total AI venture $150B+. ~40 new unicorns YTD. Capital concentration at the top unprecedented.
-          </div>
-          <div class="feed-item signal-watch">
-            <span class="signal-tag watch">WATCH</span>
-            IPO window shut. Liftoff/Clear Street withdrew. <span class="entity-ref">Anthropic</span>/<span class="entity-ref">OpenAI</span> targeting year-end listings. VIX 22.37 = risk-off.
-          </div>
-          <div class="feed-item signal-watch">
-            <span class="signal-tag watch">WATCH</span>
-            Cybersecurity AI: Kai $125M. Private credit pulling back on software amid SaaSpocalypse fears. AI disruption impacting LBO models.
-          </div>
-          <div class="my-take">
-            <div class="my-take-label">INSIGHT</div>
-            Infrastructure raising record scale; application-layer faces capital desert. $150B+ in under 3 months. IPO market frozen. When window opens post-Iran + Fed clarity, expect AI IPO rush. Secondary prices are the real signal now.
-          </div>
-        </div>
-
-<!-- ========== SECTION: AI REGULATION & POLICY ========== -->
-        <div class="feed-section" data-cat="regulation" id="section-regulation">
-          <div class="feed-section-header">AI Regulation &amp; Policy</div>
-          <div class="feed-item signal-fire">
-            <span class="signal-tag fire">FIRE</span>
-            <span class="entity-ref">Anthropic</span> Pentagon case: <span class="entity-ref">Google</span>/<span class="entity-ref">OpenAI</span> employees filed amicus brief &mdash; unprecedented cross-company solidarity. Emergency stay at DC Circuit. Pentagon using Claude during Iran war. Could redefine military AI obligations.
-          </div>
-          <div class="feed-item signal-fire">
-            <span class="signal-tag fire">FIRE</span>
-            EU AI Act high-risk obligations effective Aug 2, 2026. Conformity assessments take 6-12 months. Code of Practice for AI content labeling June 2026. Extraterritorial application.
-          </div>
-          <div class="feed-item signal-watch">
-            <span class="signal-tag watch">WATCH</span>
-            US state patchwork: CA SB 53 + AB 2013 (Jan 1), TX TRAIGA ($80K-$200K), CO SB 24-205 (June 30). WA 3 bills, VA 3 bills. 1,000+ bills. No federal preemption.
-          </div>
-          <div class="feed-item signal-watch">
-            <span class="signal-tag watch">WATCH</span>
-            SEC + FTC dual &ldquo;AI washing&rdquo; enforcement. NY RAISE Act pending. Multi-jurisdictional compliance with no harmonized framework.
-          </div>
-          <div class="my-take">
-            <div class="my-take-label">INSIGHT</div>
-            Anthropic-Pentagon is the most consequential AI governance fight. Victory = companies can set military-use red lines. Loss = implicit pressure. Cross-company employee support makes it industry-defining. EU August 2026 = hard wall, expect Q2 compliance scramble.
-          </div>
-        </div>
-
-<!-- ========== SECTION: GEOPOLITICS & MACRO ========== -->
-        <div class="feed-section" data-cat="macro" id="section-macro">
-          <div class="feed-section-header">Geopolitics &amp; Macro</div>
-          <div class="feed-item signal-fire">
-            <span class="signal-tag fire">FIRE</span>
-            Iran Day 17: UAE Shah gas field halted, Fujairah fire, tanker struck near Hormuz. Brent $103 (highest since Aug 2022), WTI $94.58 (+1.2%). US diesel $5/gal since 2022. 16 ship attacks since Feb 28. Oil up ~40% since conflict.
-          </div>
-          <div class="feed-item signal-fire">
-            <span class="signal-tag fire">FIRE</span>
-            Israel killed Iran&rsquo;s top security chief + militia official in Tehran. Trump rejected NATO: &ldquo;don&rsquo;t need or desire&rdquo; allies for Hormuz. Considering Kharg Island strike. Delaying Xi visit ~1 month.
-          </div>
-          <div class="feed-item signal-fire">
-            <span class="signal-tag fire">FIRE</span>
-            Markets: S&amp;P 6,717 (+0.27%), 2nd day of gains. <span class="ticker-ref">$GOOGL</span> +1.75%, <span class="ticker-ref">$AMZN</span> +1.63% lead. Delta raised Q1 guidance. Gold $5,006 near ATH. Fear &amp; Greed 21 (Extreme Fear) &mdash; 2026 low.
-          </div>
-          <div class="feed-item signal-watch">
-            <span class="signal-tag watch">WATCH</span>
-            Fed FOMC Day 1. Hold certain. Wednesday dot plot + Powell 2:30 PM ET. Waller/Miran vs hawks. 10Y at 4.20%.
-          </div>
-          <div class="feed-item signal-watch">
-            <span class="signal-tag watch">WATCH</span>
-            Crypto: <span class="ticker-ref">BTC</span> $74,226 (-0.88%), <span class="ticker-ref">ETH</span> $2,326 (-1.16%). DXY 99.56. Asia: Nikkei +0.75%, Kospi +2.94%, Hang Seng +0.94%.
-          </div>
-          <div class="my-take">
-            <div class="my-take-label">INSIGHT</div>
-            Markets balancing: equities up on earnings while oil screams crisis and F&amp;G hits 2026 lows. Divergence cannot persist. Brent above $100 changes inflation math. Key tells: (1) dot plot Wed, (2) Kharg Island, (3) how long equities ignore 40% oil surge. $38 physical crude premium is the canary.
-          </div>
-        </div>
-
-
-</div>
+      </div>
     </div>
 
   </div>
@@ -1994,6 +1852,18 @@
     return Math.floor(diff/86400) + 'd ago';
   }
 
+  function relTimeFromISO(isoStr) {
+    if (!isoStr) return '';
+    try {
+      var d = new Date(isoStr);
+      var diff = Math.floor((Date.now() - d.getTime()) / 1000);
+      if (diff < 60) return 'just now';
+      if (diff < 3600) return Math.floor(diff/60) + 'm ago';
+      if (diff < 86400) return Math.floor(diff/3600) + 'h ago';
+      return Math.floor(diff/86400) + 'd ago';
+    } catch(e) { return ''; }
+  }
+
   function applyState(data) {
     // Mode
     var isWorking = data.brain && (data.brain.mode === 'working' || data.brain.mode === 'thinking');
@@ -2097,6 +1967,29 @@
     }
 
     if (data.steps && data.steps.length > 0) renderSteps(data.steps, true);
+
+    // Live news feed
+    if (data.news_feed && data.news_feed.length > 0) {
+      var feedContainer = document.getElementById('newsFeedContainer');
+      if (feedContainer) {
+        var feedHtml = '';
+        for (var ni = 0; ni < data.news_feed.length; ni++) {
+          var item = data.news_feed[ni];
+          var ageStr = relTimeFromISO(item.ts);
+          // Strip Telegram HTML bold/italic tags, render clean
+          var bodyText = (item.text || '').replace(/<b>/gi,'').replace(/<\/b>/gi,'').replace(/<i>/gi,'').replace(/<\/i>/gi,'').replace(/&amp;/gi,'&').replace(/&lt;/gi,'<').replace(/&gt;/gi,'>');
+          feedHtml += '<div class="news-feed-item">'
+            + '<div class="news-feed-item-header">'
+            + '<span class="news-feed-slot-label">' + escHtml(item.label || item.slot || '') + '</span>'
+            + '<span class="news-feed-slot-time">' + escHtml(ageStr) + '</span>'
+            + '</div>'
+            + '<div class="news-feed-item-body">' + bodyText + '</div>'
+            + '</div>';
+        }
+        feedContainer.innerHTML = feedHtml;
+      }
+    }
+
     lastKnownState = data;
     // Hook: update Sorare job subtask overrides from state.json
     if (typeof applyJobOverrides === 'function') applyJobOverrides(data);
@@ -2567,14 +2460,15 @@
       ]
     },
     {
-      label: 'INTELLIGENCE FEED',
+      label: 'NEWS BOT',
       jobs: [
-        { name: 'Feed Refresh', time: '6:30 AM', scheduleHour: 6, scheduleMinute: 30, desc: 'TLDR + 7 sections: AI, Infra, Enterprise, FinServ, VC, Regulation, Macro' },
-        { name: 'Feed Refresh', time: '9:30 AM', scheduleHour: 9, scheduleMinute: 30, desc: 'TLDR + 7 sections — pre-market update' },
-        { name: 'Feed Refresh', time: '12:30 PM', scheduleHour: 12, scheduleMinute: 30, desc: 'TLDR + 7 sections — midday update' },
-        { name: 'Feed Refresh', time: '3:30 PM', scheduleHour: 15, scheduleMinute: 30, desc: 'TLDR + 7 sections — afternoon update' },
-        { name: 'Feed Refresh', time: '6:30 PM', scheduleHour: 18, scheduleMinute: 30, desc: 'TLDR + 7 sections — post-market update' },
-        { name: 'Feed Refresh', time: '9:30 PM', scheduleHour: 21, scheduleMinute: 30, desc: 'TLDR + 7 sections — overnight prep' }
+        { name: 'Morning Brief', time: '6:30 AM', scheduleHour: 6, scheduleMinute: 30, desc: 'Full brief: crypto, markets, macro, AI headlines, geopolitical' },
+        { name: 'Signal Update', time: '9:15 AM', scheduleHour: 9, scheduleMinute: 15, desc: 'Pre-market signal: top movers + breaking news' },
+        { name: 'Signal Update', time: '11:00 AM', scheduleHour: 11, scheduleMinute: 0, desc: 'Mid-morning signal: AI + market pulse' },
+        { name: 'Signal Update', time: '2:00 PM', scheduleHour: 14, scheduleMinute: 0, desc: 'Afternoon pulse: headlines + crypto + macro' },
+        { name: 'Signal Update', time: '5:30 PM', scheduleHour: 17, scheduleMinute: 30, desc: 'Markets close signal: movers + end-of-day wrap' },
+        { name: 'Daily Recap', time: '8:00 PM', scheduleHour: 20, scheduleMinute: 0, desc: 'Full daily recap: everything that mattered today' },
+        { name: 'Breaking News', time: 'Every 20min', scheduleHour: -1, scheduleMinute: -1, recurring: true, desc: 'RSS monitor: fires when story scores ≥7.0' }
       ]
     }
   ];
