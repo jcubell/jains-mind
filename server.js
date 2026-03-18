@@ -198,48 +198,102 @@ const server = http.createServer(async (req, res) => {
         orSource = 'openrouter';
       }
 
-      // === FALLBACK / MODEL BREAKDOWN: codexbar ===
-      const codexbarBin = '/opt/homebrew/bin/codexbar';
-      for (const provider of ['codex', 'claude']) {
-        let raw;
-        try {
-          raw = execSync(`${codexbarBin} cost --format json --provider ${provider}`, { timeout: 8000 }).toString();
-        } catch (e) { continue; }
-        let parsed;
-        try { parsed = JSON.parse(raw); } catch(e) { continue; }
-        const entries = Array.isArray(parsed) ? parsed : [parsed];
-        for (const entry of entries) {
-          // If OR API failed, fall back to codexbar for cost totals
-          if (orSource === 'codexbar') {
-            if (entry.last30DaysCostUSD) dailyCost += entry.last30DaysCostUSD;
-            const todayStr = new Date().toLocaleDateString('en-CA');
-            let foundToday = false;
-            for (const day of (entry.daily || [])) {
-              if (day.date === todayStr) { sessionCost += day.totalCost || 0; totalTokens += day.totalTokens || 0; foundToday = true; }
-            }
-            if (!foundToday && entry.sessionCostUSD) sessionCost += entry.sessionCostUSD;
+      // === MODEL BREAKDOWN: subagents/runs.json + state.json ===
+      // OpenRouter BYOK API doesn't expose per-model breakdown, so we reconstruct
+      // from (1) sub-agent runs tracked in runs.json, (2) main session model from state.json
+      try {
+        const RUNS_PATH = '/Users/jc_agent/.openclaw/subagents/runs.json';
+        const STATE_PATH = '/Users/jc_agent/.openclaw/workspace/dashboard/state.json';
+        // Model pricing (per 1M tokens, in/out)
+        const MODEL_PRICING = {
+          'claude-sonnet-4-6': { in: 3.0, out: 15.0 },
+          'grok-4': { in: 3.0, out: 15.0 },
+          'grok-4-fast': { in: 0.20, out: 0.50 },
+          'gemini-2.0-flash': { in: 0.10, out: 0.40 },
+          'gemini-2.5-pro': { in: 1.25, out: 10.0 },
+          'deepseek-chat-v3-0324': { in: 0.20, out: 0.77 },
+          'deepseek-r1': { in: 0.70, out: 2.50 },
+          'gpt-4o': { in: 2.50, out: 10.0 },
+          'gpt-4o-mini': { in: 0.15, out: 0.60 },
+          'mistral': { in: 0, out: 0 },
+        };
+
+        // Today's date window (use Unix epoch cutoff for today in ET)
+        const now = Date.now();
+        // 24h window
+        const cutoff24h = now - 24 * 60 * 60 * 1000;
+
+        // 1. Scan subagent runs for today
+        let runsData = null;
+        try { runsData = JSON.parse(fs.readFileSync(RUNS_PATH, 'utf8')); } catch(e) {}
+        const runs = runsData ? (Array.isArray(runsData.runs) ? runsData.runs : Object.values(runsData.runs || {})) : [];
+
+        for (const run of runs) {
+          const ts = run.createdAt || 0;
+          if (ts < cutoff24h) continue;
+          const rawModel = (run.model || '').replace(/^openrouter\/[^/]+\//, '').replace(/^openrouter\//, '');
+          const name = normalizeModelName(rawModel);
+          if (!name) continue;
+          if (!allModels[name]) allModels[name] = { model: name, cost: 0, tokens: 0, days: 0 };
+          // Use tracked cost if available, else estimate
+          const trackedCost = run.cost || 0;
+          const inTok = run.inputTokens || 0;
+          const outTok = run.outputTokens || 0;
+          if (trackedCost > 0) {
+            allModels[name].cost += trackedCost;
+          } else if (inTok > 0 || outTok > 0) {
+            const p = MODEL_PRICING[name] || { in: 3.0, out: 15.0 };
+            allModels[name].cost += (inTok * p.in + outTok * p.out) / 1_000_000;
           }
-          // Always use codexbar for per-model breakdown
-          for (const day of (entry.daily || [])) {
-            const breakdowns = day.modelBreakdowns || [];
-            const dayTokens = day.totalTokens || 0;
-            const numModels = breakdowns.length || 1;
-            for (const mb of breakdowns) {
-              const name = normalizeModelName((mb.modelName || '').trim());
-              if (!name) continue;
-              if (!allModels[name]) allModels[name] = { model: name, cost: 0, tokens: 0, days: 0 };
-              allModels[name].cost += mb.cost || 0;
-              const dayCost = day.totalCost || 0;
-              if (dayCost > 0 && mb.cost > 0) {
-                allModels[name].tokens += Math.round(dayTokens * (mb.cost / dayCost));
-              } else {
-                allModels[name].tokens += Math.round(dayTokens / numModels);
+          allModels[name].tokens += (inTok + outTok);
+          allModels[name].days += 1;
+        }
+
+        // 2. Add main session model from state.json (always active today)
+        let stateData = null;
+        try { stateData = JSON.parse(fs.readFileSync(STATE_PATH, 'utf8')); } catch(e) {}
+        const mainModel = normalizeModelName(
+          ((stateData && stateData.brain && stateData.brain.model) || 'claude-sonnet-4-6')
+            .replace(/^openrouter\/[^/]+\//, '').replace(/^openrouter\//, '')
+        );
+        if (mainModel) {
+          if (!allModels[mainModel]) allModels[mainModel] = { model: mainModel, cost: 0, tokens: 0, days: 0 };
+          // Main session cost = total daily - sum of sub-agent costs (rough estimate)
+          const subagentCostTotal = Object.values(allModels).reduce((s, m) => s + m.cost, 0);
+          const mainSessionEst = Math.max(0, dailyCost - subagentCostTotal);
+          allModels[mainModel].cost += mainSessionEst;
+          allModels[mainModel].days += 1;
+        }
+
+        // 3. Add news bot (gemini-2.0-flash) as known background model — $0.006 est
+        const newsModel = 'gemini-2.0-flash';
+        if (!allModels[newsModel]) allModels[newsModel] = { model: newsModel, cost: 0, tokens: 0, days: 0 };
+        allModels[newsModel].cost += 0.006;
+        allModels[newsModel].days += 7; // 7 briefs per day
+
+      } catch(e) {
+        // Silently fall through — model breakdown will be empty
+      }
+
+      // Fallback: try codexbar for any local tracked models
+      try {
+        const codexbarBin = '/opt/homebrew/bin/codexbar';
+        for (const provider of ['codex', 'claude']) {
+          let raw;
+          try { raw = execSync(`${codexbarBin} cost --format json --provider ${provider}`, { timeout: 5000 }).toString(); } catch(e) { continue; }
+          let parsed; try { parsed = JSON.parse(raw); } catch(e) { continue; }
+          const entries = Array.isArray(parsed) ? parsed : [parsed];
+          for (const entry of entries) {
+            if (orSource === 'codexbar') {
+              if (entry.last30DaysCostUSD) dailyCost += entry.last30DaysCostUSD;
+              const todayStr = new Date().toLocaleDateString('en-CA');
+              for (const day of (entry.daily || [])) {
+                if (day.date === todayStr) { sessionCost += day.totalCost || 0; totalTokens += day.totalTokens || 0; }
               }
-              allModels[name].days += 1;
             }
           }
         }
-      }
+      } catch(e) {}
 
       // Compute total cost and pct for model breakdown
       const modelList = Object.values(allModels);

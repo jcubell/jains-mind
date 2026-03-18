@@ -2423,57 +2423,44 @@
         monthEl.textContent = fmtCost(data.monthly.actual_or);
       }
 
-      // Model breakdown
+      // Model breakdown — top 5 by cost (24h), sorted desc, no pinned placeholders
       var breakdownEl = document.getElementById('usageModelBreakdown');
       if (breakdownEl) {
-        var models = (data.models || []).filter(function(m) { return !m.model || m.model.toLowerCase() !== 'whisper'; });
-        // Pinned models always appear (ordered: Grok 4, Claude Sonnet 4.6, GPT-4o)
-        var PINNED_MODELS = [
-          { model: 'grok-4', label: 'Grok 4' },
-          { model: 'claude-sonnet-4-6', label: 'Claude Sonnet 4.6' },
-          { model: 'gpt-4o', label: 'GPT-4o' }
-        ];
-        var modelNames = models.map(function(m) { return m.model; });
-        for (var pi = 0; pi < PINNED_MODELS.length; pi++) {
-          var pm = PINNED_MODELS[pi];
-          if (modelNames.indexOf(pm.model) === -1) {
-            models.push({ model: pm.model, count: 0, cost: 0, pct: 0 });
-          }
-        }
-        // Sort: pinned models first (in defined order), then others by cost desc
-        models.sort(function(a, b) {
-          var pa = PINNED_MODELS.findIndex ? PINNED_MODELS.findIndex(function(p) { return p.model === a.model; }) : -1;
-          var pb = PINNED_MODELS.findIndex ? PINNED_MODELS.findIndex(function(p) { return p.model === b.model; }) : -1;
-          if (pa >= 0 && pb >= 0) return pa - pb;   // both pinned: preserve pinned order
-          if (pa >= 0) return -1;                    // a is pinned, a comes first
-          if (pb >= 0) return 1;                     // b is pinned, b comes first
-          return b.cost - a.cost;                    // neither pinned: sort by cost desc
-        });
+        var MODEL_LABELS = {
+          'claude-sonnet-4-6': 'Claude Sonnet',
+          'grok-4': 'Grok 4',
+          'grok-4-fast': 'Grok 4 Fast',
+          'gemini-2.0-flash': 'Gemini Flash',
+          'gemini-2.5-pro': 'Gemini Pro',
+          'deepseek-chat-v3-0324': 'DeepSeek v3',
+          'deepseek-r1': 'DeepSeek R1',
+          'gpt-4o': 'GPT-4o',
+          'gpt-4o-mini': 'GPT-4o mini',
+          'mistral': 'Mistral',
+        };
+        var models = (data.models || [])
+          .filter(function(m) { return m.model && m.model.toLowerCase() !== 'whisper' && m.cost > 0; });
+        // Sort by cost descending, show top 5
+        models.sort(function(a, b) { return b.cost - a.cost; });
+        var top5 = models.slice(0, 5);
         var html = '';
-        // Compute maxCost for bar scale
-        var maxCost = 0;
-        for (var mi = 0; mi < models.length; mi++) {
-          if (models[mi].cost > maxCost) maxCost = models[mi].cost;
-        }
-        var shown = 0;
-        for (var i = 0; i < models.length && shown < 7; i++) {
-          var m = models[i];
-          if (m.model && m.model.toLowerCase() === 'whisper') continue;
+        var maxCost = top5.length > 0 ? top5[0].cost : 0;
+        for (var i = 0; i < top5.length; i++) {
+          var m = top5[i];
           var barPct = maxCost > 0 ? Math.round((m.cost / maxCost) * 100) : 3;
-          if (barPct < 3) barPct = 3; // minimum visible bar
+          if (barPct < 3) barPct = 3;
           var barColor = umColor(m.model);
-          var pinnedMatch = PINNED_MODELS.filter(function(p) { return p.model === m.model; });
-          var displayName = pinnedMatch.length > 0 ? pinnedMatch[0].label : m.model;
-          var costLabel = m.cost > 0 ? fmtCost(m.cost) : '—';
-          var pctLabel = m.pct > 0 ? m.pct + '%' : '—';
+          var displayName = MODEL_LABELS[m.model] || m.model;
+          var costLabel = fmtCost(m.cost);
+          var pctLabel = m.pct > 0 ? m.pct + '%' : '';
           html += '<div class="usage-model-row">'
             + '<span class="usage-model-name">' + escHtml(displayName) + '</span>'
-            + '<div class="usage-model-bar-wrap"><div class="usage-model-bar-fill" style="width:' + barPct + '%;background:' + barColor + ';box-shadow:0 0 4px ' + barColor + '66;opacity:' + (m.cost > 0 ? '1' : '0.3') + ';"></div></div>'
+            + '<div class="usage-model-bar-wrap"><div class="usage-model-bar-fill" style="width:' + barPct + '%;background:' + barColor + ';box-shadow:0 0 4px ' + barColor + '66;"></div></div>'
             + '<span class="usage-model-cost">' + costLabel + '</span>'
-            + '<span class="usage-model-pct" style="color:' + barColor + '">' + pctLabel + '</span>'
+            + (pctLabel ? '<span class="usage-model-pct" style="color:' + barColor + '">' + pctLabel + '</span>' : '')
             + '</div>';
-          shown++;
         }
+        if (!html) html = '<div class="usage-empty">Collecting usage data...</div>';
         breakdownEl.innerHTML = html;
       }
     }
