@@ -76,12 +76,17 @@ def push_to_github(state_file, tunnel_url=None):
             state = json.load(f)
         if tunnel:
             state["_tunnel_url"] = tunnel
-        state_content = json.dumps(state, indent=2, ensure_ascii=True)
 
+        # Merge news_feed from remote so push_brain calls don't wipe it
         try:
-            _, state_sha = github_get(TOKEN, STATE_FILE_PATH)
+            remote_raw, state_sha = github_get(TOKEN, STATE_FILE_PATH, branch=STATE_BRANCH)
+            remote_state = json.loads(remote_raw)
+            if remote_state.get("news_feed") and not state.get("news_feed"):
+                state["news_feed"] = remote_state["news_feed"]
         except Exception:
             state_sha = None
+
+        state_content = json.dumps(state, indent=2, ensure_ascii=True)
 
         # Push state.json to master (no Vercel build triggered)
         def github_put_branch(token, path, sha, content_str, message, branch):
