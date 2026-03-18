@@ -1656,7 +1656,6 @@
       <div class="panel-header">
         <h2>Live Intelligence</h2>
         <div style="display: flex; align-items: center; gap: 12px;">
-          <div class="fear-greed" id="fearGreedBadge"><div class="fg-dot" id="fearGreedDot"></div><span id="fearGreedText">Fear &amp; Greed: —</span></div>
           <span class="panel-meta" id="feedTimestamp">LIVE</span>
         </div>
       </div>
@@ -2039,7 +2038,8 @@
           });
           // 3d. Strip decorative emojis — keep 🔥 (signal hot) and country flags (geo context)
           // Remove: sentiment dots, section icons, number circles, direction arrows as emojis
-          s = s.replace(/[🟢🔴🟡⚡🤖🏢🌍📊🪙🔮🏗️💰🔶🔷💡📈📉⬆️⬇️➡️⬜🟥🟩①②③④⑤⑥⑦⑧⑨⑩🚨🟠🔵⚫⚪🟤]/gu, '');
+          // Keep 🟥🟩⬜ — used in Fear & Greed bar
+          s = s.replace(/[🟢🔴🟡⚡🤖🏢🌍📊🪙🔮🏗️💰🔶🔷💡📈📉⬆️⬇️➡️①②③④⑤⑥⑦⑧⑨⑩🚨🟠🔵⚫⚪🟤]/gu, '');
           // Clean up double/leading spaces left by emoji removal
           s = s.replace(/  +/g, ' ').replace(/^ /gm, '');
           // 3e. Fear & Greed — keep in brief body (badge in header may fail; inline is the truth)
