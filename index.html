@@ -2038,6 +2038,11 @@
           s = s.replace(/<code class="inline-code">(BULLISH|BEARISH|WATCH|RISK)<\/code>/g, function(m, v) {
             return '<code class="inline-code" data-verdict="' + v + '">' + v + '</code>';
           });
+          // 3d. Strip decorative emojis — keep 🔥 (signal hot) and country flags (geo context)
+          // Remove: sentiment dots, section icons, number circles, direction arrows as emojis
+          s = s.replace(/[🟢🔴🟡⚡🤖🏢🌍📊🪙🔮🏗️💰🔶🔷💡📈📉⬆️⬇️➡️⬜🟥🟩①②③④⑤⑥⑦⑧⑨⑩🚨🟠🔵⚫⚪🟤]/gu, '');
+          // Clean up double/leading spaces left by emoji removal
+          s = s.replace(/  +/g, ' ').replace(/^ /gm, '');
           // 4. Convert \n to <br>
           s = s.replace(/\n/g, '<br>');
           return s;
