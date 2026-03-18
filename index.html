@@ -490,6 +490,7 @@
 
   /* Per-model conic-gradient overrides */
   .brain-hero.model-grok { background: linear-gradient(#0a0a0a,#0a0a0a) padding-box, conic-gradient(from var(--laser-angle),#ff2222 0deg,#ff5555 30deg,#cc0000 80deg,#ff2222 160deg,#990000 220deg,#ff2222 360deg) border-box; }
+  .brain-hero.model-grok-fast { background: linear-gradient(#0a0a0a,#0a0a0a) padding-box, conic-gradient(from var(--laser-angle),#ffffff 0deg,#f0f0f0 30deg,#cccccc 80deg,#ffffff 160deg,#e0e0e0 220deg,#ffffff 360deg) border-box; }
   .brain-hero.model-sonnet { background: linear-gradient(#0a0a0a,#0a0a0a) padding-box, conic-gradient(from var(--laser-angle),#ff4444 0deg,#ff6666 30deg,#cc0000 80deg,#ff4444 160deg,#990000 220deg,#ff4444 360deg) border-box; }
   .brain-hero.model-gemini { background: linear-gradient(#0a0a0a,#0a0a0a) padding-box, conic-gradient(from var(--laser-angle),#4285f4 0deg,#74a9f7 30deg,#1a6cf5 80deg,#4285f4 160deg,#2456b8 220deg,#4285f4 360deg) border-box; }
   .brain-hero.model-deepseek { background: linear-gradient(#0a0a0a,#0a0a0a) padding-box, conic-gradient(from var(--laser-angle),#a855f7 0deg,#c084fc 30deg,#9333ea 80deg,#a855f7 160deg,#7c22ce 220deg,#a855f7 360deg) border-box; }
@@ -1559,17 +1560,29 @@
     color: #888;
     font-size: 10.5px;
   }
-  /* Rank dot (replaces number) — small colored indicator */
-  .bullet-rank-dot {
+  /* Numbered badge (replaces circle dot) — clean inline rank label */
+  .bullet-num {
     flex-shrink: 0;
-    width: 6px; height: 6px;
-    border-radius: 50%;
-    margin-top: 5px;
+    display: inline-block;
+    min-width: 22px;
+    padding: 0 4px;
+    height: 18px;
+    line-height: 18px;
+    font-size: 10px;
+    font-weight: 700;
+    font-family: ui-monospace, 'SF Mono', monospace;
+    text-align: center;
+    border-radius: 3px;
+    background: rgba(255,255,255,0.07);
+    color: #aaa;
+    margin-right: 7px;
+    vertical-align: middle;
+    letter-spacing: 0.02em;
   }
-  .signal-rank-top .bullet-rank-dot  { background: #f59e0b; box-shadow: 0 0 5px #f59e0b99; }
-  .signal-rank-mid .bullet-rank-dot  { background: #20B2AA; box-shadow: 0 0 4px #20B2AA66; }
-  .signal-rank-low .bullet-rank-dot  { background: #444; box-shadow: none; }
-  .bullet-hot      .bullet-rank-dot  { background: #ef4444; box-shadow: 0 0 6px #ef444499; }
+  .signal-rank-top .bullet-num { background: rgba(245,158,11,0.18); color: #f59e0b; }
+  .signal-rank-mid .bullet-num { background: rgba(32,178,170,0.14); color: #20B2AA; }
+  .signal-rank-low .bullet-num { background: rgba(255,255,255,0.05); color: #555; }
+  .bullet-hot      .bullet-num { background: rgba(239,68,68,0.18);  color: #ef4444; }
 
   /* Hot bullet (🔥) */
   .bullet-hot {
@@ -1970,6 +1983,7 @@
   function setModelTheme(model) {
     var themes = {
       'grok': { color: '#ff2222', glow: 'rgba(255,34,34,0.2)', border: 'rgba(255,34,34,0.4)', cls: 'model-grok' },
+      'grok-fast': { color: '#ffffff', glow: 'rgba(255,255,255,0.2)', border: 'rgba(255,255,255,0.5)', cls: 'model-grok-fast' },
       'sonnet': { color: '#ff4444', glow: 'rgba(255,68,68,0.2)', border: 'rgba(255,68,68,0.4)', cls: 'model-sonnet' },
       'gemini': { color: '#4285f4', glow: 'rgba(66,133,244,0.2)', border: 'rgba(66,133,244,0.4)', cls: 'model-gemini' },
       'deepseek': { color: '#a855f7', glow: 'rgba(168,85,247,0.2)', border: 'rgba(168,85,247,0.4)', cls: 'model-deepseek' },
@@ -1980,7 +1994,8 @@
     };
     var m = model ? model.toLowerCase() : '';
     var key = 'default';
-    if (m.includes('grok')) key = 'grok';
+    if (m.includes('grok-4-fast') || m.includes('grok4fast') || m.includes('grok-fast')) key = 'grok-fast';
+    else if (m.includes('grok')) key = 'grok';
     else if (m.includes('sonnet') || m.includes('claude')) key = 'sonnet';
     else if (m.includes('gemini')) key = 'gemini';
     else if (m.includes('deepseek')) key = 'deepseek';
@@ -2261,14 +2276,12 @@
               var rankClass = ' signal-rank-' + rankTier;
               var hotClass = isHot ? ' bullet-hot' : rankClass;
               var tagHtml = tag ? '<span class="bullet-tag" style="color:' + tagColor + ';border-color:' + tagColor + '44">' + tag + '</span>' : '';
-              // Color-coded dot instead of number — hot gets fire emoji inline
-              var dotHtml = isHot
-                ? '<span class="bullet-rank-dot" style="background:#ef4444;box-shadow:0 0 6px #ef444499"></span>'
-                : '<span class="bullet-rank-dot"></span>';
-              var hotPrefix = isHot ? '<span style="font-size:11px;margin-right:3px">🔥</span>' : '';
+              // Clean numbered badge — hot gets fire emoji before the number
+              var numLabel = isHot ? '🔥 ' + num + '.' : num + '.';
+              var numBadge = '<span class="bullet-num">' + numLabel + '</span>';
               out.push('<div class="brief-bullet signal-bullet' + hotClass + '">'
-                + dotHtml
-                + '<span class="bullet-body">' + hotPrefix + tagHtml + bodyContent + '</span>'
+                + numBadge
+                + '<span class="bullet-body">' + tagHtml + bodyContent + '</span>'
                 + '</div>');
               continue;
             }
@@ -2301,11 +2314,11 @@
               continue;
             }
 
-            // Any remaining line with 🔥 = hot signal
+            // Any remaining line with 🔥 = hot signal (no rank number)
             if (trimmed.startsWith('🔥') || trimmed.startsWith('\uD83D\uDD25')) {
               out.push('<div class="brief-bullet bullet-hot signal-bullet signal-rank-top">'
-                + '<span class="bullet-rank-dot" style="background:#ef4444;box-shadow:0 0 6px #ef444499"></span>'
-                + '<span class="bullet-body"><span style="font-size:11px;margin-right:3px">🔥</span>' + trimmed.slice(trimmed.indexOf('🔥') + 2).trim() + '</span>'
+                + '<span class="bullet-num">🔥</span>'
+                + '<span class="bullet-body">' + trimmed.slice(trimmed.indexOf('🔥') + 2).trim() + '</span>'
                 + '</div>');
               continue;
             }
@@ -2393,6 +2406,7 @@
 
     var MODEL_COLORS = {
       'grok-4':              '#ff2222',
+      'grok-4-fast':         '#ffffff',
       'claude-sonnet-4-6':   '#ff4444',
       'claude-sonnet-4-5':   '#ff4444',
       'gemini-2.5-pro':      '#4285f4',
@@ -2414,6 +2428,7 @@
       if (MODEL_COLORS[short]) return MODEL_COLORS[short];
       // Fallback pattern matching
       if (k.includes('gpt') || k.includes('openai')) return '#00A3FF';
+      if (k.includes('grok-4-fast') || k.includes('grok4fast') || k.includes('grok-fast')) return '#ffffff';
       if (k.includes('grok')) return '#ff2222';
       if (k.includes('sonnet') || k.includes('claude')) return '#ff4444';
       if (k.includes('gemini')) return '#4285f4';
@@ -2622,6 +2637,7 @@
 
     var UM_COLORS = {
       'grok-4':              '#ff2222',
+      'grok-4-fast':         '#ffffff',
       'claude-sonnet-4-6':   '#ff4444',
       'claude-sonnet-4-5':   '#ff4444',
       'gemini-2.5-pro':      '#4285f4',
@@ -2640,6 +2656,7 @@
       // Normalize full openrouter path (e.g. openrouter/openai/gpt-4o → gpt-4o)
       var short = k.replace(/^openrouter\/[^/]+\//, '').replace(/^openrouter\//, '');
       if (UM_COLORS[short]) return UM_COLORS[short];
+      if (k.includes('grok-4-fast') || k.includes('grok4fast') || k.includes('grok-fast')) return '#ffffff';
       if (k.includes('grok')) return '#ff2222';
       if (k.includes('sonnet') || k.includes('claude')) return '#ff4444';
       if (k.includes('gemini')) return '#4285f4';
