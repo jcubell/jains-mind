@@ -1572,7 +1572,6 @@
           <div class="brain-hero-header">
             <div class="objective-dot idle" id="objDot"></div>
             <span class="brain-hero-label">
-              <img src="jain_logo.png" alt="J.AI.N" style="width:36px;height:36px;object-fit:contain;flex-shrink:0;border-radius:6px;">
               Brain Feed
               <div class="model-roster" id="modelRoster">
                 <span class="model-chip active" data-model="grok-4">grok-4</span>
@@ -1585,7 +1584,8 @@
                 <span class="model-chip" data-model="whisper" style="display:none;">whisper</span>
               </div>
             </span>
-            <span style="font-family:var(--mono);font-size:8px;color:rgba(255,60,60,0.4);margin-left:auto;flex-shrink:0;white-space:nowrap;" id="brainLastUpdated"></span>
+            <img id="brainLogoTop" src="jain_logo.png" alt="J.AI.N" style="width:40px;height:40px;object-fit:contain;flex-shrink:0;border-radius:8px;margin-left:auto;box-shadow:0 0 12px rgba(255,68,68,0.5),0 0 24px rgba(255,68,68,0.2);transition:box-shadow 0.6s ease;">
+            <span style="font-family:var(--mono);font-size:8px;color:rgba(255,60,60,0.4);flex-shrink:0;white-space:nowrap;margin-left:8px;" id="brainLastUpdated"></span>
           </div>
           <!-- Model Usage Breakdown — compact inline strip -->
           <div class="or-model-usage-wrap" id="orModelUsageWrap">
@@ -1643,7 +1643,7 @@
       
       <div class="jobs-section">
         <div class="panel-header">
-          <h2><img src="jain_logo.png" alt="J.AI.N" style="width:28px;height:28px;object-fit:contain;vertical-align:middle;margin-right:8px;border-radius:5px;">Today's Jobs</h2>
+          <h2>Today's Jobs</h2>
           <span class="panel-meta" id="jobCount">6 Jobs</span>
         </div>
         <div class="panel-body" id="jobsContainer"></div>
@@ -1655,7 +1655,7 @@
     
     <div class="panel right-panel">
       <div class="panel-header">
-        <h2><img src="jain_logo.png" alt="J.AI.N" style="width:28px;height:28px;object-fit:contain;vertical-align:middle;margin-right:8px;border-radius:5px;">Live Intelligence</h2>
+        <h2>Live Intelligence</h2>
         <div style="display: flex; align-items: center; gap: 12px;">
           <div class="fear-greed" id="fearGreedBadge"><div class="fg-dot" id="fearGreedDot"></div><span id="fearGreedText">Fear &amp; Greed: —</span></div>
           <span class="panel-meta" id="feedTimestamp">LIVE</span>
@@ -1843,6 +1843,13 @@
     if (hero) {
       hero.className = hero.className.replace(/\bmodel-\w+/g, '').trim() + ' ' + t.cls;
     }
+    // Update logo glow on both watermark and brain feed top-right logo
+    var glowStr = '0 0 16px ' + t.color + '99, 0 0 32px ' + t.color + '44';
+    var glowStrSm = '0 0 10px ' + t.color + '99, 0 0 20px ' + t.color + '44';
+    var wm = document.getElementById('jainWatermark');
+    if (wm) wm.style.boxShadow = glowStr;
+    var bl = document.getElementById('brainLogoTop');
+    if (bl) bl.style.boxShadow = glowStrSm;
     // Show whisper chip only when active, hide otherwise
     var whisperChip = document.querySelector('.model-chip[data-model="whisper"]');
     if (whisperChip) whisperChip.style.display = key === 'whisper' ? '' : 'none';
@@ -2675,5 +2682,12 @@
 
 </div>
 
+  <!-- J.AI.N watermark — bottom right, glows with model color -->
+  <img id="jainWatermark" src="jain_logo.png" alt="J.AI.N" style="
+    position:fixed;bottom:18px;right:20px;width:52px;height:52px;
+    object-fit:contain;border-radius:12px;opacity:0.7;
+    box-shadow:0 0 16px rgba(255,68,68,0.5),0 0 32px rgba(255,68,68,0.2);
+    transition:box-shadow 0.6s ease,opacity 0.3s ease;
+    pointer-events:none;z-index:999;">
 </body>
 </html><!-- cache bust Sun Mar 15 19:15 EDT 2026 -->
