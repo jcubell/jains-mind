@@ -1,5 +1,5 @@
 {
-  "objective": "",
+  "objective": "Sorare NBA daily management -- morning run complete",
   "status": "idle",
   "brain": {
     "mode": "working",
@@ -89,12 +89,13 @@
     "subagents": []
   },
   "steps": [],
-  "updated_at": "2026-03-18T00:55:00Z",
+  "updated_at": "2026-03-18T15:30:00Z",
   "_tunnel_url": "https://charged-unique-architects-fusion.trycloudflare.com",
   "jobs": {
     "sorare_morning": {
-      "status": "scheduled",
-      "scheduledAt": "11:00 AM"
+      "status": "done",
+      "completedAt": "11:30 AM ET",
+      "summary": "WNTR pack +3 cards (146/150). Daily Pickup set (Jokic MVP). QP skipped (White locked). Missions set. Hot Streak L1 done, L2 active (180 target)."
     },
     "sorare_evening": {
       "status": "scheduled",
@@ -109,5 +110,30 @@
       "ts": "2026-03-18T01:49:49.483506Z",
       "category": null
     }
-  ]
+  ],
+  "sorare_daily_report": {
+    "date": "2026-03-18",
+    "run": "morning_3",
+    "tier1_cash": {
+      "hot_streak": "L1 completed (3 rounds), L2 active at 180pt target (WNTR -10 discount). 2 lives remaining on L2.",
+      "quick_play": "SKIPPED -- White Sunset locked in GW41 Contender",
+      "biweekly": "GW42 lineups set yesterday (LC #1: Jokic/White/Zion/Jabari/Murray, LC #2: SGA/Amen/Sensabaugh/Christie/Dunn)"
+    },
+    "tier2_collection": {
+      "wntr_progress": "146/150 (4 needed, 4 days left -- on track)",
+      "wntr_pack": "+3 cards (Beal, Bruce Brown, Dylan Harper)",
+      "essence": "Common: 3,570 | WNTR: 1,426 | Limited: not visible",
+      "wheel": "Not active (0 tickets)"
+    },
+    "tier3_engagement": {
+      "daily_pickup": "LIMITED div -- MVP Jokic, Amen, Zion, Saddiq Bey, Kris Murray (cap 117/120)",
+      "missions": "Daily Picker: Pritchard/Amen/Jabari. Sharpshooter: Pritchard/Christie/White"
+    },
+    "injuries_flagged": "Edwards OUT (knee), Curry OUT (calf), Bam OUT (calf), Cade OUT (back)",
+    "flags": [
+      "QP blocked until GW41 ends Mar 19",
+      "WNTR 146/150 -- 4 more cards needed by Mar 22",
+      "Sensabaugh (UTA tanking team) in LC #2 -- flag for GW43"
+    ]
+  }
 }
