@@ -2042,9 +2042,7 @@
           s = s.replace(/[🟢🔴🟡⚡🤖🏢🌍📊🪙🔮🏗️💰🔶🔷💡📈📉⬆️⬇️➡️⬜🟥🟩①②③④⑤⑥⑦⑧⑨⑩🚨🟠🔵⚫⚪🟤]/gu, '');
           // Clean up double/leading spaces left by emoji removal
           s = s.replace(/  +/g, ' ').replace(/^ /gm, '');
-          // 3e. Strip stale Fear & Greed lines from brief body (live value shown in header badge)
-          s = s.replace(/^Fear\s*&amp;\s*Greed:.*$/gmi, '');
-          s = s.replace(/^Fear\s*&\s*Greed:.*$/gmi, '');
+          // 3e. Fear & Greed — keep in brief body (badge in header may fail; inline is the truth)
           // 4. Convert \n to <br>
           s = s.replace(/\n/g, '<br>');
           return s;
