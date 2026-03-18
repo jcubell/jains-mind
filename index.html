@@ -490,7 +490,7 @@
 
   /* Per-model conic-gradient overrides */
   .brain-hero.model-grok { background: linear-gradient(#0a0a0a,#0a0a0a) padding-box, conic-gradient(from var(--laser-angle),#ff2222 0deg,#ff5555 30deg,#cc0000 80deg,#ff2222 160deg,#990000 220deg,#ff2222 360deg) border-box; }
-  .brain-hero.model-sonnet { background: linear-gradient(#0a0a0a,#0a0a0a) padding-box, conic-gradient(from var(--laser-angle),#ff9500 0deg,#ffb347 30deg,#ff6600 80deg,#ff9500 160deg,#cc7700 220deg,#ff9500 360deg) border-box; }
+  .brain-hero.model-sonnet { background: linear-gradient(#0a0a0a,#0a0a0a) padding-box, conic-gradient(from var(--laser-angle),#ff4444 0deg,#ff6666 30deg,#cc0000 80deg,#ff4444 160deg,#990000 220deg,#ff4444 360deg) border-box; }
   .brain-hero.model-gemini { background: linear-gradient(#0a0a0a,#0a0a0a) padding-box, conic-gradient(from var(--laser-angle),#4285f4 0deg,#74a9f7 30deg,#1a6cf5 80deg,#4285f4 160deg,#2456b8 220deg,#4285f4 360deg) border-box; }
   .brain-hero.model-deepseek { background: linear-gradient(#0a0a0a,#0a0a0a) padding-box, conic-gradient(from var(--laser-angle),#a855f7 0deg,#c084fc 30deg,#9333ea 80deg,#a855f7 160deg,#7c22ce 220deg,#a855f7 360deg) border-box; }
   .brain-hero.model-llama { background: linear-gradient(#0a0a0a,#0a0a0a) padding-box, conic-gradient(from var(--laser-angle),#22c55e 0deg,#4ade80 30deg,#16a34a 80deg,#22c55e 160deg,#15803d 220deg,#22c55e 360deg) border-box; }
@@ -626,6 +626,16 @@
     display: flex; flex-direction: column;
     overflow: hidden;
     min-height: 0;
+    margin: 0 14px 14px;
+    border-radius: 12px;
+    border: 1.5px solid rgba(255,68,68,0.2);
+    box-shadow: 0 0 5px 0px rgba(255,68,68,0.1);
+    animation: jobs-breathe 4s ease-in-out infinite;
+    animation-delay: 1s;
+  }
+  @keyframes jobs-breathe {
+    0%,100% { border-color: rgba(255,68,68,0.2); box-shadow: 0 0 5px 0px rgba(255,68,68,0.1); }
+    50% { border-color: rgba(255,68,68,0.35); box-shadow: 0 0 12px 2px rgba(255,68,68,0.2); }
   }
 
   .panel-header {
@@ -1815,7 +1825,7 @@
   function setModelTheme(model) {
     var themes = {
       'grok': { color: '#ff2222', glow: 'rgba(255,34,34,0.2)', border: 'rgba(255,34,34,0.4)', cls: 'model-grok' },
-      'sonnet': { color: '#ff9500', glow: 'rgba(255,149,0,0.2)', border: 'rgba(255,149,0,0.4)', cls: 'model-sonnet' },
+      'sonnet': { color: '#ff4444', glow: 'rgba(255,68,68,0.2)', border: 'rgba(255,68,68,0.4)', cls: 'model-sonnet' },
       'gemini': { color: '#4285f4', glow: 'rgba(66,133,244,0.2)', border: 'rgba(66,133,244,0.4)', cls: 'model-gemini' },
       'deepseek': { color: '#a855f7', glow: 'rgba(168,85,247,0.2)', border: 'rgba(168,85,247,0.4)', cls: 'model-deepseek' },
       'llama': { color: '#22c55e', glow: 'rgba(34,197,94,0.2)', border: 'rgba(34,197,94,0.4)', cls: 'model-llama' },
@@ -2125,8 +2135,8 @@
 
     var MODEL_COLORS = {
       'grok-4':              '#ff2222',
-      'claude-sonnet-4-6':   '#d4a76a',
-      'claude-sonnet-4-5':   '#d4a76a',
+      'claude-sonnet-4-6':   '#ff4444',
+      'claude-sonnet-4-5':   '#ff4444',
       'gemini-2.5-pro':      '#4285f4',
       'gemini-2.0-flash':    '#34a853',
       'deepseek-v3':         '#ff6b35',
@@ -2147,7 +2157,7 @@
       // Fallback pattern matching
       if (k.includes('gpt') || k.includes('openai')) return '#00A3FF';
       if (k.includes('grok')) return '#ff2222';
-      if (k.includes('sonnet') || k.includes('claude')) return '#d4a76a';
+      if (k.includes('sonnet') || k.includes('claude')) return '#ff4444';
       if (k.includes('gemini')) return '#4285f4';
       if (k.includes('deepseek')) return '#ff6b35';
       if (k.includes('llama')) return '#22c55e';
@@ -2354,8 +2364,8 @@
 
     var UM_COLORS = {
       'grok-4':              '#ff2222',
-      'claude-sonnet-4-6':   '#ff9500',
-      'claude-sonnet-4-5':   '#ff9500',
+      'claude-sonnet-4-6':   '#ff4444',
+      'claude-sonnet-4-5':   '#ff4444',
       'gemini-2.5-pro':      '#4285f4',
       'gemini-2.0-flash':    '#34a853',
       'deepseek-v3':         '#a855f7',
@@ -2373,7 +2383,7 @@
       var short = k.replace(/^openrouter\/[^/]+\//, '').replace(/^openrouter\//, '');
       if (UM_COLORS[short]) return UM_COLORS[short];
       if (k.includes('grok')) return '#ff2222';
-      if (k.includes('sonnet') || k.includes('claude')) return '#ff9500';
+      if (k.includes('sonnet') || k.includes('claude')) return '#ff4444';
       if (k.includes('gemini')) return '#4285f4';
       if (k.includes('deepseek')) return '#a855f7';
       if (k.includes('gpt') || k.includes('openai')) return '#00A3FF';
