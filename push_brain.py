@@ -166,6 +166,37 @@ def clear_subagent():
 if __name__ == "__main__":
     import argparse
 
+    # --reset-baseline: snapshot current OR usage as new session zero-point
+    if '--reset-baseline' in sys.argv:
+        import urllib.request, datetime
+        BASELINE_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'cost_baseline.json')
+        OR_KEY_FILE = os.path.expanduser('~/.secrets/openrouter_api_key.txt')
+        try:
+            or_key = open(OR_KEY_FILE).read().strip()
+            req = urllib.request.Request(
+                'https://openrouter.ai/api/v1/auth/key',
+                headers={'Authorization': f'Bearer {or_key}'}
+            )
+            with urllib.request.urlopen(req, timeout=10) as r:
+                d = json.loads(r.read()).get('data', {})
+            baseline = {
+                'captured_at': datetime.datetime.now(datetime.timezone.utc).isoformat(),
+                'usage_daily':        d.get('usage_daily', 0),
+                'usage_weekly':       d.get('usage_weekly', 0),
+                'usage_monthly':      d.get('usage_monthly', 0),
+                'byok_usage_daily':   d.get('byok_usage_daily', 0),
+                'byok_usage_weekly':  d.get('byok_usage_weekly', 0),
+                'byok_usage_monthly': d.get('byok_usage_monthly', 0),
+                'total_daily':        d.get('usage_daily', 0) + d.get('byok_usage_daily', 0),
+                'total_monthly':      d.get('usage_monthly', 0) + d.get('byok_usage_monthly', 0),
+            }
+            with open(BASELINE_FILE, 'w') as f:
+                json.dump(baseline, f, indent=2)
+            print(f"Baseline reset — daily was ${baseline['total_daily']:.4f}")
+        except Exception as e:
+            print(f"Baseline reset ERROR: {e}")
+        sys.exit(0)
+
     # Support both legacy positional args and new --flag style
     # If first arg starts with "--" or no positional args given, use argparse
     use_flags = len(sys.argv) > 1 and (sys.argv[1].startswith('--') or '--current-model' in sys.argv or '--subagents' in sys.argv)

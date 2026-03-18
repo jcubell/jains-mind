@@ -1,11 +1,11 @@
 {
-  "captured_at": "2026-03-16T06:12:02.789791Z",
-  "usage_daily": 0.15904875,
-  "usage_weekly": 0.15904875,
-  "usage_monthly": 1.2699718,
-  "byok_usage_daily": 69.44421025,
-  "byok_usage_weekly": 69.44421025,
-  "byok_usage_monthly": 122.01720495,
-  "total_daily": 69.603259,
-  "total_monthly": 123.28717675
+  "captured_at": "2026-03-18T02:14:44.017666+00:00",
+  "usage_daily": 0.62172943,
+  "usage_weekly": 2.397147586,
+  "usage_monthly": 3.508070636,
+  "byok_usage_daily": 19.9466009,
+  "byok_usage_weekly": 236.0753342,
+  "byok_usage_monthly": 288.6483289,
+  "total_daily": 20.56833033,
+  "total_monthly": 292.15639953600004
 }
