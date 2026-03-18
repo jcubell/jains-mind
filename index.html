@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Perplexity Computer: Vercel production deploy 2026-03-15 -->
+<!-- J.AI.N Command Center — Josh's AI Network Dashboard -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -15,34 +15,37 @@
 <style>
 /*
 ================================================================================
-  DASHBOARD OWNERSHIP MAP — READ BEFORE EDITING
+  J.AI.N COMMAND CENTER — FULL OWNERSHIP MAP
+  Built and maintained by J.AI.N (Josh's AI Network)
+  GitHub Pages: https://jcubell.github.io/jains-mind
 ================================================================================
 
-  OWNED BY J.AI.N (do not modify without coordinating):
-  ┌─ .brain-hero-wrap / .brain-hero     — Brain Feed hero widget (top-left)
+  LEFT PANEL — TOP (Brain Feed):
+  ┌─ .brain-hero-wrap / .brain-hero     — Brain Feed hero widget
   ├─ #brainFocus, #brainStream          — Live focus + thought stream
   ├─ #modelRoster, #subagentPanel       — Model chips + sub-agent card
   ├─ .model-chip, setModelTheme()       — Per-model color theming
   ├─ push_brain.py / push_github.py     — State push pipeline
-  └─ --m-color, --m-glow, --m-border    — Model-color CSS vars (DO NOT hardcode red)
+  └─ --m-color, --m-glow, --m-border    — Model-color CSS vars
 
-  OWNED BY PERPLEXITY COMPUTER (your zone):
-  ┌─ .jobs-section                      — Today's Jobs panel (bottom-left)
-  ├─ .right-panel / .feed-section       — Live Intelligence Feed (right)
-  ├─ .ticker-bar                        — Market ticker
-  ├─ var(jobs data array in JS)         — Job definitions (name/time/desc/subtasks)
-  └─ Feed HTML content                  — News items, insights, signal/watch/noise
+  LEFT PANEL — BOTTOM (Today's Jobs):
+  ┌─ .jobs-section                      — Daily jobs panel
+  ├─ jobCategories (JS array)           — Job definitions (name/time/desc)
+  └─ renderJobs(), getJobStatus()       — Auto-status logic (ET timezone)
 
-  SHARED (coordinate before changing):
+  RIGHT PANEL (Live Intelligence Feed):
+  ┌─ .right-panel / .feed-section       — News brief feed
+  ├─ .ticker-bar                        — Market ticker (live via push_news.py)
+  ├─ #fearGreedBadge                    — Live Fear & Greed (alternative.me API)
+  └─ push_news.py → state.json          — Feed content pipeline
+
+  SHARED:
   ┌─ .top-bar                           — Title, clock, status dot
   ├─ :root CSS variables                — Global colors/fonts
   └─ .dashboard grid layout             — Two-column grid
 
-  PERPLEXITY: YOUR ACCENT COLOR IS TEAL #20B2AA — not red (red = J.AI.N's Brain Feed)
-  When you add new sections, scope ALL CSS under your section class (.jobs-section, .right-panel)
-  Never modify: #brainFocus, #brainStream, #modelRoster, #subagentPanel, #objDot, setModelTheme()
+  Accent colors: Red #ef4444 = Brain Feed | Teal #20B2AA = Intel Feed
   Branch workflow: edit on main → git push origin main → git push origin main:master --force
-  GitHub Pages serves from master branch. URL: https://jcubell.github.io/jains-mind
 ================================================================================
 */
 
@@ -703,8 +706,8 @@
   @keyframes blink-s { 0%,50%{opacity:0.4} 51%,100%{opacity:0} }
   @keyframes blink-f { 0%,50%{opacity:0.8} 51%,100%{opacity:0} }
 
-  /* TODAY'S JOBS — Perplexity Computer compact row design */
-  /* ===== JOBS ===== */
+  /* TODAY'S JOBS */
+  
 
   .jobs-section .panel-header { padding: 10px 16px 8px; }
   .jobs-section .panel-header h2 {
@@ -1094,12 +1097,9 @@
   }
 
   /* ===================================================================
-     Perplexity Computer: Scoped teal accent overrides for Perplexity-owned sections.
-     Per CONTRIBUTING.md — restores Perplexity teal for jobs + right panel
+     
      without affecting J.AI.N's red Brain Feed accents.
      =================================================================== */
-
-  /* Perplexity Computer: Teal accent for the right panel (Live Intelligence Feed) */
   .right-panel {
     --accent: var(--m-color);
     --accent-soft: var(--m-glow);
@@ -1126,15 +1126,11 @@
     border-radius: 12px;
     pointer-events: none; z-index: 0;
   }
-
-  /* Perplexity Computer: Teal scanline for .right-panel */
   .right-panel::after { display: none; }
 
   /* ===================================================================
-     Perplexity Computer: Shared animations for both sections
+     Shared animations
      =================================================================== */
-
-  /* Perplexity Computer: Smooth fade-in for cards and feed items */
   @keyframes pplx-breathe {
     0%,100% { border-color: rgba(32,178,170,0.2); box-shadow: 0 0 5px 0px rgba(32,178,170,0.1); }
     50% { border-color: rgba(32,178,170,0.35); box-shadow: 0 0 12px 2px rgba(32,178,170,0.2); }
@@ -1144,24 +1140,18 @@
     from { opacity: 0; transform: translateY(6px); }
     to { opacity: 1; transform: translateY(0); }
   }
-
-  /* Perplexity Computer: Subtle shimmer for active elements */
   @keyframes pplx-shimmer {
     0% { background-position: -200% center; }
     100% { background-position: 200% center; }
   }
-
-  /* Perplexity Computer: Glow pulse for active badges */
   @keyframes pplx-glow-pulse {
     0%, 100% { box-shadow: 0 0 4px rgba(32, 178, 170, 0.2); }
     50% { box-shadow: 0 0 10px rgba(32, 178, 170, 0.35); }
   }
 
   /* ===================================================================
-     Perplexity Computer: LIVE INTELLIGENCE FEED — Enhanced styling
+     LIVE INTELLIGENCE FEED — Enhanced styling
      =================================================================== */
-
-  /* Perplexity Computer: Feed panel header with teal accent line */
   .right-panel .panel-header {
     padding: 18px 24px 14px;
     border-bottom: 1px solid var(--glass-border);
@@ -1180,16 +1170,12 @@
     background: linear-gradient(90deg, var(--accent), transparent);
     border-radius: 1px;
   }
-
-  /* Perplexity Computer: Feed header glow on hover */
   .right-panel .panel-header h2 {
     transition: color 0.3s ease;
   }
   .right-panel:hover .panel-header h2 {
     color: var(--accent-muted);
   }
-
-  /* Perplexity Computer: Ticker bar glassmorphism */
   .right-panel .ticker-bar {
     padding: 10px 0;
     background: rgba(32, 178, 170, 0.02);
@@ -1238,8 +1224,6 @@
   .right-panel .ticker-sep {
     color: rgba(32, 178, 170, 0.35);
   }
-
-  /* Perplexity Computer: Feed date with teal accent */
   .right-panel .feed-date {
     color: #20B2AA;
     font-size: 10px;
@@ -1248,8 +1232,6 @@
     border-bottom: 1px solid var(--glass-border);
     margin-bottom: 10px;
   }
-
-  /* Perplexity Computer: Feed section headers — teal, clean separators */
   .right-panel .feed-section-header {
     color: #20B2AA;
     font-size: 10px;
@@ -1281,8 +1263,6 @@
   .right-panel .feed-section:hover .feed-section-header {
     color: #20B2AA;
   }
-
-  /* Perplexity Computer: Feed section spacing refinement */
   .right-panel .feed-section {
     margin-bottom: 16px;
     animation: pplx-fade-in 0.5s ease both;
@@ -1291,8 +1271,6 @@
   .right-panel .feed-section:nth-child(3) { animation-delay: 0.2s; }
   .right-panel .feed-section:nth-child(4) { animation-delay: 0.3s; }
   .right-panel .feed-section:nth-child(5) { animation-delay: 0.4s; }
-
-  /* Perplexity Computer: Signal-fire items — white text, teal left border */
   .right-panel .feed-item.signal-fire {
     color: #ffffff;
     padding: 10px 0 10px 16px;
@@ -1308,15 +1286,11 @@
     background: linear-gradient(90deg, rgba(32, 178, 170, 0.09), transparent 60%);
     box-shadow: -2px 0 8px rgba(32, 178, 170, 0.1);
   }
-
-  /* Perplexity Computer: Signal tags — teal for fire, muted gray for watch */
   .right-panel .signal-tag.fire {
     color: #20B2AA;
     font-weight: 700;
     font-size: 10px;
   }
-
-  /* Perplexity Computer: Signal-watch items — #cccccc text */
   .right-panel .feed-item.signal-watch {
     color: #cccccc;
     padding: 8px 0 8px 16px;
@@ -1338,13 +1312,9 @@
     color: #666666;
     font-size: 9px;
   }
-
-  /* Perplexity Computer: Signal-noise items — hidden entirely */
   .right-panel .feed-item.signal-noise {
     display: none;
   }
-
-  /* Perplexity Computer: Ticker refs — teal color */
   .right-panel .feed-item .ticker-ref {
     color: var(--accent);
     font-weight: 600;
@@ -1353,8 +1323,6 @@
   .right-panel .feed-item .ticker-ref:hover {
     text-shadow: 0 0 8px rgba(32, 178, 170, 0.3);
   }
-
-  /* Perplexity Computer: Entity refs — refined highlight */
   .right-panel .feed-item .entity-ref {
     color: #e0e0e0;
     font-weight: 600;
@@ -1363,8 +1331,6 @@
   .right-panel .feed-item:hover .entity-ref {
     color: #f0f0f0;
   }
-
-  /* Perplexity Computer: Insight boxes — teal border, premium analysis feel */
   .right-panel .my-take {
     margin: 10px 0 6px;
     padding: 12px 16px;
@@ -1386,8 +1352,6 @@
     border-left-color: #20B2AA;
     box-shadow: 0 2px 12px rgba(32, 178, 170, 0.07);
   }
-
-  /* Perplexity Computer: Insight label — teal */
   .right-panel .my-take-label {
     color: #20B2AA;
     opacity: 1;
@@ -1395,8 +1359,6 @@
     letter-spacing: 0.14em;
     margin-bottom: 5px;
   }
-
-  /* Perplexity Computer: Fear & Greed badge with glassmorphism */
   .right-panel .fear-greed {
     background: rgba(239, 83, 80, 0.08);
     color: #ff7070;
@@ -1412,8 +1374,6 @@
     background: rgba(239, 83, 80, 0.1);
     border-color: rgba(239, 83, 80, 0.2);
   }
-
-  /* Perplexity Computer: LIVE badge — teal pulsing accent */
   .right-panel .panel-meta {
     color: #3dd6ce;
     font-weight: 600;
@@ -1431,8 +1391,6 @@
     animation: pulse-idle 2s ease-in-out infinite;
     vertical-align: middle;
   }
-
-  /* Perplexity Computer: Scrollbar for feed panel */
   .right-panel .panel-body::-webkit-scrollbar-thumb {
     background: rgba(32, 178, 170, 0.12);
     border-radius: 2px;
@@ -1547,8 +1505,6 @@
     0%,100% { opacity: 1; transform: scale(1); }
     50%      { opacity: 0.4; transform: scale(0.8); }
   }
-
-  /* Perplexity Computer: Footer attribution — teal hover */
   .footer-attr a:hover {
     color: var(--accent);
     text-shadow: 0 0 12px rgba(32, 178, 170, 0.2);
@@ -1654,7 +1610,7 @@
       </div>
 
       <!-- Jobs Section -->
-      <!-- Perplexity Computer: Enhanced with glassmorphism cards, teal accents, hover states, staggered animations -->
+      
       <div class="jobs-section">
         <div class="panel-header">
           <h2>Today's Jobs</h2>
@@ -1666,7 +1622,7 @@
     </div>
 
     <!-- RIGHT: FEED -->
-    <!-- Perplexity Computer: Enhanced with teal accents, glassmorphism insights, refined signal hierarchy, smooth transitions -->
+    
     <div class="panel right-panel">
       <div class="panel-header">
         <h2>Live Intelligence Feed</h2>
@@ -1758,9 +1714,9 @@
 <div class="refresh-toast" id="refreshToast">Synced</div>
 <div id="reloadOverlay"></div>
 
-<!-- Perplexity Computer: Footer attribution with teal hover accent -->
+
 <div class="footer-attr">
-  <a href="https://www.perplexity.ai/computer" target="_blank" rel="noopener noreferrer">Created with Perplexity Computer</a>
+  <a href="https://github.com/jcubell/jains-mind" target="_blank" rel="noopener noreferrer">J.AI.N Command Center</a>
 </div>
 
 
@@ -2508,15 +2464,23 @@
 
   var jobCategories = [
     {
-      label: 'J.AI.N',
+      label: '📡 Intelligence Feed',
       jobs: [
-        { name: 'Morning Brief', time: '6:30 AM', scheduleHour: 6, scheduleMinute: 30, desc: 'Intelligence feed update — full brief: crypto, markets, macro, AI, geopolitical' },
-        { name: 'Markets Open', time: '9:15 AM', scheduleHour: 9, scheduleMinute: 15, desc: 'Intelligence feed update — pre-market signal: top movers + breaking news' },
-        { name: 'AI Signal', time: '11:00 AM', scheduleHour: 11, scheduleMinute: 0, desc: 'Intelligence feed update — mid-morning: AI + market pulse' },
-        { name: 'Afternoon Pulse', time: '2:00 PM', scheduleHour: 14, scheduleMinute: 0, desc: 'Intelligence feed update — afternoon: headlines + crypto + macro' },
-        { name: 'Markets Close', time: '5:30 PM', scheduleHour: 17, scheduleMinute: 30, desc: 'Intelligence feed update — end-of-day: movers + closing wrap' },
-        { name: 'Evening Update', time: '8:00 PM', scheduleHour: 20, scheduleMinute: 0, desc: 'Intelligence feed update — evening digest: everything that mattered' },
-        { name: 'Daily Recap', time: '10:00 PM', scheduleHour: 22, scheduleMinute: 0, desc: 'Intelligence feed update — nightly recap: full day summary' }
+        { name: 'Morning Brief', time: '6:30 AM', scheduleHour: 6, scheduleMinute: 30, desc: 'Full brief — crypto, markets, macro, AI, geopolitical signals' },
+        { name: 'Markets Open', time: '9:15 AM', scheduleHour: 9, scheduleMinute: 15, desc: 'Pre-market signal — top movers, breaking news, early momentum' },
+        { name: 'AI Signal', time: '11:00 AM', scheduleHour: 11, scheduleMinute: 0, desc: 'Mid-morning — AI news, market pulse, mid-session movers' },
+        { name: 'Afternoon Pulse', time: '2:00 PM', scheduleHour: 14, scheduleMinute: 0, desc: 'Afternoon check — headlines, crypto, macro data drops' },
+        { name: 'Markets Close', time: '5:30 PM', scheduleHour: 17, scheduleMinute: 30, desc: 'End-of-day — closing movers, sector wrap, insider activity' },
+        { name: 'Evening Update', time: '8:00 PM', scheduleHour: 20, scheduleMinute: 0, desc: 'Evening digest — newsletters, Reddit pulse, HN trending, AI drops' },
+        { name: 'Daily Recap', time: '10:00 PM', scheduleHour: 22, scheduleMinute: 0, desc: 'Nightly recap — full day summary, portfolio, WHOOP recovery' }
+      ]
+    },
+    {
+      label: '⚙️ System',
+      jobs: [
+        { name: 'Cost Baseline', time: '12:00 AM', scheduleHour: 0, scheduleMinute: 0, desc: 'Reset session cost baseline — snapshots OpenRouter spend for dashboard delta tracking' },
+        { name: 'Breaking News', time: 'Continuous', scheduleHour: -1, scheduleMinute: 0, recurring: true, desc: 'RSS poller — monitors 10 feeds, scores signals, fires Telegram alerts on 7+ hits' },
+        { name: 'Heartbeat', time: 'Every 30 min', scheduleHour: -1, scheduleMinute: 0, recurring: true, desc: 'Watchdog pulse — checks cost routing, flags anomalies, keeps agent context warm' }
       ]
     }
   ];
@@ -2532,21 +2496,11 @@
     return 'scheduled';
   }
 
-  // Subtask overrides from state.json (pushed by cron runs)
+  // Job status overrides from state.json (reserved for future cron push data)
   var jobSubtaskOverrides = {};
-  // Parse state.json jobs key if available
   function applyJobOverrides(stateData) {
-    if (!stateData || !stateData.jobs) return;
-    var j = stateData.jobs;
-    if (j.sorare_morning && j.sorare_morning.subtasks) {
-      jobSubtaskOverrides['morning'] = j.sorare_morning.subtasks;
-    }
-    if (j.sorare_evening && j.sorare_evening.subtasks) {
-      jobSubtaskOverrides['evening'] = j.sorare_evening.subtasks;
-    }
+    // Reserved — future: cron runs can push job result data into state.json under "jobs" key
   }
-  // applyJobOverrides is called from applyState() on each poll
-  // Also seed from lastKnownState on first render
   if (typeof lastKnownState !== 'undefined' && lastKnownState) applyJobOverrides(lastKnownState);
 
   function getSubtaskStatus(jobKey, stKey, parentStatus) {
