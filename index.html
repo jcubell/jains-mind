@@ -1671,7 +1671,7 @@
       <div class="panel-header">
         <h2>Live Intelligence Feed</h2>
         <div style="display: flex; align-items: center; gap: 12px;">
-          <div class="fear-greed"><div class="fg-dot"></div>Fear &amp; Greed: 20</div>
+          <div class="fear-greed" id="fearGreedBadge"><div class="fg-dot" id="fearGreedDot"></div><span id="fearGreedText">Fear &amp; Greed: —</span></div>
           <span class="panel-meta" id="feedTimestamp">LIVE</span>
         </div>
       </div>
@@ -2635,6 +2635,30 @@
       setTimeout(function() { location.reload(); }, 250);
     }, 550);
   }
+
+  // Fear & Greed — live fetch from Alternative.me
+  function fetchFearGreed() {
+    var badge = document.getElementById('fearGreedBadge');
+    if (!badge) return;
+    fetch('https://api.alternative.me/fng/?limit=1', { cache: 'no-store' })
+      .then(function(r) { return r.json(); })
+      .then(function(d) {
+        var item = d && d.data && d.data[0];
+        if (!item) return;
+        var score = parseInt(item.value, 10);
+        var label = item.value_classification || '';
+        // Color dot by zone
+        var dot = document.getElementById('fearGreedDot');
+        if (dot) {
+          dot.style.background = score <= 25 ? '#ef4444' : score <= 45 ? '#f97316' : score <= 55 ? '#eab308' : score <= 75 ? '#22c55e' : '#16a34a';
+        }
+        var txt = document.getElementById('fearGreedText');
+        if (txt) txt.textContent = 'Fear & Greed: ' + score + ' \u2014 ' + label;
+      })
+      .catch(function() {});
+  }
+  fetchFearGreed();
+  setInterval(fetchFearGreed, 10 * 60 * 1000); // refresh every 10 min
 
   // PWA refresh poller — check every 2s
   var lastRefreshAt = 0;
