@@ -1528,44 +1528,48 @@
   }
   .brief-bullet:hover { background: rgba(255,255,255,0.03); }
 
-  /* Signal numbered bullets */
+  /* Signal bullets — no number circles, pure color-coded left stripe */
   .signal-bullet {
-    border-left-color: rgba(255,255,255,0.1);
+    border-left-width: 3px;
+    border-left-color: rgba(255,255,255,0.08);
+    padding-left: 8px;
   }
-  /* Signal rank tiers — visual hierarchy for top/mid/low items */
+  /* Signal rank tiers — visual hierarchy via stripe color + bg wash */
   .signal-rank-top {
-    border-left-color: rgba(245,158,11,0.5);
-    background: rgba(245,158,11,0.04);
+    border-left-color: #f59e0b;
+    background: rgba(245,158,11,0.05);
   }
   .signal-rank-top .bullet-body {
     color: #fff0cc;
     font-weight: 500;
   }
   .signal-rank-mid {
-    border-left-color: rgba(32,178,170,0.25);
+    border-left-color: rgba(32,178,170,0.45);
     background: transparent;
   }
   .signal-rank-mid .bullet-body {
     color: #c8d8d8;
   }
   .signal-rank-low {
-    border-left-color: rgba(255,255,255,0.06);
+    border-left-color: rgba(255,255,255,0.07);
     background: transparent;
-    opacity: 0.65;
+    opacity: 0.55;
   }
   .signal-rank-low .bullet-body {
     color: #888;
     font-size: 10.5px;
   }
-  .bullet-num {
+  /* Rank dot (replaces number) — small colored indicator */
+  .bullet-rank-dot {
     flex-shrink: 0;
-    font-size: 10px; font-weight: 700;
-    color: #555;
-    min-width: 16px;
-    text-align: right;
-    padding-top: 1px;
-    font-family: var(--mono);
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    margin-top: 5px;
   }
+  .signal-rank-top .bullet-rank-dot  { background: #f59e0b; box-shadow: 0 0 5px #f59e0b99; }
+  .signal-rank-mid .bullet-rank-dot  { background: #20B2AA; box-shadow: 0 0 4px #20B2AA66; }
+  .signal-rank-low .bullet-rank-dot  { background: #444; box-shadow: none; }
+  .bullet-hot      .bullet-rank-dot  { background: #ef4444; box-shadow: 0 0 6px #ef444499; }
 
   /* Hot bullet (🔥) */
   .bullet-hot {
@@ -2257,11 +2261,14 @@
               var rankClass = ' signal-rank-' + rankTier;
               var hotClass = isHot ? ' bullet-hot' : rankClass;
               var tagHtml = tag ? '<span class="bullet-tag" style="color:' + tagColor + ';border-color:' + tagColor + '44">' + tag + '</span>' : '';
-              // Number badge — color by rank, fire icon for hot
-              var numStyle = isHot ? 'color:#ef4444' : (rankTier === 'top' ? 'color:#f59e0b' : rankTier === 'mid' ? 'color:#20B2AA' : 'color:#444');
+              // Color-coded dot instead of number — hot gets fire emoji inline
+              var dotHtml = isHot
+                ? '<span class="bullet-rank-dot" style="background:#ef4444;box-shadow:0 0 6px #ef444499"></span>'
+                : '<span class="bullet-rank-dot"></span>';
+              var hotPrefix = isHot ? '<span style="font-size:11px;margin-right:3px">🔥</span>' : '';
               out.push('<div class="brief-bullet signal-bullet' + hotClass + '">'
-                + '<span class="bullet-num" style="' + numStyle + '">' + (isHot ? '🔥' : num) + '</span>'
-                + '<span class="bullet-body">' + tagHtml + bodyContent + '</span>'
+                + dotHtml
+                + '<span class="bullet-body">' + hotPrefix + tagHtml + bodyContent + '</span>'
                 + '</div>');
               continue;
             }
@@ -2296,9 +2303,9 @@
 
             // Any remaining line with 🔥 = hot signal
             if (trimmed.startsWith('🔥') || trimmed.startsWith('\uD83D\uDD25')) {
-              out.push('<div class="brief-bullet bullet-hot">'
-                + '<span class="bullet-num" style="color:#ef4444">🔥</span>'
-                + '<span class="bullet-body">' + trimmed.slice(trimmed.indexOf('🔥') + 2).trim() + '</span>'
+              out.push('<div class="brief-bullet bullet-hot signal-bullet signal-rank-top">'
+                + '<span class="bullet-rank-dot" style="background:#ef4444;box-shadow:0 0 6px #ef444499"></span>'
+                + '<span class="bullet-body"><span style="font-size:11px;margin-right:3px">🔥</span>' + trimmed.slice(trimmed.indexOf('🔥') + 2).trim() + '</span>'
                 + '</div>');
               continue;
             }
