@@ -1485,15 +1485,67 @@
     white-space: pre-wrap;
     word-break: break-word;
   }
-  /* Strip HTML tags from Telegram HTML — show clean text */
+  /* Telegram HTML rendered — bold/italic/code pass-through */
   .news-feed-item-body b,
   .news-feed-item-body strong { color: #ffffff; font-weight: 600; }
+  .news-feed-item-body em { color: #c4c4d4; font-style: italic; }
+  .news-feed-item-body a { color: #20B2AA; text-decoration: none; }
+  .news-feed-item-body a:hover { text-decoration: underline; }
   .news-feed-empty {
     font-family: var(--mono);
     font-size: 11px;
     color: var(--text-muted);
     padding: 24px 0;
     text-align: center;
+  }
+  /* Inline code in news feed */
+  .news-feed-item-body .inline-code {
+    background: rgba(32,178,170,0.15);
+    color: #20B2AA;
+    padding: 1px 5px;
+    border-radius: 3px;
+    font-family: var(--mono);
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+  }
+  /* Brief section divider */
+  .brief-divider {
+    border: none;
+    border-top: 1px solid rgba(255,255,255,0.08);
+    margin: 10px 0;
+  }
+  /* Category badge */
+  .feed-cat-badge {
+    display: inline-block;
+    font-family: var(--mono);
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    padding: 1px 6px;
+    border-radius: 3px;
+    margin-left: 6px;
+    vertical-align: middle;
+  }
+  .feed-cat-AI       { background: rgba(59,130,246,0.2);   color: #60a5fa; }
+  .feed-cat-CRYPTO   { background: rgba(249,115,22,0.2);   color: #fb923c; }
+  .feed-cat-MACRO    { background: rgba(32,178,170,0.2);   color: #20B2AA; }
+  .feed-cat-GEO      { background: rgba(168,85,247,0.2);   color: #c084fc; }
+  .feed-cat-NASDAQ   { background: rgba(34,197,94,0.2);    color: #4ade80; }
+  .feed-cat-ENTERPRISE { background: rgba(251,113,133,0.2); color: #fb7185; }
+  /* Live pulse dot */
+  .live-dot {
+    display: inline-block;
+    width: 6px; height: 6px;
+    background: #20B2AA;
+    border-radius: 50%;
+    margin-right: 5px;
+    animation: livePulse 1.5s ease-in-out infinite;
+    vertical-align: middle;
+  }
+  @keyframes livePulse {
+    0%,100% { opacity: 1; transform: scale(1); }
+    50%      { opacity: 0.4; transform: scale(0.8); }
   }
 
   /* Perplexity Computer: Footer attribution — teal hover */
@@ -1968,22 +2020,45 @@
 
     if (data.steps && data.steps.length > 0) renderSteps(data.steps, true);
 
-    // Live news feed
+    // Live news feed — Telegram HTML renderer
     if (data.news_feed && data.news_feed.length > 0) {
       var feedContainer = document.getElementById('newsFeedContainer');
       if (feedContainer) {
+        // Convert Telegram HTML to safe displayable HTML
+        function renderTelegramHtml(raw) {
+          var s = raw || '';
+          // 1. Decode HTML entities
+          s = s.replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"');
+          // 2. Convert Telegram tags to display HTML
+          s = s.replace(/<b>([\s\S]*?)<\/b>/gi, '<strong>$1</strong>');
+          s = s.replace(/<i>([\s\S]*?)<\/i>/gi, '<em>$1</em>');
+          s = s.replace(/<code>([\s\S]*?)<\/code>/gi, '<code class="inline-code">$1</code>');
+          s = s.replace(/<a\s+href="([^"]*)"[^>]*>([\s\S]*?)<\/a>/gi,
+            '<a href="$1" target="_blank" rel="noopener">$2</a>');
+          // 3. Convert ━━━ divider lines to <hr>
+          s = s.replace(/^[━\u2501]+$/gm, '<hr class="brief-divider">');
+          // 4. Convert \n to <br>
+          s = s.replace(/\n/g, '<br>');
+          return s;
+        }
+        var catColors = { AI:'AI', CRYPTO:'CRYPTO', MACRO:'MACRO', GEO:'GEO', NASDAQ:'NASDAQ', ENTERPRISE:'ENTERPRISE' };
         var feedHtml = '';
         for (var ni = 0; ni < data.news_feed.length; ni++) {
           var item = data.news_feed[ni];
           var ageStr = relTimeFromISO(item.ts);
-          // Strip Telegram HTML bold/italic tags, render clean
-          var bodyText = (item.text || '').replace(/<b>/gi,'').replace(/<\/b>/gi,'').replace(/<i>/gi,'').replace(/<\/i>/gi,'').replace(/&amp;/gi,'&').replace(/&lt;/gi,'<').replace(/&gt;/gi,'>');
+          var isFirst = (ni === 0);
+          var catKey = item.category ? item.category.toUpperCase() : null;
+          var catBadge = (catKey && catColors[catKey])
+            ? '<span class="feed-cat-badge feed-cat-' + catKey + '">' + catKey + '</span>'
+            : '';
+          var liveDot = isFirst ? '<span class="live-dot"></span>' : '';
+          var bodyHtml = renderTelegramHtml(item.text);
           feedHtml += '<div class="news-feed-item">'
             + '<div class="news-feed-item-header">'
-            + '<span class="news-feed-slot-label">' + escHtml(item.label || item.slot || '') + '</span>'
-            + '<span class="news-feed-slot-time">' + escHtml(ageStr) + '</span>'
+            + '<span class="news-feed-slot-label">' + escHtml(item.label || item.slot || '') + catBadge + '</span>'
+            + '<span class="news-feed-slot-time">' + liveDot + escHtml(ageStr) + '</span>'
             + '</div>'
-            + '<div class="news-feed-item-body">' + bodyText + '</div>'
+            + '<div class="news-feed-item-body">' + bodyHtml + '</div>'
             + '</div>';
         }
         feedContainer.innerHTML = feedHtml;
