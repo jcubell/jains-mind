@@ -2660,15 +2660,16 @@
           var live = liveMap[p.model] || {};
           return { model: p.model, label: p.label, cost: live.cost || 0, pct: live.pct || 0 };
         });
-        // maxCost for bar scale (only models with actual spend)
-        var maxCost = merged.reduce(function(mx, m) { return m.cost > mx ? m.cost : mx; }, 0);
+        // Use pct (call-count %) for both the bar width and the label — keeps them consistent
+        var maxPct = merged.reduce(function(mx, m) { return m.pct > mx ? m.pct : mx; }, 0);
         var html = '';
         for (var i = 0; i < merged.length; i++) {
           var m = merged[i];
-          var hasData = m.cost > 0;
-          var barPct = (maxCost > 0 && hasData) ? Math.round((m.cost / maxCost) * 100) : 0;
+          var hasData = m.pct > 0;
+          // Bar width = pct relative to the top model (so top model = 100% bar, others proportional)
+          var barPct = (maxPct > 0 && hasData) ? Math.round((m.pct / maxPct) * 100) : 0;
           var barColor = umColor(m.model);
-          var costLabel = hasData ? fmtCost(m.cost) : '—';
+          var costLabel = m.cost > 0 ? fmtCost(m.cost) : '—';
           var pctLabel  = hasData ? m.pct + '%' : '0%';
           html += '<div class="usage-model-row' + (hasData ? '' : ' usage-model-zero') + '">'
             + '<span class="usage-model-name">' + escHtml(m.label) + '</span>'
