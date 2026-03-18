@@ -1824,6 +1824,10 @@
       <div class="panel-header">
         <h2>Live Intelligence</h2>
         <div style="display: flex; align-items: center; gap: 12px;">
+          <div class="fear-greed" id="fearGreedBadge" title="Fear &amp; Greed Index — live from alternative.me">
+            <span class="fg-dot" id="fearGreedDot"></span>
+            <span id="fearGreedText">F&amp;G: —</span>
+          </div>
           <span class="panel-meta" id="feedTimestamp">LIVE</span>
         </div>
       </div>
@@ -2186,6 +2190,8 @@
           // 2. Convert Telegram inline tags to HTML
           s = s.replace(/<b>([\s\S]*?)<\/b>/gi, '<strong>$1</strong>');
           s = s.replace(/<i>([\s\S]*?)<\/i>/gi, '<em>$1</em>');
+          s = s.replace(/<u>([\s\S]*?)<\/u>/gi, '<span style="text-decoration:underline;opacity:0.9">$1</span>');
+          s = s.replace(/<s>([\s\S]*?)<\/s>/gi, '<span style="text-decoration:line-through;opacity:0.6">$1</span>');
           s = s.replace(/<code>([\s\S]*?)<\/code>/gi, '<code class="inline-code">$1</code>');
           s = s.replace(/<a\s+href="([^"]*)"[^>]*>([\s\S]*?)<\/a>/gi,
             '<a href="$1" target="_blank" rel="noopener">$2</a>');
@@ -2251,7 +2257,40 @@
               continue;
             }
 
-            // Numbered bullet (SIGNAL section) — "1." "2." etc or "🔥 1."
+            // Numbered bullet (SIGNAL section) — "1." "2." etc or "🔥 1." or ① ② ③…⑩ circled nums
+            // Normalize circled unicode number bullets (① = U+2460, offset 0x2460-1 = num)
+            var circledMatch = trimmed.match(/^([①②③④⑤⑥⑦⑧⑨⑩])\s*(🔥\s*)?(🔴|🟡|🟢)?\s*(.+)$/su);
+            if (circledMatch) {
+              var circledNums = '①②③④⑤⑥⑦⑧⑨⑩';
+              var circledIdx = circledNums.indexOf(circledMatch[1]) + 1;
+              var isHotC = !!circledMatch[2];
+              var sentEmoji = circledMatch[3] || '';
+              var contentC = (sentEmoji ? sentEmoji + ' ' : '') + circledMatch[4];
+              var tagMatchC = contentC.match(/^\s*(?:🔴|🟡|🟢)?\s*(BREAKING|DEVELOPING)?\s*\[([A-Z]+)\]\s*[—-]?\s*/);
+              var tagC = tagMatchC ? tagMatchC[2] : null;
+              var urgencyC = tagMatchC ? tagMatchC[1] : null;
+              var tagColorC = '#888';
+              if (tagC === 'AI') tagColorC = '#60a5fa';
+              else if (tagC === 'CRYPTO') tagColorC = '#fb923c';
+              else if (tagC === 'MACRO') tagColorC = '#20B2AA';
+              else if (tagC === 'GEO') tagColorC = '#c084fc';
+              else if (tagC === 'NASDAQ') tagColorC = '#4ade80';
+              else if (tagC === 'ENTERPRISE') tagColorC = '#fb7185';
+              else if (tagC === 'INFRA') tagColorC = '#00BCD4';
+              var bodyContentC = tagMatchC ? contentC.slice(tagMatchC[0].length) : contentC;
+              // Strip leading sentiment emoji from body if already captured
+              bodyContentC = bodyContentC.replace(/^[🔴🟡🟢]\s*/, '');
+              var rankTierC = circledIdx <= 3 ? 'top' : circledIdx <= 6 ? 'mid' : 'low';
+              var hotClassC = isHotC ? ' bullet-hot' : ' signal-rank-' + rankTierC;
+              var tagHtmlC = tagC ? '<span class="bullet-tag" style="color:' + tagColorC + ';border-color:' + tagColorC + '44">' + tagC + '</span>' : '';
+              var urgHtmlC = urgencyC ? '<span class="bullet-tag" style="color:#f97316;border-color:#f9731644;margin-right:2px">' + urgencyC + '</span>' : '';
+              var numLabelC = isHotC ? '🔥 ' + circledIdx + '.' : circledIdx + '.';
+              out.push('<div class="brief-bullet signal-bullet' + hotClassC + '">'
+                + '<span class="bullet-num">' + numLabelC + '</span>'
+                + '<span class="bullet-body">' + urgHtmlC + tagHtmlC + bodyContentC + '</span>'
+                + '</div>');
+              continue;
+            }
             var numMatch = trimmed.match(/^(🔥\s*)?(\d{1,2})\.\s+(.+)$/s);
             if (numMatch) {
               var isHot = !!numMatch[1];
@@ -2923,8 +2962,6 @@
 
   // Fear & Greed — live fetch from Alternative.me
   function fetchFearGreed() {
-    var badge = document.getElementById('fearGreedBadge');
-    if (!badge) return;
     fetch('https://api.alternative.me/fng/?limit=1', { cache: 'no-store' })
       .then(function(r) { return r.json(); })
       .then(function(d) {
@@ -2932,18 +2969,27 @@
         if (!item) return;
         var score = parseInt(item.value, 10);
         var label = item.value_classification || '';
-        // Color dot by zone
-        var dot = document.getElementById('fearGreedDot');
-        if (dot) {
-          dot.style.background = score <= 25 ? '#ef4444' : score <= 45 ? '#f97316' : score <= 55 ? '#eab308' : score <= 75 ? '#22c55e' : '#16a34a';
+        // Color coding: Extreme Fear ≤25 deep red, Fear ≤45 orange-red, Neutral ≤55 yellow, Greed ≤75 green, Extreme Greed dark green
+        var color = score <= 25 ? '#ef4444' : score <= 45 ? '#f97316' : score <= 55 ? '#eab308' : score <= 75 ? '#22c55e' : '#16a34a';
+        var bg    = score <= 25 ? 'rgba(239,68,68,0.12)'  : score <= 45 ? 'rgba(249,115,22,0.12)' : score <= 55 ? 'rgba(234,179,8,0.12)' : 'rgba(34,197,94,0.12)';
+        var badge = document.getElementById('fearGreedBadge');
+        if (badge) {
+          badge.style.color = color;
+          badge.style.background = bg;
+          badge.style.borderColor = color.replace(')', ',0.3)').replace('rgb', 'rgba');
         }
+        var dot = document.getElementById('fearGreedDot');
+        if (dot) dot.style.background = color;
         var txt = document.getElementById('fearGreedText');
-        if (txt) txt.textContent = 'Fear & Greed: ' + score + ' \u2014 ' + label;
+        if (txt) txt.textContent = 'F&G: ' + score + ' — ' + label;
       })
-      .catch(function() {});
+      .catch(function() {
+        var txt = document.getElementById('fearGreedText');
+        if (txt) txt.textContent = 'F&G: —';
+      });
   }
   fetchFearGreed();
-  setInterval(fetchFearGreed, 10 * 60 * 1000); // refresh every 10 min
+  setInterval(fetchFearGreed, 5 * 60 * 1000); // refresh every 5 min
 
   // PWA refresh poller — check every 2s
   var lastRefreshAt = 0;
