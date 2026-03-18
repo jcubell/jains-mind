@@ -1563,21 +1563,23 @@
   /* Numbered badge (replaces circle dot) — clean inline rank label */
   .bullet-num {
     flex-shrink: 0;
-    display: inline-block;
-    min-width: 22px;
-    padding: 0 4px;
-    height: 18px;
-    line-height: 18px;
-    font-size: 10px;
-    font-weight: 700;
-    font-family: ui-monospace, 'SF Mono', monospace;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 26px;
+    padding: 1px 6px;
+    line-height: 1.4;
+    font-size: 14px;
+    font-weight: 600;
+    font-family: 'JetBrains Mono', ui-monospace, 'SF Mono', monospace;
     text-align: center;
-    border-radius: 3px;
-    background: rgba(255,255,255,0.07);
-    color: #aaa;
-    margin-right: 7px;
+    border-radius: 4px;
+    background: rgba(255,255,255,0.08);
+    color: #ccc;
+    margin-right: 8px;
     vertical-align: middle;
-    letter-spacing: 0.02em;
+    letter-spacing: 0;
+    white-space: nowrap;
   }
   .signal-rank-top .bullet-num { background: rgba(245,158,11,0.18); color: #f59e0b; }
   .signal-rank-mid .bullet-num { background: rgba(32,178,170,0.14); color: #20B2AA; }
@@ -2284,9 +2286,10 @@
               var hotClassC = isHotC ? ' bullet-hot' : ' signal-rank-' + rankTierC;
               var tagHtmlC = tagC ? '<span class="bullet-tag" style="color:' + tagColorC + ';border-color:' + tagColorC + '44">' + tagC + '</span>' : '';
               var urgHtmlC = urgencyC ? '<span class="bullet-tag" style="color:#f97316;border-color:#f9731644;margin-right:2px">' + urgencyC + '</span>' : '';
-              var numLabelC = isHotC ? '🔥 ' + circledIdx + '.' : circledIdx + '.';
+              var numLabelC = circledIdx + '.';
+              var hotPrefixC = isHotC ? '<span style="font-size:13px;margin-right:4px;vertical-align:middle">🔥</span>' : '';
               out.push('<div class="brief-bullet signal-bullet' + hotClassC + '">'
-                + '<span class="bullet-num">' + numLabelC + '</span>'
+                + hotPrefixC + '<span class="bullet-num">' + numLabelC + '</span>'
                 + '<span class="bullet-body">' + urgHtmlC + tagHtmlC + bodyContentC + '</span>'
                 + '</div>');
               continue;
@@ -2315,11 +2318,12 @@
               var rankClass = ' signal-rank-' + rankTier;
               var hotClass = isHot ? ' bullet-hot' : rankClass;
               var tagHtml = tag ? '<span class="bullet-tag" style="color:' + tagColor + ';border-color:' + tagColor + '44">' + tag + '</span>' : '';
-              // Clean numbered badge — hot gets fire emoji before the number
-              var numLabel = isHot ? '🔥 ' + num + '.' : num + '.';
+              // Clean numbered badge — hot gets fire emoji outside the badge
+              var numLabel = num + '.';
+              var hotPrefix = isHot ? '<span style="font-size:13px;margin-right:4px;vertical-align:middle">🔥</span>' : '';
               var numBadge = '<span class="bullet-num">' + numLabel + '</span>';
               out.push('<div class="brief-bullet signal-bullet' + hotClass + '">'
-                + numBadge
+                + hotPrefix + numBadge
                 + '<span class="bullet-body">' + tagHtml + bodyContent + '</span>'
                 + '</div>');
               continue;
@@ -2356,7 +2360,7 @@
             // Any remaining line with 🔥 = hot signal (no rank number)
             if (trimmed.startsWith('🔥') || trimmed.startsWith('\uD83D\uDD25')) {
               out.push('<div class="brief-bullet bullet-hot signal-bullet signal-rank-top">'
-                + '<span class="bullet-num">🔥</span>'
+                + '<span style="font-size:14px;margin-right:8px;vertical-align:middle;flex-shrink:0">🔥</span>'
                 + '<span class="bullet-body">' + trimmed.slice(trimmed.indexOf('🔥') + 2).trim() + '</span>'
                 + '</div>');
               continue;
