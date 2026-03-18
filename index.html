@@ -359,7 +359,7 @@
     display: flex; align-items: center; gap: 4px;
     margin-left: 6px; flex-wrap: nowrap; flex-shrink: 1;
   }
-  .model-chip[data-model="whisper"] { display: none; }
+  .model-chip:not(.active) { display: none; }
   .model-chip[data-model="whisper"].active { display: inline-block; }
   .model-chip {
     font-family: var(--mono);
@@ -1549,7 +1549,7 @@
 
 <div class="shell">
   <div class="top-bar">
-    <div class="top-bar-title"><img src="news_logo_final.png" alt="J.AI.N" style="height:28px;width:auto;vertical-align:middle;margin-right:10px;display:inline-block;">J<span>.</span><span class="ai">AI</span><span>.</span>N'S&nbsp;&nbsp;Mind</div>
+    <div class="top-bar-title">J<span>.</span><span class="ai">AI</span><span>.</span>N'S&nbsp;&nbsp;Mind</div>
     <div class="top-bar-right">
       <div class="status-indicator" id="statusIndicator">
         <div class="status-dot"></div>
@@ -1585,11 +1585,7 @@
                 <span class="model-chip" data-model="whisper" style="display:none;">whisper</span>
               </div>
             </span>
-            <span class="brain-powered" style="margin-left:auto;display:flex;align-items:center;gap:5px;">
-              <span class="or-model-badge badge-openclaw">OpenClaw</span>
-              <span class="or-model-badge badge-openrouter badge-openrouter-themed" id="orBadge">via OpenRouter</span>
-            </span>
-            <span style="font-family:var(--mono);font-size:8px;color:rgba(255,60,60,0.4);margin-left:4px;flex-shrink:0;white-space:nowrap;" id="brainLastUpdated"></span>
+            <span style="font-family:var(--mono);font-size:8px;color:rgba(255,60,60,0.4);margin-left:auto;flex-shrink:0;white-space:nowrap;" id="brainLastUpdated"></span>
           </div>
           <!-- Model Usage Breakdown — compact inline strip -->
           <div class="or-model-usage-wrap" id="orModelUsageWrap">
@@ -2418,10 +2414,11 @@
       // Monthly card (show only if we have actual OR data)
       var monthCard = document.getElementById('usageMonthlyCard');
       var monthEl = document.getElementById('usageMonthlyCost');
-      if (monthCard && monthEl && data.monthly && data.monthly.actual_or != null) {
-        monthCard.style.display = '';
-        monthEl.textContent = fmtCost(data.monthly.actual_or);
-      }
+      // Monthly card hidden — too confusing next to session/daily
+      // if (monthCard && monthEl && data.monthly && data.monthly.actual_or != null) {
+      //   monthCard.style.display = '';
+      //   monthEl.textContent = fmtCost(data.monthly.actual_or);
+      // }
 
       // Model breakdown — top 5 by cost (24h), sorted desc, no pinned placeholders
       var breakdownEl = document.getElementById('usageModelBreakdown');
