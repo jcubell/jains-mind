@@ -2635,41 +2635,46 @@
       //   monthEl.textContent = fmtCost(data.monthly.actual_or);
       // }
 
-      // Model breakdown — top 5 by cost (24h), sorted desc, no pinned placeholders
+      // Model breakdown — always show full pinned roster; fill with live data where available
       var breakdownEl = document.getElementById('usageModelBreakdown');
       if (breakdownEl) {
-        var MODEL_LABELS = {
-          'claude-sonnet-4-6': 'Claude Sonnet',
-          'grok-4': 'Grok 4',
-          'grok-4-fast': 'Grok 4 Fast',
-          'gemini-2.0-flash': 'Gemini Flash',
-          'gemini-2.5-pro': 'Gemini Pro',
-          'deepseek-chat-v3-0324': 'DeepSeek v3',
-          'deepseek-r1': 'DeepSeek R1',
-          'gpt-4o': 'GPT-4o',
-          'gpt-4o-mini': 'GPT-4o mini',
-          'mistral': 'Mistral',
-        };
-        var models = (data.models || [])
-          .filter(function(m) { return m.model && m.model.toLowerCase() !== 'whisper' && m.cost > 0; });
-        // Sort by cost descending, show top 5
-        models.sort(function(a, b) { return b.cost - a.cost; });
-        var top5 = models.slice(0, 5);
+        // Ordered roster — every "expected" model we use, always visible
+        var PINNED_ROSTER = [
+          { model: 'claude-sonnet-4-6',      label: 'Claude Sonnet' },
+          { model: 'grok-4',                  label: 'Grok 4' },
+          { model: 'grok-4-fast',             label: 'Grok 4 Fast' },
+          { model: 'gemini-2.0-flash',        label: 'Gemini Flash' },
+          { model: 'gemini-2.5-pro',          label: 'Gemini Pro' },
+          { model: 'deepseek-chat-v3-0324',   label: 'DeepSeek v3' },
+          { model: 'deepseek-r1',             label: 'DeepSeek R1' },
+          { model: 'gpt-4o',                  label: 'GPT-4o' },
+          { model: 'gpt-4o-mini',             label: 'GPT-4o mini' },
+        ];
+        // Build lookup from live data
+        var liveMap = {};
+        (data.models || []).forEach(function(m) {
+          if (m.model && m.model.toLowerCase() !== 'whisper') liveMap[m.model] = m;
+        });
+        // Merge: roster order, fill live cost/pct if available
+        var merged = PINNED_ROSTER.map(function(p) {
+          var live = liveMap[p.model] || {};
+          return { model: p.model, label: p.label, cost: live.cost || 0, pct: live.pct || 0 };
+        });
+        // maxCost for bar scale (only models with actual spend)
+        var maxCost = merged.reduce(function(mx, m) { return m.cost > mx ? m.cost : mx; }, 0);
         var html = '';
-        var maxCost = top5.length > 0 ? top5[0].cost : 0;
-        for (var i = 0; i < top5.length; i++) {
-          var m = top5[i];
-          var barPct = maxCost > 0 ? Math.round((m.cost / maxCost) * 100) : 3;
-          if (barPct < 3) barPct = 3;
+        for (var i = 0; i < merged.length; i++) {
+          var m = merged[i];
+          var hasData = m.cost > 0;
+          var barPct = (maxCost > 0 && hasData) ? Math.round((m.cost / maxCost) * 100) : 0;
           var barColor = umColor(m.model);
-          var displayName = MODEL_LABELS[m.model] || m.model;
-          var costLabel = fmtCost(m.cost);
-          var pctLabel = m.pct > 0 ? m.pct + '%' : '';
-          html += '<div class="usage-model-row">'
-            + '<span class="usage-model-name">' + escHtml(displayName) + '</span>'
-            + '<div class="usage-model-bar-wrap"><div class="usage-model-bar-fill" style="width:' + barPct + '%;background:' + barColor + ';box-shadow:0 0 4px ' + barColor + '66;"></div></div>'
-            + '<span class="usage-model-cost">' + costLabel + '</span>'
-            + (pctLabel ? '<span class="usage-model-pct" style="color:' + barColor + '">' + pctLabel + '</span>' : '')
+          var costLabel = hasData ? fmtCost(m.cost) : '—';
+          var pctLabel  = hasData ? m.pct + '%' : '0%';
+          html += '<div class="usage-model-row' + (hasData ? '' : ' usage-model-zero') + '">'
+            + '<span class="usage-model-name">' + escHtml(m.label) + '</span>'
+            + '<div class="usage-model-bar-wrap"><div class="usage-model-bar-fill" style="width:' + (barPct > 0 ? barPct : 0) + '%;background:' + barColor + ';box-shadow:0 0 4px ' + barColor + '66;opacity:' + (hasData ? '1' : '0.18') + ';"></div></div>'
+            + '<span class="usage-model-cost" style="opacity:' + (hasData ? '1' : '0.35') + '">' + costLabel + '</span>'
+            + '<span class="usage-model-pct" style="color:' + barColor + ';opacity:' + (hasData ? '1' : '0.35') + '">' + pctLabel + '</span>'
             + '</div>';
         }
         if (!html) html = '<div class="usage-empty">Collecting usage data...</div>';
