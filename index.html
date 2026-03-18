@@ -777,7 +777,7 @@
     flex: 1; min-width: 0;
   }
 
-  /* Subtask checkboxes — compact inline grid under Sorare jobs */
+  /* Subtask checkboxes — compact inline grid under jobs */
   .job-subtasks-row {
     display: flex; flex-wrap: wrap; gap: 0;
     padding: 2px 0 4px 22px;
@@ -2022,7 +2022,7 @@
     }
 
     lastKnownState = data;
-    // Hook: update Sorare job subtask overrides from state.json
+    // Hook: update job subtask overrides from state.json
     if (typeof applyJobOverrides === 'function') applyJobOverrides(data);
   }
 
