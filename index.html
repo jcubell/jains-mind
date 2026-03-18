@@ -270,9 +270,9 @@
   }
   .brain-hero-label {
     font-family: var(--font);
-    font-size: 14px; font-weight: 700;
-    letter-spacing: 0.16em; text-transform: uppercase;
-    color: var(--m-color);
+    font-size: 11px; font-weight: 700;
+    letter-spacing: 0.08em; text-transform: uppercase;
+    color: #cc4444;
     display: flex; align-items: center; gap: 8px;
     flex: 1; min-width: 0; white-space: nowrap; overflow: hidden;
   }
@@ -297,6 +297,8 @@
     padding: 16px 16px 12px;
     flex-shrink: 0;
     position: relative; z-index: 2;
+    border-left: 1px solid #ef4444;
+    margin-left: 2px;
   }
   .brain-focus-text {
     font-family: var(--font);
@@ -1547,7 +1549,7 @@
 
 <div class="shell">
   <div class="top-bar">
-    <div class="top-bar-title">J<span>.</span><span class="ai">AI</span><span>.</span>N'S&nbsp;&nbsp;Mind</div>
+    <div class="top-bar-title"><img src="news_logo_final.png" alt="J.AI.N" style="height:28px;width:auto;vertical-align:middle;margin-right:10px;display:inline-block;">J<span>.</span><span class="ai">AI</span><span>.</span>N'S&nbsp;&nbsp;Mind</div>
     <div class="top-bar-right">
       <div class="status-indicator" id="statusIndicator">
         <div class="status-dot"></div>
@@ -1570,7 +1572,7 @@
           <div class="brain-hero-header">
             <div class="objective-dot idle" id="objDot"></div>
             <span class="brain-hero-label">
-              <svg viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg" style="width:20px;height:20px;flex-shrink:0;filter:drop-shadow(0 0 4px rgba(255,40,40,0.6))"><defs><linearGradient id="lg2" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#ff4d4d"/><stop offset="100%" stop-color="#991b1b"/></linearGradient></defs><path d="M60 10 C30 10 15 35 15 55 C15 75 30 95 45 100 L45 110 L55 110 L55 100 C55 100 60 102 65 100 L65 110 L75 110 L75 100 C90 95 105 75 105 55 C105 35 90 10 60 10Z" fill="url(#lg2)"/><path d="M20 45 C5 40 0 50 5 60 C10 70 20 65 25 55 C28 48 25 45 20 45Z" fill="url(#lg2)"/><path d="M100 45 C115 40 120 50 115 60 C110 70 100 65 95 55 C92 48 95 45 100 45Z" fill="url(#lg2)"/><path d="M45 15 Q35 5 30 8" stroke="#ff4d4d" stroke-width="3" stroke-linecap="round"/><path d="M75 15 Q85 5 90 8" stroke="#ff4d4d" stroke-width="3" stroke-linecap="round"/><circle cx="45" cy="35" r="6" fill="#050810"/><circle cx="75" cy="35" r="6" fill="#050810"/><circle cx="46" cy="34" r="2.5" fill="#00e5cc"/><circle cx="76" cy="34" r="2.5" fill="#00e5cc"/></svg>
+              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="width:18px;height:18px;flex-shrink:0"><path d="M12 2C8.13 2 5 5.13 5 9c0 2.38 1.19 4.47 3 5.74V17c0 .55.45 1 1 1h6c.55 0 1-.45 1-1v-2.26C17.81 13.47 19 11.38 19 9c0-3.87-3.13-7-7-7z" stroke="#ef4444" stroke-width="1.5" fill="none"/><path d="M9 21h6M10 17v4M14 17v4" stroke="#ef4444" stroke-width="1.5" stroke-linecap="round"/></svg>
               Brain Feed
               <div class="model-roster" id="modelRoster">
                 <span class="model-chip active" data-model="grok-4">grok-4</span>
@@ -1645,7 +1647,7 @@
       
       <div class="jobs-section">
         <div class="panel-header">
-          <h2>Today's Jobs</h2>
+          <h2><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="width:14px;height:14px;margin-right:6px;vertical-align:middle;flex-shrink:0"><rect x="3" y="4" width="18" height="18" rx="2" stroke="#20B2AA" stroke-width="1.5" fill="none"/><path d="M16 2v4M8 2v4M3 10h18" stroke="#20B2AA" stroke-width="1.5" stroke-linecap="round"/></svg>Today's Jobs</h2>
           <span class="panel-meta" id="jobCount">6 Jobs</span>
         </div>
         <div class="panel-body" id="jobsContainer"></div>
@@ -2511,7 +2513,7 @@
 
   var jobCategories = [
     {
-      label: '📡 Intelligence Feed',
+      label: 'Intelligence Feed',
       jobs: [
         { name: 'Morning Brief', time: '6:30 AM', scheduleHour: 6, scheduleMinute: 30, desc: 'Full brief — crypto, markets, macro, AI, geopolitical signals' },
         { name: 'Markets Open', time: '9:15 AM', scheduleHour: 9, scheduleMinute: 15, desc: 'Pre-market signal — top movers, breaking news, early momentum' },
@@ -2523,7 +2525,7 @@
       ]
     },
     {
-      label: '⚙️ System',
+      label: 'System',
       jobs: [
         { name: 'Cost Baseline', time: '12:00 AM', scheduleHour: 0, scheduleMinute: 0, desc: 'Reset session cost baseline — snapshots OpenRouter spend for dashboard delta tracking' },
         { name: 'Breaking News', time: 'Continuous', scheduleHour: -1, scheduleMinute: 0, recurring: true, desc: 'RSS poller — monitors 10 feeds, scores signals, fires Telegram alerts on 7+ hits' },
