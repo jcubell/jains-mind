@@ -1244,9 +1244,9 @@
     color: #20B2AA;
     font-size: 10px;
     letter-spacing: 0.14em;
-    padding-bottom: 10px;
+    padding-bottom: 6px;
     border-bottom: 1px solid var(--glass-border);
-    margin-bottom: 20px;
+    margin-bottom: 10px;
   }
 
   /* Perplexity Computer: Feed section headers — teal, clean separators */
@@ -1256,8 +1256,8 @@
     font-weight: 700;
     letter-spacing: 0.2em;
     text-transform: uppercase;
-    margin-bottom: 14px;
-    padding-bottom: 8px;
+    margin-bottom: 8px;
+    padding-bottom: 5px;
     border-bottom: 1px solid var(--glass-border);
     position: relative;
     transition: color 0.3s ease;
@@ -1284,7 +1284,7 @@
 
   /* Perplexity Computer: Feed section spacing refinement */
   .right-panel .feed-section {
-    margin-bottom: 28px;
+    margin-bottom: 16px;
     animation: pplx-fade-in 0.5s ease both;
   }
   .right-panel .feed-section:nth-child(2) { animation-delay: 0.1s; }
@@ -1449,7 +1449,7 @@
   }
   .news-feed-item {
     border-bottom: 1px solid rgba(255,255,255,0.06);
-    padding: 14px 0;
+    padding: 8px 0;
     animation: feedFadeIn 0.4s ease;
   }
   .news-feed-item:last-child { border-bottom: none; }
@@ -1461,7 +1461,7 @@
     display: flex;
     align-items: center;
     gap: 8px;
-    margin-bottom: 8px;
+    margin-bottom: 4px;
   }
   .news-feed-slot-label {
     font-family: var(--mono);
@@ -1479,8 +1479,8 @@
   }
   .news-feed-item-body {
     font-family: var(--mono);
-    font-size: 11px;
-    line-height: 1.65;
+    font-size: 10.5px;
+    line-height: 1.5;
     color: #c8c8c8;
     white-space: pre-wrap;
     word-break: break-word;
@@ -1513,7 +1513,7 @@
   .brief-divider {
     border: none;
     border-top: 1px solid rgba(255,255,255,0.08);
-    margin: 10px 0;
+    margin: 6px 0;
   }
   /* Category badge */
   .feed-cat-badge {
@@ -1787,8 +1787,8 @@
   var tunnelUrl = null;
   var tunnelFailCount = 0;
   var TUNNEL_FAIL_LIMIT = 3;
-  var POLL_FAST = 1000;
-  var POLL_SLOW = 15000;
+  var POLL_FAST = 5000;
+  var POLL_SLOW = 30000;
   var pollTimer = null;
   var lastKnownState = null;
   var knownStepCount = 0;
@@ -2061,7 +2061,7 @@
             + '<div class="news-feed-item-body">' + bodyHtml + '</div>'
             + '</div>';
         }
-        feedContainer.innerHTML = feedHtml;
+        if (feedContainer._lastHtml !== feedHtml) { feedContainer.innerHTML = feedHtml; feedContainer._lastHtml = feedHtml; }
       }
     }
 
@@ -2507,33 +2507,6 @@
   })();
 
   var jobCategories = [
-    {
-      label: 'SORARE',
-      jobs: [
-        { name: 'Morning Picks', time: '11:00 AM', scheduleHour: 11, scheduleMinute: 0, desc: 'Daily farming + missions + strategic picks',
-          subtasks: [
-            { key: 'wntr_pack', label: 'WNTR Pack' },
-            { key: 'wheel', label: 'Wheel' },
-            { key: 'quick_play', label: 'Quick Play' },
-            { key: 'hot_streak', label: 'Hot Streak' },
-            { key: 'daily_pickup', label: 'Daily Pickup' },
-            { key: 'pickers', label: 'Pickers' },
-            { key: 'lineups', label: 'GW Lineups' },
-            { key: 'scrap', label: 'Scrap Dupes' }
-          ]
-        },
-        { name: 'Evening Strategy', time: '5:00 PM', scheduleHour: 17, scheduleMinute: 0, desc: 'Optimize lineups + injury swaps + streak guard',
-          subtasks: [
-            { key: 'injury_check', label: 'Injury Check' },
-            { key: 'lineup_optimize', label: 'Lineup Swaps' },
-            { key: 'hot_streak_guard', label: 'Streak Guard' },
-            { key: 'catchup', label: 'Catch-up' },
-            { key: 'standings', label: 'Standings' },
-            { key: 'arena', label: 'Arena' }
-          ]
-        }
-      ]
-    },
     {
       label: 'J.AI.N',
       jobs: [
