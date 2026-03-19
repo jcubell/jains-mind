@@ -1,139 +1,37 @@
 {
-  "objective": "Sorare NBA daily management -- evening run complete",
+  "objective": "",
   "status": "idle",
   "brain": {
     "mode": "working",
-    "focus": "Running signal update test",
+    "focus": "Committing dashboard changes to git",
     "model": "claude-sonnet-4-6",
-    "thoughts": [
-      {
-        "time": "8:48 PM ET",
-        "type": "complete",
-        "text": "Signal-only middle slots, 8pm recap, RSS poller, feedback loop live",
-        "title": "Done \u2014 news bot overhaul complete"
-      },
-      {
-        "time": "8:42 PM ET",
-        "type": "action",
-        "text": "DeepSeek writing new slots, RSS poller, feedback loop",
-        "title": "Spawning sub-agent: news bot overhaul + RSS breaking news"
-      },
-      {
-        "time": "8:23 PM ET",
-        "type": "complete",
-        "text": "cost check not due (2.1h < 4h)",
-        "title": "Done \u2014 heartbeat ack"
-      },
-      {
-        "time": "7:25 PM ET",
-        "type": "complete",
-        "text": "cost check not due (1.1h < 4h)",
-        "title": "Done \u2014 heartbeat ack"
-      },
-      {
-        "time": "6:50 PM ET",
-        "type": "complete",
-        "text": "cost check not due (0.5h < 4h)",
-        "title": "Done \u2014 heartbeat ack"
-      },
-      {
-        "time": "5:58 PM ET",
-        "type": "complete",
-        "text": "J-lobster focal point, clean dark backgrounds A/B/C",
-        "title": "Done \u2014 3 clean dark-mode news icons sent to Telegram"
-      },
-      {
-        "time": "5:50 PM ET",
-        "type": "action",
-        "text": "3 dark-mode news icon concepts",
-        "title": "Generating icons via DALL-E 3 (OpenAI)"
-      },
-      {
-        "time": "5:47 PM ET",
-        "type": "complete",
-        "text": "Local models free, web search enabled, Sonnet stays primary",
-        "title": "Done \u2014 Ollama 0.18.1 upgraded + wired into OpenClaw"
-      },
-      {
-        "time": "5:44 PM ET",
-        "type": "action",
-        "text": "brew upgrade + LaunchAgent restart",
-        "title": "Upgrading Ollama 0.15.5 \u2192 0.18.0"
-      },
-      {
-        "time": "5:24 PM ET",
-        "type": "complete",
-        "text": "cost check not due (3.3h < 4h)",
-        "title": "Done \u2014 heartbeat ack"
-      },
-      {
-        "time": "4:54 PM ET",
-        "type": "complete",
-        "text": "cost check not due (2.8h < 4h)",
-        "title": "Done \u2014 heartbeat ack"
-      },
-      {
-        "time": "4:24 PM ET",
-        "type": "complete",
-        "text": "cost check not due (2.3h < 4h)",
-        "title": "Done \u2014 heartbeat ack"
-      }
-    ],
-    "subagent": {
-      "name": "news-bot-rebuild",
-      "task": "Rebuild news_bot.py with all 16 fetchers",
-      "model": "claude-sonnet-4-6",
-      "status": "running"
-    },
-    "currentModel": "claude-sonnet-4-6",
-    "subagents": []
+    "thoughts": [],
+    "subagent": null,
+    "currentModel": "claude-sonnet-4-6"
   },
   "steps": [],
-  "updated_at": "2026-03-18T21:05:00Z",
-  "_tunnel_url": "https://charged-unique-architects-fusion.trycloudflare.com",
-  "jobs": {
-    "sorare_morning": {
-      "status": "done",
-      "completedAt": "11:30 AM ET"
-    },
-    "sorare_evening": {
-      "status": "done",
-      "completedAt": "5:05 PM ET",
-      "summary": "No changes needed -- all players healthy. Zero browser minutes."
-    }
-  },
+  "updated_at": "2026-03-19T16:53:10Z",
   "news_feed": [
     {
-      "slot": "evening_update",
-      "label": "Evening Update",
-      "text": "Fear & Greed: \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2591\u2591 72 \u2014 Greed\n\n\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\n\u26a1 <b>SIGNAL</b>\n\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\n\ud83d\udd25 1. [MACRO] Fed holds rates at 5.25-5.50%; Powell signals no cuts until inflation hits 2% target \u2014 <i>Reuters</i>\n2. [AI] OpenAI GPT-5 entering final evaluation; release expected Q2 2026 \u2014 <i>The Information</i>\n3. [CRYPTO] Bitcoin breaks $85K resistance; ETF inflows hit $1.2B single-day record \u2014 <i>CoinTelegraph</i>\n4. [NASDAQ] Nvidia beats Q4 earnings by 12%; data center revenue +220% YoY \u2014 <i>MarketWatch</i>\n5. [GEO] \ud83c\uddfa\ud83c\uddf8\ud83c\udde8\ud83c\uddf3 US-China trade talks resume in Geneva; tariff pause extended 90 days \u2014 <i>BBC</i>\n\n\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\n\ud83e\udd16 <b>AI VALUE CHAIN</b>\n\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\nMood: \ud83d\udfe2 Risk-On | Inference demand surging\n\ud83d\udfe2 Anthropic closes $3B Series E at $61B valuation \u2014 compute expansion <i>TechCrunch</i>\n\ud83d\udfe2 Meta releases Llama 4 open-source; benchmark scores rival GPT-4o <i>VentureBeat</i>\n\ud83d\udd34 Google Gemini API latency issues affecting enterprise customers \u2014 SLA breach risk <i>The Verge</i>\n\n\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\n\ud83d\udcca <b>NASDAQ 100 MOVERS</b>\n\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\nMood: \ud83d\udfe2 Risk-On | <b>QQQ</b> +1.4%\n\ud83d\udfe2 \u25b2 <b>NVDA</b> +4.2% \u2014 blowout earnings + guidance raise\n\ud83d\udfe2 \u25b2 <b>META</b> +2.8% \u2014 Llama 4 open-source momentum\n\ud83d\udd34 \u25bc <b>TSLA</b> -3.1% \u2014 deliveries miss; margin compression\n\ud83d\udd34 \u25bc <b>INTC</b> -2.4% \u2014 foundry delays, market share loss\n\n\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\n\ud83e\ude99 <b>CRYPTO TOP MOVERS</b>\n\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\nMood: \ud83d\udfe2 Risk-On | <b>BTC</b> $85,420 (+3.2%)\n\ud83d\udfe2 \u25b2 <b>SOL</b> +6.1% \u2014 DEX volume record, network upgrade\n\ud83d\udfe2 \u25b2 <b>ETH</b> +2.9% \u2014 L2 adoption + staking yield demand\n\ud83d\udd34 \u25bc <b>DOGE</b> -1.8% \u2014 profit taking after Elon mentions\n\n\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\n\ud83d\udd2e <b>PREDICTIONS & HOT TAKES</b>\n\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\nMood: \ud83d\udfe2 Risk-On\n\ud83d\udfe2 BTC $100K before end of Q2 as ETF inflows compound <code>BULLISH</code>\n\ud83d\udd34 Small-cap AI plays getting crushed as big tech eats their lunch <code>RISK</code>\n\ud83d\udfe1 Fed pivot rhetoric heating up \u2014 watch CPI print Thursday <code>WATCH</code>",
-      "ts": "2026-03-18T01:49:49.483506Z",
-      "category": null
+      "id": "breaking_now_1773939091",
+      "slot": "breaking_now",
+      "ts": "2026-03-19T16:51:00Z",
+      "label": "Breaking Now",
+      "text": "\ud83d\udce1 <b>BREAKING \u2014 LIVE FEED</b>\n<i>March 19, 2026  \u00b7  12:48 PM ET</i>\n\n\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\n\n\u26a1 <b>LATEST SIGNALS</b>\n\n\u2022 <b>DoorDash launches 'Tasks' app</b> \u2014 pays couriers to film videos & speak languages to train AI models. Gig economy pivots to data labor. <a href=\"https://techcrunch.com/2026/03/19/doordash-launches-a-new-tasks-app-that-pays-couriers-to-submit-videos-to-train-ai/\">(TechCrunch)</a>\n\u2022 <b>FBI seizes pro-Iranian hacking group sites</b> after Handala hackers mass-wiped thousands of Stryker medical devices. <a href=\"https://techcrunch.com/2026/03/19/fbi-seizes-pro-iranian-hacking-groups-websites-after-destructive-stryker-hack/\">(TechCrunch)</a>\n\u2022 <b>CISA warns Microsoft Intune vulnerability</b> \u2014 urges firms to lock down remote device management after Stryker wipe attack. <a href=\"https://techcrunch.com/2026/03/19/cisa-urges-companies-to-secure-microsoft-intune-systems-after-hackers-mass-wipe-stryker-devices/\">(TechCrunch)</a>\n\u2022 <b>Gold & silver sell-off accelerates</b> \u2014 metals down 5-10% as Iran war inflation fears grip global markets. <a href=\"https://www.cnbc.com/2026/03/19/gold-and-silver-sell-off-as-inflation-fears-grip-global-markets.html\">(CNBC)</a>\n\u2022 <b>Govt bonds face 'perfect storm'</b> \u2014 Iran war rattles ECB, BoE; yields surge as European central banks grapple with new inflation reality. <a href=\"https://www.cnbc.com/2026/03/19/interest-rates-bonds-bank-of-england-european-central-bank-investors-iran-war-ecb-inflation.html\">(CNBC)</a>\n\u2022 <b>Xiaomi MiMo-V2-Pro drops</b> \u2014 1T param LLM nearing GPT-5.2/Opus 4.6 performance at 1/6 the cost. Led by ex-DeepSeek R1 team. <a href=\"https://venturebeat.com/technology/xiaomi-stuns-with-new-mimo-v2-pro-llm-nearing-gpt-5-2-opus-4-6-performance\">(VentureBeat)</a>\n\u2022 <b>Meta reverses Horizon Worlds shutdown</b> \u2014 VR metaverse app survives after company almost pulled plug 4 years post-launch. <a href=\"https://techcrunch.com/2026/03/19/meta-decides-not-to-shut-down-horizon-worlds-on-vr-after-all/\">(TechCrunch)</a>\n\n<i>J.AI.N \u00b7 Live scrape \u00b7 12:48 PM ET</i>"
+    },
+    {
+      "id": "mid_morning_1773939116",
+      "slot": "mid_morning",
+      "ts": "2026-03-19T15:15:30Z",
+      "label": "Signal Update",
+      "text": "\ud83d\udce1 <b>J.AI.N SIGNAL UPDATE</b>  <i>(interim)</i>\n<i>March 19, 2026  \u00b7  11:15 AM ET</i>\n\n\ud83e\udde0 <b>F&G:</b>  <code>[\u2588\u2588\u2591\u2591\u2591\u2591\u2591\u2591\u2591\u2591]</code>  <b>23</b>  \u2014 Extreme Fear \ud83d\ude28\n\n\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\n\n\u26a1 <b>LATEST SIGNALS</b>  <i>(new since last update)</i>\n\u2022 66% of CEOs are freezing hiring while betting billions on AI. It's a costly mis\u2026 <a href=\"https://fortune.com/2026/03/18/corporate-america-ai-hiring-freeze-workforce-architecture/\">(Link)</a>\n  <i>Fortune</i> <code>\u26a17.5</code>\n\u2022 BlackRock CEO Larry Fink warns AI could leave the class of 2026 facing the highest youth unemployment since the 1930s. <a href=\"https://fortune.com/2026/03/18/blackrock-ceo-larry-fink-class-of-2026-gen-z-college-graduate-warning-ai-job-market-crisis-unprepared-workforce-skilled-trade-growth/\">(Link)</a>\n  <i>Fortune</i> <code>\u26a17.5</code>\n\u2022 DOD says Anthropic's 'red lines' make it an 'unacceptable risk to national security'. <a href=\"https://techcrunch.com/2026/03/18/dod-says-anthropics-red-lines-make-it-an-unacceptable-risk-to-national-security/\">(Link)</a>\n  <i>TechCrunch</i> <code>\u26a17.5</code>\n\n<i>J.AI.N \u00b7 Ollama \u22656.5 filter \u00b7 11:15 AM ET</i>"
+    },
+    {
+      "id": "markets_open_1773939127",
+      "slot": "markets_open",
+      "ts": "2026-03-19T13:15:30Z",
+      "label": "Signal Update",
+      "text": "\ud83d\udce1 <b>J.AI.N SIGNAL UPDATE</b>  <i>(interim)</i>\n<i>March 19, 2026  \u00b7  09:15 AM ET</i>\n\n\ud83e\udde0 <b>F&G:</b>  <code>[\u2588\u2588\u2591\u2591\u2591\u2591\u2591\u2591\u2591\u2591]</code>  <b>23</b>  \u2014 Extreme Fear \ud83d\ude28\n\n\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\n\n\u26a1 <b>LATEST SIGNALS</b>  <i>(new since last update)</i>\n\u2022 DLSS 5: Has Nvidia's AI graphics technology gone too far? <a href=\"https://www.theverge.com/games/896518/nvidia-dlss-5-ai-3d-rendering\">(Link)</a>\n  <i>The Verge</i> <code>\u26a17.5</code>\n\u2022 Micron rides memory price spike into earnings with stock up 62%, drubbing its tech peers. <a href=\"https://www.cnbc.com/2026/03/18/micron-mu-memory-price-spike-earnings.html\">(Link)</a>\n  <i>CNBC</i> <code>\u26a17.5</code>\n\u2022 Anthropic sued 2x in 1 day. Shadow Library Strategy strikes again. Total all copyright suits v AI hits 93. <a href=\"https://chatgptiseatingtheworld.com/2026/03/17/anthropic-sued-2x-in-1-day-shadow-library-strategy-strikes-again-total-all-copyright-suits-v-ai-companies-hits-93/\">(Link)</a>\n  <i>Chatgptiseatingtheworld</i> <code>\u26a17.5</code>\n\u2022 Torq unveils Agentic Builder to automate security workflows from natural language intent. <a href=\"https://siliconangle.com/2026/03/18/torq-unveils-agentic-builder-automate-security-workflows-natural-language-intent/\">(Link)</a>\n  <i>SiliconAngle</i> <code>\u26a17.5</code>\n\n<i>J.AI.N \u00b7 Ollama \u22656.5 filter \u00b7 09:15 AM ET</i>"
     }
-  ],
-  "sorare_daily_report": {
-    "date": "2026-03-18",
-    "run": "morning_3",
-    "tier1_cash": {
-      "hot_streak": "L1 completed (3 rounds), L2 active at 180pt target (WNTR -10 discount). 2 lives remaining on L2.",
-      "quick_play": "SKIPPED -- White Sunset locked in GW41 Contender",
-      "biweekly": "GW42 lineups set yesterday (LC #1: Jokic/White/Zion/Jabari/Murray, LC #2: SGA/Amen/Sensabaugh/Christie/Dunn)"
-    },
-    "tier2_collection": {
-      "wntr_progress": "146/150 (4 needed, 4 days left -- on track)",
-      "wntr_pack": "+3 cards (Beal, Bruce Brown, Dylan Harper)",
-      "essence": "Common: 3,570 | WNTR: 1,426 | Limited: not visible",
-      "wheel": "Not active (0 tickets)"
-    },
-    "tier3_engagement": {
-      "daily_pickup": "LIMITED div -- MVP Jokic, Amen, Zion, Saddiq Bey, Kris Murray (cap 117/120)",
-      "missions": "Daily Picker: Pritchard/Amen/Jabari. Sharpshooter: Pritchard/Christie/White"
-    },
-    "injuries_flagged": "Edwards OUT (knee), Curry OUT (calf), Bam OUT (calf), Cade OUT (back)",
-    "flags": [
-      "QP blocked until GW41 ends Mar 19",
-      "WNTR 146/150 -- 4 more cards needed by Mar 22",
-      "Sensabaugh (UTA tanking team) in LC #2 -- flag for GW43"
-    ]
-  }
+  ]
 }
