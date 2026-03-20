@@ -13,6 +13,7 @@ import json
 import os
 import subprocess
 import time
+import hashlib
 from datetime import datetime, timezone
 
 STATE_PATH = os.path.join(os.path.dirname(__file__), 'state.json')
@@ -61,8 +62,53 @@ def main():
         print(f"⚠️ Could not read state.json: {e}", file=sys.stderr)
         state = {}
 
-    # Prepend new item, trim to MAX_ITEMS
+    # Normalize slot using content header (handles '--send' or ad-hoc invocations)
+    def detect_slot_from_text(text, fallback_slot):
+        t = text[:200].upper()
+        if "MORNING BRIEF" in t:
+            return "morning_brief"
+        if "MARKETS OPEN" in t:
+            return "markets_open"
+        if "MID MORNING" in t:
+            return "mid_morning"
+        if "AFTERNOON PULSE" in t:
+            return "afternoon_pulse"
+        if "MARKETS CLOSE" in t:
+            return "markets_close"
+        if "EVENING UPDATE" in t or "DAILY RECAP" in t:
+            return "evening_update"
+        if "BREAKING" in t[:50]:
+            return "breaking_now"
+        return fallback_slot
+
+    canonical_slot = detect_slot_from_text(brief_text, slot)
+
+    # Content hash for deduplication — uses canonical_slot + first 100 chars of text
+    # (100 chars covers header+date which is unique per slot per day, not per run)
+    content_sig = hashlib.md5((canonical_slot + brief_text[:100]).encode()).hexdigest()[:12]
+
+    # Dedupe: skip if same canonical_slot+content-header seen within the last 4 hours
     feed = state.get("news_feed", [])
+    FOUR_HOURS = 4 * 3600
+    for existing in feed:
+        existing_canonical = detect_slot_from_text(existing.get("text", ""), existing.get("slot", ""))
+        existing_sig = hashlib.md5(
+            (existing_canonical + existing.get("text", "")[:100]).encode()
+        ).hexdigest()[:12]
+        if existing_sig == content_sig:
+            try:
+                existing_epoch = int(
+                    datetime.strptime(existing["ts"], "%Y-%m-%dT%H:%M:%SZ")
+                    .replace(tzinfo=timezone.utc).timestamp()
+                )
+            except Exception:
+                existing_epoch = 0
+            age_secs = epoch - existing_epoch
+            if age_secs < FOUR_HOURS:
+                print(f"⏭️  Skipping duplicate {slot} (same content seen {age_secs}s ago, sig={content_sig})")
+                sys.exit(0)
+
+    # Prepend new item, trim to MAX_ITEMS
     feed.insert(0, new_item)
     feed = feed[:MAX_ITEMS]
     state["news_feed"] = feed

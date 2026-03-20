@@ -2990,9 +2990,11 @@
         if (data._tunnel_url && data._tunnel_url !== tunnelUrl) tunnelUrl = data._tunnel_url;
         applyState(data);
       })
-      .catch(function() {
+      .catch(function(err) {
         tunnelFailCount++;
+        console.warn('[JAIN] Tunnel fetch failed (' + tunnelFailCount + '/' + TUNNEL_FAIL_LIMIT + ')', err);
         if (tunnelFailCount >= TUNNEL_FAIL_LIMIT) {
+          console.warn('[JAIN] Tunnel unreachable — falling back to GitHub bootstrap');
           tunnelUrl = null; tunnelFailCount = 0;
           if (pollTimer) { clearInterval(pollTimer); pollTimer = null; }
           bootstrapFromGitHub();
@@ -3014,13 +3016,19 @@
           if (!pollTimer) pollTimer = setInterval(bootstrapFromGitHub, POLL_SLOW);
         }
       })
-      .catch(function() {
+      .catch(function(err) {
+        console.warn('[JAIN] GitHub bootstrap failed, retrying...', err);
+        // Show subtle status in the thoughts area so user sees something
+        var el = document.getElementById('brain-thoughts');
+        if (el && (!el.textContent || el.textContent === '…')) {
+          el.textContent = '⚠ Loading via GitHub fallback…';
+        }
         if (!pollTimer) pollTimer = setInterval(bootstrapFromGitHub, POLL_SLOW);
       });
   }
 
   // Seed tunnel URL directly — skip GitHub bootstrap on first load
-  tunnelUrl = 'https://charged-unique-architects-fusion.trycloudflare.com';
+  tunnelUrl = 'https://essex-vector-social-cancellation.trycloudflare.com';
   pollTunnel();
   pollTimer = setInterval(pollTunnel, POLL_FAST);
 
@@ -3363,7 +3371,43 @@
     // ── Expose hook for Telegram feed merge ─────────────────────────────────
     // Called by applyState() when new news_feed arrives from state.json
     window._liveIntelMergeTelegram = function(newsFeed) {
-      _telegramItems = Array.isArray(newsFeed) ? newsFeed : [];
+      var raw = Array.isArray(newsFeed) ? newsFeed : [];
+
+      // Content-hash dedup: drop items with identical slot+text content
+      // Uses canonical slot (detected from text header) + first 100 chars as fingerprint
+      // This collapses morning_brief duplicates even when sent with --send or different slot names
+      function detectCanonicalSlot(text, fallbackSlot) {
+        var t = (text || '').substring(0, 200).toUpperCase();
+        if (t.indexOf('MORNING BRIEF') !== -1) return 'morning_brief';
+        if (t.indexOf('MARKETS OPEN') !== -1) return 'markets_open';
+        if (t.indexOf('MID MORNING') !== -1) return 'mid_morning';
+        if (t.indexOf('AFTERNOON PULSE') !== -1) return 'afternoon_pulse';
+        if (t.indexOf('MARKETS CLOSE') !== -1) return 'markets_close';
+        if (t.indexOf('EVENING UPDATE') !== -1 || t.indexOf('DAILY RECAP') !== -1) return 'evening_update';
+        return fallbackSlot || '';
+      }
+      var seenContentSigs = {};
+      var deduped = [];
+      raw.forEach(function(item) {
+        var canonSlot = detectCanonicalSlot(item.text, item.slot);
+        var sig = canonSlot + '|' + (item.text || '').substring(0, 100);
+        // Simple djb2-style hash (no crypto needed — just collision resistance)
+        var hash = 0;
+        for (var ci = 0; ci < sig.length; ci++) {
+          hash = ((hash << 5) - hash) + sig.charCodeAt(ci);
+          hash |= 0; // Convert to 32bit integer
+        }
+        var hashKey = hash.toString(36);
+
+        if (seenContentSigs[hashKey]) {
+          // Keep the newer item (items are ordered newest-first from push_news.py)
+          return; // skip this duplicate
+        }
+        seenContentSigs[hashKey] = true;
+        deduped.push(item);
+      });
+
+      _telegramItems = deduped;
       mergeAndRender();
     };
 

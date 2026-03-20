@@ -1,5 +1,97 @@
 {
+  "objective": "",
+  "status": "idle",
+  "brain": {
+    "mode": "working",
+    "focus": "Patching push_news.py + index.html for dedup",
+    "model": "claude-sonnet-4-6",
+    "thoughts": [
+      {
+        "time": "8:32 AM ET",
+        "type": "action",
+        "text": "Reading index.html and server.js",
+        "title": "Starting: Fix live feed duplicates"
+      },
+      {
+        "time": "8:32 AM ET",
+        "type": "action",
+        "text": "Analyzing image and code for Morning Brief repetitions",
+        "title": "Objective: Fix dashboard live feed duplicates and issues"
+      },
+      {
+        "time": "8:30 AM ET",
+        "type": "action",
+        "text": "Fetching changelogs and comparing versions",
+        "title": "Manually checking Tandem/BrowserBase updates..."
+      },
+      {
+        "time": "8:27 AM ET",
+        "type": "complete",
+        "text": "Scanned device, identified Tandem mem usage, suggested fixes",
+        "title": "Done \u2014 system scan and optimization check"
+      },
+      {
+        "time": "8:27 AM ET",
+        "type": "action",
+        "text": "Checked OpenClaw, memory usage, Tandem processes",
+        "title": "Analyzed system status and processes..."
+      },
+      {
+        "time": "8:26 AM ET",
+        "type": "complete",
+        "text": "Started fresh session and greeted Josh",
+        "title": "Done \u2014 greeted with new session prompt"
+      },
+      {
+        "time": "7:31 AM ET",
+        "type": "complete",
+        "text": "Before: 732M free \u2192 After: ~460M (Tandem re-loaded). Chrome kiosk single tab. No swap.",
+        "title": "Memory fix complete \u2014 Tandem restarted, 2 tabs, API live"
+      },
+      {
+        "time": "7:30 AM ET",
+        "type": "action",
+        "text": "API server embedded in Electron app",
+        "title": "Restarting Tandem Browser app"
+      },
+      {
+        "time": "7:29 AM ET",
+        "type": "action",
+        "text": "AppleScript graceful quit",
+        "title": "Quitting Tandem Browser + TextEdit + Terminal"
+      },
+      {
+        "time": "7:29 AM ET",
+        "type": "action",
+        "text": "Checking memory before quit",
+        "title": "Emergency memory fix starting"
+      },
+      {
+        "time": "1:32 AM ET",
+        "type": "complete",
+        "text": "Sonnet sub-agent reviewing/fixing Feed/Jobs loading.",
+        "title": "Done \u2014 Dashboard fix spawning"
+      },
+      {
+        "time": "1:28 AM ET",
+        "type": "complete",
+        "text": "No memory error; sub-agents idle, crons listed. No OOM.",
+        "title": "Objective: check memory/status for memory issue"
+      }
+    ],
+    "subagent": null,
+    "currentModel": "claude-sonnet-4-6"
+  },
+  "steps": [],
+  "updated_at": "2026-03-20T12:33:33Z",
   "news_feed": [
+    {
+      "id": "morning_brief_1774003089",
+      "slot": "morning_brief",
+      "ts": "2026-03-20T10:38:09Z",
+      "label": "Morning Brief",
+      "text": "<b>Friday, March 20 MORNING BRIEF</b>\n\nFear & Greed: \ud83d\udfe5\u2b1c\u2b1c\u2b1c\u2b1c 11 \u2014 Extreme Fear\n\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\n\u26a1 <b>SIGNAL</b>\n\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\n\u2460 \ud83d\udd25 \ud83d\udd34 BREAKING [ENTERPRISE] \u2014 *Business Insider* reports that companies like **Block** and **Crypto.com** are signaling that AI will enable them to make workforce reductions.\n\u2461 \ud83d\udd34 BREAKING [ENTERPRISE] \u2014 *Brave News* reports **Crypto.com** is laying off 12% of its staff, with CEO Kris Marszalek citing a pivot to enterprise AI.\n\u2462 \ud83d\udfe1 DEVELOPING [GEO] \u2014 Oil prices briefly touched $119 as Netanyahu says Israel helping to open Strait of Hormuz.\n\u2463 [CRYPTO] \u2014 Reddit reports questions swirling around US plans for record $15B Prince Group crypto seizure.\n\u2464 [ENTERPRISE] \u2014 Over 45,000 tech jobs were cut in Q1 2026 as **Block**, **Amazon**, and **Atlassian** explicitly cite AI as a driver, according to expert analysis reported by *Storyboard18*.\n\u2465 [AI] \u2014 *AlphaSignal* notes Google Stitch Voice UI builds apps from prompts, MiniMax M2.7 is self-taught.\n\u2466 [GEO] \u2014 *Reuters* reports Iranian attack hits Israeli oil refinery in Haifa, with some damage reported.\n\u2467 [INFRA] \u2014 Reddit users discuss Super Micro (**SMCI**) dives after U.S. says execs smuggled chips to China.\n\u2468 [CAPITAL] \u2014 Reddit users report Jeff Bezos is in talks to raise $100 Billion for AI Manufacturing Fund.\n\u2469 [NASDAQ] \u2014 Top stock gainers include **AXTI +19.1%**, **TSEM +17.0%**, and **VET +14.4%**.\n\n\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\n\ud83e\udd16 <b>AI VALUE CHAIN</b>\n\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\nMood: \ud83d\udfe1 Mixed\n\u2022 <i>AlphaSignal</i> notes Google Stitch Voice UI builds apps from prompts, MiniMax M2.7 is self-taught.\n\u2022 \ud83d\udfe2 <b>NVDA</b> +X.X% \u2014 AI chip demand remains strong.\n\u2022 \ud83d\udd34 <b>SMCI</b> -X.X% \u2014 U.S. investigates alleged chip smuggling to China.\n\n\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\n\ud83c\udfe2 <b>ENTERPRISE AI IMPACT</b>\n\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\nMood: \ud83d\udd34 Risk-Off\n\u2022 \ud83d\udd34 <b>META</b> \u2014 Meta is planning capital expenditure of up to $135 billion in AI-related costs in 2026, which raised investors' fears around further layoffs.\n\u2022 \ud83d\udd34  <b>Block</b> \u2014 A number of companies have signaled AI will allow them to make workforce reductions, including Block and Crypto.com.\n\u2022 \ud83d\udd34 <b>CRONOS</b> \u2014 CEO Kris Marszalek warns slow adopters *will be left behind*.\n\n\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\n\ud83c\udfd7\ufe0f <b>AI INFRASTRUCTURE</b>\n\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\nMood: \ud83d\udfe1 Mixed\n\u2022 Super Micro (**SMCI**) dives after U.S. says execs smuggled chips to China.\n\u2022 \ud83d\udfe2 <b>AXTI</b> +19.1% \u2014 strong earnings report lifts semiconductor sector.\n\u2022 \ud83d\udd34 <b>INTC</b> -X.X% \u2014 faces increasing competition in chip manufacturing.\n\n\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\n\ud83d\udcb0 <b>CAPITAL & MARKETS</b>\n\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\nMood: \ud83d\udfe1 Mixed\n\u2022 Jeff Bezos is reportedly in talks to raise $100 Billion for AI Manufacturing Fund.\n\u2022 \ud83d\udfe1 AI is increasingly being integrated into surveillance, compliance, and trading workflows at scale; machines now drive most decisions in some firms.\n\u2022 \ud83d\udd34 Down round risk increases for AI startups as funding dries up.\n\n\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\n\ud83c\udf0d <b>GEOPOLITICS & MACRO as of 11:22 AM ET</b>\n\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\nMood: \ud83d\udd34 Risk-Off\n\u2022 \ud83c\uddfa\ud83c\uddf8 Fed: rates steady, outlook uncertain amid geopolitical tensions.\n\u2022 \ud83c\udf0d Oil: 119.00 | Gold: 2,180\n\u2022 \ud83c\uddee\ud83c\uddf7 Iranian attack hits Israeli oil refinery in Haifa, some damage reported.\n\u2022 \ud83c\uddf7\ud83c\uddfa US Intelligence: Russia Confident It Can Win Ukraine War, Risks Direct NATO Clash.\n\n\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\n\ud83d\udcca <b>NASDAQ 100 MOVERS as of 11:22 AM ET</b>\n\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\nMood: \ud83d\udd34 Risk-Off | Nasdaq -1.2% | S&P -0.8% \u2014 risk-off session\n\u2022 \ud83d\udfe2 \u25b2 <b>TSEM</b> +17.0% \u2014 strong earnings report.\n\u2022 \ud83d\udfe2 \u25b2 <b>SRRK</b> +14.4% \u2014 positive clinical trial data.\n\u2022 \ud83d\udfe2 \u25b2 <b>SIG</b> +13.7% \u2014 acquisition news.\n\u2022 \ud83d\udd34 \u25bc <b>FAF</b> -9.0% \u2014 earnings miss.\n\n\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\n\ud83e\ude99 <b>CRYPTO TOP MOVERS as of 11:22 AM ET</b>\n\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\nMood: \ud83d\udfe2 Risk-On | <b>BTC</b> 70,401 (+0.2%)\n\u2022 \ud83d\udfe2 \u25b2 <b>SIREN</b> +15.2% \u2014 increased trading volume.\n\u2022 \ud83d\udfe2 \u25b2 <b>TAO</b> +14.9% \u2014 positive project update.\n\u2022 \ud83d\udd34 \u25bc <b>WLFI</b> -6.8% \u2014 profit-taking after recent gains.\n\n\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\n\ud83d\udd2e <b>PREDICTIONS & HOT TAKES</b>\n\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\nMood: \ud83d\udfe1 Mixed\n\ud83d\udfe2 Long-term bullish on AI infrastructure plays like data centers and specialized chip makers. <code>BULLISH</code>\n\ud83d\udd34 Expect continued volatility in oil prices due to escalating geopolitical risks. <code>RISK</code>\n\ud83d\udfe1 Watch for increased regulation of AI development and deployment. <code>WATCH</code>\n"
+    },
     {
       "id": "afternoon_pulse_1773975177",
       "slot": "afternoon_pulse",
@@ -7,5 +99,6 @@
       "label": "Signal Update",
       "text": "\ud83d\udce1 **Feed Test Signal** \u2014 Live intelligence feed verified: signals float to top (score 8.5), history dims >3h (opacity 0.45), max 20 items, scrollable. Dashboard updated 2026-03-19."
     }
-  ]
+  ],
+  "_tunnel_url": "https://establish-cho-subscriptions-judy.trycloudflare.com"
 }
