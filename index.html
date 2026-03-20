@@ -28,12 +28,10 @@
   ├─ push_brain.py / push_github.py     — State push pipeline
   └─ --m-color, --m-glow, --m-border    — Model-color CSS vars
 
-  LEFT PANEL — BOTTOM (Live Task Queue):
-  ┌─ .jobs-section                      — Task queue / Active crons panel (tabbed)
-  ├─ tab: "Active Crons"               — Live poll /cron-status every 30s (openclaw cron list)
-  ├─ tab: "Task Queue"                 — Live poll /task-queue every 10s (runs.json + brain state)
-  ├─ renderCrons()                     — Renders real cron data from API (nextRunAtMs, lastRunAtMs)
-  └─ renderTaskQueue()                 — FIFO queue: queued → in-progress → complete sub-agents
+  LEFT PANEL — BOTTOM (Today's Jobs — Unified):
+  ┌─ .jobs-section                      — Unified single-pane: Active Crons (top) + Task Queue (bottom)
+  ├─ fetchAllJobs()                     — Parallel fetch /cron-status + /task-queue, unified render, every 15s
+  └─ renderUnifiedJobs()               — Top: crons table (ETAs/status); Bottom: FIFO task queue items
 
   RIGHT PANEL (Live Intelligence Feed):
   ┌─ .right-panel / .feed-section       — News brief feed
@@ -810,36 +808,18 @@
     white-space: nowrap;
   }
 
-  /* ── JOBS WIDGET TABS ─────────────────────────────────────────────────── */
-  .jobs-tabs {
-    display: flex;
-    align-items: center;
-    gap: 0;
-    border-bottom: 1px solid rgba(32,178,170,0.12);
-    flex-shrink: 0;
-    padding: 0 12px;
-  }
-  .jobs-tab {
+  /* ── UNIFIED JOBS SECTION LABELS ─────────────────────────────────────── */
+  .jobs-section-label {
     font-family: var(--mono);
     font-size: 9px;
-    font-weight: 600;
-    letter-spacing: 0.1em;
+    font-weight: 700;
+    letter-spacing: 0.14em;
     text-transform: uppercase;
-    padding: 7px 10px 5px;
-    cursor: pointer;
-    border-bottom: 2px solid transparent;
-    transition: all 0.2s ease;
-    color: rgba(255,255,255,0.28);
-    background: none; border-top: none; border-left: none; border-right: none;
-    outline: none;
-    position: relative;
-    top: 1px;
+    color: rgba(32,178,170,0.65);
+    padding: 2px 0 5px;
+    border-bottom: 1px solid rgba(32,178,170,0.10);
+    margin-bottom: 5px;
   }
-  .jobs-tab.active {
-    color: #20B2AA;
-    border-bottom-color: #20B2AA;
-  }
-  .jobs-tab:hover:not(.active) { color: rgba(255,255,255,0.5); }
 
   /* ── TASK QUEUE ITEMS ────────────────────────────────────────────────── */
   .tq-list { display: flex; flex-direction: column; gap: 5px; padding: 2px 0; }
@@ -3661,36 +3641,13 @@
     window._fetchUsageMetrics = function(force) { fetchUsageMetrics(force); };
   })();
 
-  // ── LIVE TASK QUEUE / ACTIVE CRONS WIDGET ─────────────────────────────────
-  // Cron data: live from /cron-status (openclaw cron list) every 30s
-  // Task queue: live from /task-queue (runs.json + brain state) every 10s
+  // ── UNIFIED JOBS WIDGET (Active Crons top + Task Queue bottom) ─────────────
+  // Single pane, no tabs. Fetches /cron-status + /task-queue, renders both every 15s.
 
   function getETNow() { return new Date(new Date().toLocaleString('en-US', { timeZone: 'America/New_York' })); }
 
-  var _activeJobTab = 'crons'; // 'crons' | 'queue'
-  var _liveCrons = [];         // filled by fetchCronStatus
-  var _liveQueue = {};         // filled by fetchTaskQueue
-
-  function switchJobTab(tab) {
-    _activeJobTab = tab;
-    var tC = document.getElementById('tabCrons');
-    var tQ = document.getElementById('tabQueue');
-    var cC = document.getElementById('cronsContainer');
-    var cQ = document.getElementById('taskQueueContainer');
-    if (tab === 'crons') {
-      if(tC) { tC.classList.add('active'); }
-      if(tQ) { tQ.classList.remove('active'); }
-      if(cC) cC.style.display = 'block';
-      if(cQ) cQ.style.display = 'none';
-      renderCrons();
-    } else {
-      if(tQ) { tQ.classList.add('active'); }
-      if(tC) { tC.classList.remove('active'); }
-      if(cQ) cQ.style.display = 'block';
-      if(cC) cC.style.display = 'none';
-      renderTaskQueue();
-    }
-  }
+  var _liveCrons = [];  // filled by fetchAllJobs
+  var _liveQueue = {};  // filled by fetchAllJobs
 
   // Format a duration in ms to human string
   function fmtDur(ms) {
@@ -3747,166 +3704,141 @@
     return expr;
   }
 
-  // Render crons from live _liveCrons data
-  function renderCrons() {
-    var c = document.getElementById('cronsContainer');
-    if (!c || _activeJobTab !== 'crons') return;
+  // ── UNIFIED RENDER: Active Crons (top) + Task Queue (bottom) ───────────────
+  function renderUnifiedJobs() {
+    var c = document.getElementById('unifiedJobsContainer');
+    if (!c) return;
+    var now = Date.now();
+    var h = '';
+
+    // ── Section 1: Active Crons ──
+    h += '<div class="jobs-section-label">Active Crons</div>';
     if (!_liveCrons || _liveCrons.length === 0) {
-      c.innerHTML = '<div class="tq-empty">Loading crons…</div>';
-      return;
-    }
-    var now = Date.now();
-    var healthy = 0, errors = 0;
-    var h = '<table class="crons-table"><thead><tr>'
-      + '<th>Cron</th><th>Schedule</th><th>Next Run</th><th>Status</th>'
-      + '</tr></thead><tbody>';
-    for (var i = 0; i < _liveCrons.length; i++) {
-      var j = _liveCrons[i];
-      var state = j.state || {};
-      var expr = (j.schedule && j.schedule.expr) || '';
-      var nextMs = state.nextRunAtMs || 0;
-      var lastMs = state.lastRunAtMs || 0;
-      var lastStatus = state.lastRunStatus || 'ok';
-      var consErrors = state.consecutiveErrors || 0;
-      var schedLabel = fmtCronExpr(expr);
-      var nextLabel = fmtNextRun(nextMs);
-      var statusClass = 'cron-status-healthy';
-      var statusLabel = '✓ ok';
-      if (consErrors > 0) {
-        statusClass = 'cron-status-pending'; // amber-ish for errors
-        statusLabel = '✗ err×' + consErrors;
-        errors++;
-      } else if (lastStatus !== 'ok') {
-        statusClass = 'cron-status-soon';
-        statusLabel = '⚠ ' + lastStatus;
-      } else if (nextMs > 0 && nextMs - now < 5 * 60 * 1000) {
-        statusClass = 'cron-status-soon';
-        statusLabel = '◎ soon';
-        healthy++;
-      } else {
-        healthy++;
-      }
-      h += '<tr>'
-        + '<td class="cron-name">' + escHtml(j.name || '—') + '</td>'
-        + '<td class="cron-schedule">' + escHtml(schedLabel) + '</td>'
-        + '<td class="cron-lastrun">' + escHtml(nextLabel) + '</td>'
-        + '<td class="' + statusClass + '">' + statusLabel + '</td>'
-        + '</tr>';
-    }
-    h += '</tbody></table>';
-    c.innerHTML = h;
-    // Update header meta
-    var meta = document.getElementById('cronStatus');
-    if (meta) {
-      if (errors > 0) meta.textContent = errors + ' Error' + (errors > 1 ? 's' : '');
-      else meta.textContent = healthy + ' Healthy';
-    }
-  }
-
-  // Render task queue from live _liveQueue data
-  function renderTaskQueue() {
-    var c = document.getElementById('taskQueueContainer');
-    if (!c || _activeJobTab !== 'queue') return;
-    var tasks = (_liveQueue && _liveQueue.tasks) ? _liveQueue.tasks : [];
-    var now = Date.now();
-    if (!tasks || tasks.length === 0) {
-      c.innerHTML = '<div class="tq-empty">No recent tasks</div>';
-      // Update meta
-      var meta = document.getElementById('cronStatus');
-      if (meta) meta.textContent = 'idle';
-      return;
-    }
-
-    // Sort: in-progress first, then queued, then complete (FIFO within each group)
-    var inP = tasks.filter(function(t){ return t.status === 'in-progress'; });
-    var q   = tasks.filter(function(t){ return t.status === 'queued'; });
-    var done = tasks.filter(function(t){ return t.status === 'complete'; });
-    var ordered = inP.concat(q).concat(done);
-
-    var h = '<div class="tq-list">';
-    for (var i = 0; i < ordered.length; i++) {
-      var t = ordered[i];
-      var cls = t.status === 'in-progress' ? 'tq-in-progress'
-              : t.status === 'complete'    ? 'tq-complete'
-              : 'tq-queued';
-      var badge = t.status === 'in-progress' ? 'RUNNING'
-                : t.status === 'complete'    ? 'DONE'
-                : 'QUEUED';
-      var ageStr = t.ageMs ? fmtAgo(t.ageMs) : '';
-      var etaStr = t.eta ? 'eta ' + fmtDur(t.eta * 1000) : '';
-      var durStr = t.durationMs ? fmtDur(t.durationMs) : '';
-      var modelShort = t.model ? shortModel(t.model) : '';
-      // Progress bar: for in-progress, animate width based on elapsed/eta
-      var progressBar = '';
-      if (t.status === 'in-progress') {
-        var pct = 0;
-        if (t.eta && t.ageMs) {
-          var total = (t.ageMs / 1000) + t.eta;
-          pct = total > 0 ? Math.min(95, Math.round((t.ageMs / 1000) / total * 100)) : 10;
+      h += '<div class="tq-empty">Loading crons…</div>';
+    } else {
+      var healthy = 0, errors = 0;
+      h += '<table class="crons-table"><thead><tr>'
+        + '<th>Cron</th><th>Schedule</th><th>Next Run</th><th>Status</th>'
+        + '</tr></thead><tbody>';
+      for (var i = 0; i < _liveCrons.length; i++) {
+        var j = _liveCrons[i];
+        var state = j.state || {};
+        var expr = (j.schedule && j.schedule.expr) || '';
+        var nextMs = state.nextRunAtMs || 0;
+        var lastStatus = state.lastRunStatus || 'ok';
+        var consErrors = state.consecutiveErrors || 0;
+        var schedLabel = fmtCronExpr(expr);
+        var nextLabel = fmtNextRun(nextMs);
+        var statusClass = 'cron-status-healthy';
+        var statusLabel = '✓ ok';
+        if (consErrors > 0) {
+          statusClass = 'cron-status-pending';
+          statusLabel = '✗ err×' + consErrors;
+          errors++;
+        } else if (lastStatus !== 'ok') {
+          statusClass = 'cron-status-soon';
+          statusLabel = '⚠ ' + lastStatus;
+          healthy++;
+        } else if (nextMs > 0 && nextMs - now < 5 * 60 * 1000) {
+          statusClass = 'cron-status-soon';
+          statusLabel = '◎ soon';
+          healthy++;
         } else {
-          // Indefinite: show slow creep
-          pct = Math.min(85, Math.round((t.ageMs || 0) / 60000 * 5 + 10));
+          healthy++;
         }
-        progressBar = '<div class="tq-progress-bar" style="width:' + pct + '%"></div>';
+        h += '<tr>'
+          + '<td class="cron-name">' + escHtml(j.name || '—') + '</td>'
+          + '<td class="cron-schedule">' + escHtml(schedLabel) + '</td>'
+          + '<td class="cron-lastrun">' + escHtml(nextLabel) + '</td>'
+          + '<td class="' + statusClass + '">' + statusLabel + '</td>'
+          + '</tr>';
       }
-      h += '<div class="tq-item ' + cls + '">'
-        + progressBar
-        + '<div class="tq-dot"></div>'
-        + '<div class="tq-body">'
-        + '<div class="tq-label">' + escHtml(t.label || 'Task') + '</div>'
-        + '<div class="tq-meta">'
-        + (modelShort ? '<span class="tq-model">' + escHtml(modelShort) + '</span>' : '')
-        + (ageStr ? '<span class="tq-age">' + escHtml(ageStr) + '</span>' : '')
-        + (etaStr ? '<span class="tq-eta">' + escHtml(etaStr) + '</span>' : '')
-        + (durStr && t.status === 'complete' ? '<span class="tq-age">took ' + escHtml(durStr) + '</span>' : '')
-        + '</div>'
-        + '</div>'
-        + '<span class="tq-status-badge">' + badge + '</span>'
-        + '</div>';
+      h += '</tbody></table>';
     }
-    h += '</div>';
+
+    // ── Section 2: Task Queue ──
+    h += '<div class="jobs-section-label" style="margin-top:10px;">Task Queue</div>';
+    var tasks = (_liveQueue && _liveQueue.tasks) ? _liveQueue.tasks : [];
+    if (!tasks || tasks.length === 0) {
+      h += '<div class="tq-empty">No recent tasks</div>';
+    } else {
+      var inP  = tasks.filter(function(t){ return t.status === 'in-progress'; });
+      var q    = tasks.filter(function(t){ return t.status === 'queued'; });
+      var done = tasks.filter(function(t){ return t.status === 'complete'; });
+      var ordered = inP.concat(q).concat(done);
+      h += '<div class="tq-list">';
+      for (var ti = 0; ti < ordered.length; ti++) {
+        var t = ordered[ti];
+        var cls = t.status === 'in-progress' ? 'tq-in-progress'
+                : t.status === 'complete'    ? 'tq-complete'
+                : 'tq-queued';
+        var badge = t.status === 'in-progress' ? 'RUNNING'
+                  : t.status === 'complete'    ? 'DONE'
+                  : 'QUEUED';
+        var ageStr = t.ageMs ? fmtAgo(t.ageMs) : '';
+        var etaStr = t.eta ? 'eta ' + fmtDur(t.eta * 1000) : '';
+        var durStr = t.durationMs ? fmtDur(t.durationMs) : '';
+        var modelShort = t.model ? shortModel(t.model) : '';
+        var progressBar = '';
+        if (t.status === 'in-progress') {
+          var pct = 0;
+          if (t.eta && t.ageMs) {
+            var total = (t.ageMs / 1000) + t.eta;
+            pct = total > 0 ? Math.min(95, Math.round((t.ageMs / 1000) / total * 100)) : 10;
+          } else {
+            pct = Math.min(85, Math.round((t.ageMs || 0) / 60000 * 5 + 10));
+          }
+          progressBar = '<div class="tq-progress-bar" style="width:' + pct + '%"></div>';
+        }
+        h += '<div class="tq-item ' + cls + '">'
+          + progressBar
+          + '<div class="tq-dot"></div>'
+          + '<div class="tq-body">'
+          + '<div class="tq-label">' + escHtml(t.label || 'Task') + '</div>'
+          + '<div class="tq-meta">'
+          + (modelShort ? '<span class="tq-model">' + escHtml(modelShort) + '</span>' : '')
+          + (ageStr ? '<span class="tq-age">' + escHtml(ageStr) + '</span>' : '')
+          + (etaStr ? '<span class="tq-eta">' + escHtml(etaStr) + '</span>' : '')
+          + (durStr && t.status === 'complete' ? '<span class="tq-age">took ' + escHtml(durStr) + '</span>' : '')
+          + '</div>'
+          + '</div>'
+          + '<span class="tq-status-badge">' + badge + '</span>'
+          + '</div>';
+      }
+      h += '</div>';
+    }
+
     c.innerHTML = h;
 
     // Update header meta
     var meta = document.getElementById('cronStatus');
     if (meta) {
-      var ip = inP.length;
-      if (ip > 0) meta.textContent = ip + ' Running';
-      else if (q.length > 0) meta.textContent = q.length + ' Queued';
-      else meta.textContent = done.length + ' Complete';
+      var runningTasks = (_liveQueue && _liveQueue.inProgress) || 0;
+      var cronCount = _liveCrons ? _liveCrons.length : 0;
+      if (runningTasks > 0) meta.textContent = runningTasks + ' Running · ' + cronCount + ' Crons';
+      else meta.textContent = cronCount + ' Crons';
     }
   }
 
-  // Fetch live cron status from /cron-status every 30s
-  function fetchCronStatus() {
+  // Unified fetch: both endpoints in parallel, render once when both complete
+  function fetchAllJobs() {
+    var cronDone = false, queueDone = false;
     fetch('/cron-status').then(function(r){ return r.json(); }).then(function(d) {
       _liveCrons = d.jobs || [];
-      renderCrons();
-    }).catch(function(e) {
-      // Silently ignore fetch errors — keep showing last known
-    });
-  }
-  fetchCronStatus();
-  setInterval(fetchCronStatus, 30000);
+      cronDone = true;
+      if (queueDone) renderUnifiedJobs();
+    }).catch(function() { cronDone = true; if (queueDone) renderUnifiedJobs(); });
 
-  // Fetch live task queue from /task-queue every 10s
-  function fetchTaskQueue() {
     fetch('/task-queue').then(function(r){ return r.json(); }).then(function(d) {
       _liveQueue = d;
-      renderTaskQueue();
-      // Auto-switch to queue tab if a task is actively running
-      if (d.inProgress > 0 && _activeJobTab === 'crons') {
-        // Flash the queue tab badge if tasks are running
-        var tQ = document.getElementById('tabQueue');
-        if (tQ && !tQ.dataset.notified) {
-          tQ.style.color = '#20B2AA';
-          tQ.dataset.notified = '1';
-        }
-      }
-    }).catch(function(e) {});
+      queueDone = true;
+      if (cronDone) renderUnifiedJobs();
+    }).catch(function() { queueDone = true; if (cronDone) renderUnifiedJobs(); });
   }
-  fetchTaskQueue();
-  setInterval(fetchTaskQueue, 10000);
+
+  // Load immediately on page open, then refresh every 15s
+  fetchAllJobs();
+  setInterval(fetchAllJobs, 15000);
 
   function updateFeedTime() {
     var n=getETNow(), h=n.getHours(), m=n.getMinutes(), a=h>=12?'PM':'AM';
