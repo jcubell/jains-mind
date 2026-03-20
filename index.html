@@ -3271,8 +3271,8 @@
     setTimeout(fetchUsageMetrics, 3000);
     setInterval(fetchUsageMetrics, USAGE_POLL_MS);
 
-    // Expose so pollTunnel success can trigger a refresh
-    window._fetchUsageMetrics = fetchUsageMetrics;
+    // Expose so pollTunnel success can trigger a refresh (force=true bypasses debounce)
+    window._fetchUsageMetrics = function(force) { fetchUsageMetrics(force); };
   })();
 
   // ── LIVE TASK QUEUE / ACTIVE CRONS WIDGET ─────────────────────────────────
