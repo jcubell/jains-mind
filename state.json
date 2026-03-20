@@ -2,10 +2,16 @@
   "objective": "",
   "status": "idle",
   "brain": {
-    "mode": "working",
-    "focus": "Patching push_news.py + index.html for dedup",
+    "mode": "idle",
+    "focus": "Done \u2014 live feed dedup fix deployed",
     "model": "claude-sonnet-4-6",
     "thoughts": [
+      {
+        "time": "8:36 AM ET",
+        "type": "complete",
+        "text": "push_news.py + index.html: content-hash dedup, state.json cleaned (3\u21921 morning brief), committed+pushed",
+        "title": "Done \u2014 live feed dedup fix deployed"
+      },
       {
         "time": "8:32 AM ET",
         "type": "action",
@@ -71,27 +77,14 @@
         "type": "complete",
         "text": "Sonnet sub-agent reviewing/fixing Feed/Jobs loading.",
         "title": "Done \u2014 Dashboard fix spawning"
-      },
-      {
-        "time": "1:28 AM ET",
-        "type": "complete",
-        "text": "No memory error; sub-agents idle, crons listed. No OOM.",
-        "title": "Objective: check memory/status for memory issue"
       }
     ],
     "subagent": null,
     "currentModel": "claude-sonnet-4-6"
   },
   "steps": [],
-  "updated_at": "2026-03-20T12:33:33Z",
+  "updated_at": "2026-03-20T12:36:14Z",
   "news_feed": [
-    {
-      "id": "morning_brief_1774010135",
-      "slot": "morning_brief",
-      "ts": "2026-03-20T12:35:35Z",
-      "label": "Morning Brief",
-      "text": "<b>Friday, March 20 MORNING BRIEF</b>\n\nFear & Greed: \ud83d\udfe5 11 \u2014 Extreme Fear test"
-    },
     {
       "id": "morning_brief_1774003089",
       "slot": "morning_brief",
