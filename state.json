@@ -62,6 +62,13 @@
   "updated_at": "2026-03-20T16:16:24Z",
   "news_feed": [
     {
+      "id": "breaking_now_1774023413",
+      "slot": "breaking_now",
+      "ts": "2026-03-20T16:16:53Z",
+      "label": "Breaking Now",
+      "text": "\ud83d\udd34 BREAKING [GEO/MACRO] \u2014 Fed Chair Powell signals emergency rate cut possible if oil stays above $120. Strait of Hormuz tension driving energy inflation fears. Goldman raises recession probability to 35% for Q3 2026."
+    },
+    {
       "id": "mid_morning_1774023411",
       "slot": "mid_morning",
       "ts": "2026-03-20T16:16:51Z",
