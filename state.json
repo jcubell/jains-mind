@@ -2,9 +2,9 @@
   "objective": "",
   "status": "idle",
   "brain": {
-    "mode": "idle",
-    "focus": "Done \u2014 clarified news bot setup",
-    "model": "openrouter/x-ai/grok-4-fast",
+    "mode": "working",
+    "focus": "Processing voice message...",
+    "model": "whisper",
     "thoughts": [
       {
         "time": "4:32 PM ET",
@@ -26,10 +26,10 @@
       }
     ],
     "subagent": null,
-    "currentModel": "openrouter/x-ai/grok-4-fast"
+    "currentModel": "whisper"
   },
   "steps": [],
-  "updated_at": "2026-03-20T20:32:55Z",
+  "updated_at": "2026-03-20T20:33:58Z",
   "news_feed": [
     {
       "id": "afternoon_pulse_1774023415",
