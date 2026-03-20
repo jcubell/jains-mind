@@ -3,9 +3,15 @@
   "status": "idle",
   "brain": {
     "mode": "working",
-    "focus": "Transcribing voice message...",
-    "model": "whisper",
+    "focus": "Processing transcribed audio...",
+    "model": "openrouter/x-ai/grok-4-fast",
     "thoughts": [
+      {
+        "time": "12:14 PM ET",
+        "type": "action",
+        "text": "Responding to voice message about signals and news bot",
+        "title": "Processing transcribed audio..."
+      },
       {
         "time": "10:29 AM ET",
         "type": "action",
@@ -20,10 +26,10 @@
       }
     ],
     "subagent": null,
-    "currentModel": "whisper"
+    "currentModel": "openrouter/x-ai/grok-4-fast"
   },
   "steps": [],
-  "updated_at": "2026-03-20T16:14:15Z",
+  "updated_at": "2026-03-20T16:14:21Z",
   "news_feed": [
     {
       "id": "morning_brief_1774003089",
