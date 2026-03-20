@@ -2,9 +2,9 @@
   "objective": "",
   "status": "idle",
   "brain": {
-    "mode": "idle",
-    "focus": "Heartbeat check \u2014 cost healthy",
-    "model": "openrouter/x-ai/grok-4-fast",
+    "mode": "working",
+    "focus": "Reading heartbeat...",
+    "model": "claude-sonnet-4-6",
     "thoughts": [
       {
         "time": "1:32 AM ET",
@@ -26,10 +26,10 @@
       }
     ],
     "subagent": null,
-    "currentModel": "openrouter/x-ai/grok-4-fast"
+    "currentModel": "claude-sonnet-4-6"
   },
   "steps": [],
-  "updated_at": "2026-03-20T07:38:10Z",
+  "updated_at": "2026-03-20T11:27:07Z",
   "news_feed": [
     {
       "id": "morning_brief_1774003089",
