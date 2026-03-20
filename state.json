@@ -62,6 +62,13 @@
   "updated_at": "2026-03-20T16:16:24Z",
   "news_feed": [
     {
+      "id": "breaking_now_1774023404",
+      "slot": "breaking_now",
+      "ts": "2026-03-20T16:16:44Z",
+      "label": "Breaking Now",
+      "text": "\ud83d\udd34 BREAKING [AI] \u2014 OpenAI confirms GPT-5 deployment begins rolling out to enterprise customers today, with reasoning capabilities 10x beyond GPT-4o. CTO Mira Murati: 'This changes everything about knowledge work.'  up 2.1% on the news."
+    },
+    {
       "id": "morning_brief_1774003089",
       "slot": "morning_brief",
       "ts": "2026-03-20T10:38:09Z",
