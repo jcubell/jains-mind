@@ -2,10 +2,16 @@
   "objective": "",
   "status": "idle",
   "brain": {
-    "mode": "working",
-    "focus": "Starting: Update dashboard Jobs widget with descriptive cron names",
-    "model": "claude-sonnet-4-6",
+    "mode": "idle",
+    "focus": "Heartbeat OK \u2014 Sonnet usage healthy (no daily data yet, under /bin/zsh.50)",
+    "model": "openrouter/x-ai/grok-4-fast",
     "thoughts": [
+      {
+        "time": "4:34 PM ET",
+        "type": "complete",
+        "text": "Cost check: No overuse patterns; last at ~12:15 ET",
+        "title": "Heartbeat OK \u2014 Sonnet usage healthy (no daily data yet, under /bin/zsh.50)"
+      },
       {
         "time": "4:32 PM ET",
         "type": "complete",
@@ -26,10 +32,10 @@
       }
     ],
     "subagent": null,
-    "currentModel": "claude-sonnet-4-6"
+    "currentModel": "openrouter/x-ai/grok-4-fast"
   },
   "steps": [],
-  "updated_at": "2026-03-20T20:34:38Z",
+  "updated_at": "2026-03-20T20:34:41Z",
   "news_feed": [
     {
       "id": "afternoon_pulse_1774023415",
