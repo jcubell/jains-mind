@@ -3,8 +3,8 @@
   "status": "idle",
   "brain": {
     "mode": "working",
-    "focus": "Reading message...",
-    "model": "openrouter/x-ai/grok-4-fast",
+    "focus": "Fixing: tunnel URL mismatch in index.html + populating feed",
+    "model": "claude-sonnet-4-6",
     "thoughts": [
       {
         "time": "12:15 PM ET",
@@ -56,10 +56,10 @@
       }
     ],
     "subagent": null,
-    "currentModel": "openrouter/x-ai/grok-4-fast"
+    "currentModel": "claude-sonnet-4-6"
   },
   "steps": [],
-  "updated_at": "2026-03-20T16:15:44Z",
+  "updated_at": "2026-03-20T16:16:24Z",
   "news_feed": [
     {
       "id": "morning_brief_1774003089",
