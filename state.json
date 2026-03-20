@@ -62,6 +62,13 @@
   "updated_at": "2026-03-20T16:16:24Z",
   "news_feed": [
     {
+      "id": "markets_open_1774023408",
+      "slot": "markets_open",
+      "ts": "2026-03-20T16:16:48Z",
+      "label": "Signal Update",
+      "text": "\u26a1 SIGNAL [MARKETS] \u2014 NVDA +3.8% after Blackwell Ultra GPU pre-orders exceed 2M units. AMD -1.2%. Oil at $121. BTC holding $70.8K. Fear & Greed: 14 \u2014 Extreme Fear. S&P futures +0.4%."
+    },
+    {
       "id": "breaking_now_1774023406",
       "slot": "breaking_now",
       "ts": "2026-03-20T16:16:46Z",
