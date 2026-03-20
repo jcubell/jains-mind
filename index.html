@@ -2990,9 +2990,11 @@
         if (data._tunnel_url && data._tunnel_url !== tunnelUrl) tunnelUrl = data._tunnel_url;
         applyState(data);
       })
-      .catch(function() {
+      .catch(function(err) {
         tunnelFailCount++;
+        console.warn('[JAIN] Tunnel fetch failed (' + tunnelFailCount + '/' + TUNNEL_FAIL_LIMIT + ')', err);
         if (tunnelFailCount >= TUNNEL_FAIL_LIMIT) {
+          console.warn('[JAIN] Tunnel unreachable — falling back to GitHub bootstrap');
           tunnelUrl = null; tunnelFailCount = 0;
           if (pollTimer) { clearInterval(pollTimer); pollTimer = null; }
           bootstrapFromGitHub();
@@ -3014,7 +3016,13 @@
           if (!pollTimer) pollTimer = setInterval(bootstrapFromGitHub, POLL_SLOW);
         }
       })
-      .catch(function() {
+      .catch(function(err) {
+        console.warn('[JAIN] GitHub bootstrap failed, retrying...', err);
+        // Show subtle status in the thoughts area so user sees something
+        var el = document.getElementById('brain-thoughts');
+        if (el && (!el.textContent || el.textContent === '…')) {
+          el.textContent = '⚠ Loading via GitHub fallback…';
+        }
         if (!pollTimer) pollTimer = setInterval(bootstrapFromGitHub, POLL_SLOW);
       });
   }
