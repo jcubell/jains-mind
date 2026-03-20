@@ -3,8 +3,8 @@
   "status": "idle",
   "brain": {
     "mode": "working",
-    "focus": "Processing sub-agent completion",
-    "model": "openrouter/x-ai/grok-4-fast",
+    "focus": "Processing voice message...",
+    "model": "whisper",
     "thoughts": [
       {
         "time": "12:18 PM ET",
@@ -68,10 +68,10 @@
       }
     ],
     "subagent": null,
-    "currentModel": "openrouter/x-ai/grok-4-fast"
+    "currentModel": "whisper"
   },
   "steps": [],
-  "updated_at": "2026-03-20T16:18:51Z",
+  "updated_at": "2026-03-20T19:15:04Z",
   "news_feed": [
     {
       "id": "afternoon_pulse_1774023415",
