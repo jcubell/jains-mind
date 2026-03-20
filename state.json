@@ -3,9 +3,15 @@
   "status": "idle",
   "brain": {
     "mode": "working",
-    "focus": "Checking news_bot.py for Telegram target...",
+    "focus": "Checking for news bot sessions...",
     "model": "openrouter/x-ai/grok-4-fast",
     "thoughts": [
+      {
+        "time": "10:29 AM ET",
+        "type": "action",
+        "text": "Listing sessions to find news bot target",
+        "title": "Checking for news bot sessions..."
+      },
       {
         "time": "10:29 AM ET",
         "type": "action",
@@ -17,7 +23,7 @@
     "currentModel": "openrouter/x-ai/grok-4-fast"
   },
   "steps": [],
-  "updated_at": "2026-03-20T14:29:15Z",
+  "updated_at": "2026-03-20T14:29:31Z",
   "news_feed": [
     {
       "id": "morning_brief_1774003089",
