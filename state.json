@@ -2,8 +2,8 @@
   "objective": "",
   "status": "idle",
   "brain": {
-    "mode": "working",
-    "focus": "Reading message...",
+    "mode": "idle",
+    "focus": "Heartbeat check \u2014 cost healthy",
     "model": "openrouter/x-ai/grok-4-fast",
     "thoughts": [
       {
@@ -29,7 +29,7 @@
     "currentModel": "openrouter/x-ai/grok-4-fast"
   },
   "steps": [],
-  "updated_at": "2026-03-20T07:37:08Z",
+  "updated_at": "2026-03-20T07:38:10Z",
   "news_feed": [
     {
       "id": "afternoon_pulse_1773975177",
