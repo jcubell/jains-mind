@@ -189,7 +189,7 @@ def push(focus, thought_text=None, thought_type="action", mode="working",
     except Exception:
         pass
 
-    print(f"Pushed: {focus}", file=sys.stderr)
+    # Intentionally silent — no stdout/stderr output to avoid leaking into exec tool results
 
 
 def set_subagent(name, task, eta_seconds=None, status="running"):
@@ -222,7 +222,7 @@ def set_subagent(name, task, eta_seconds=None, status="running"):
     except Exception:
         pass
 
-    print(f"Subagent set: {name} — {task}", file=sys.stderr)
+    # Intentionally silent — no stderr output
 
 
 def clear_subagent():
@@ -341,7 +341,7 @@ if __name__ == "__main__":
                              stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, start_new_session=True)
         except Exception:
             pass
-        print(f"Pushed: {focus}", file=sys.stderr)
+        # Intentionally silent — no stderr output
     else:
         # Legacy positional args
         focus        = sys.argv[1] if len(sys.argv) > 1 else "Idle — awaiting instruction"
