@@ -564,6 +564,19 @@ const server = http.createServer(async (req, res) => {
     return;
   }
 
+  // Static image files (PNG, JPG, ICO, etc.)
+  const imageExts = { '.png': 'image/png', '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg', '.ico': 'image/x-icon', '.svg': 'image/svg+xml', '.gif': 'image/gif', '.webp': 'image/webp' };
+  const ext = require('path').extname(urlPath).toLowerCase();
+  if (imageExts[ext]) {
+    const imgPath = path.join(__dirname, urlPath);
+    if (fs.existsSync(imgPath)) {
+      const data = fs.readFileSync(imgPath);
+      res.writeHead(200, { 'Content-Type': imageExts[ext], 'Cache-Control': 'public, max-age=86400' });
+      res.end(data);
+      return;
+    }
+  }
+
   res.writeHead(404); res.end('Not Found');
 });
 
