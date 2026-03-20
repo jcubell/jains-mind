@@ -2,10 +2,16 @@
   "objective": "",
   "status": "idle",
   "brain": {
-    "mode": "working",
-    "focus": "Patching dashboard: adding JOB_DESCRIPTIONS map + subtitle CSS",
+    "mode": "idle",
+    "focus": "Done \u2014 Dashboard Jobs widget updated with descriptive cron names (11 crons)",
     "model": "claude-sonnet-4-6",
     "thoughts": [
+      {
+        "time": "4:36 PM ET",
+        "type": "complete",
+        "text": "JOB_DESCRIPTIONS map added, CSS subtitle class added, fmtCronExpr improved",
+        "title": "Done \u2014 Dashboard Jobs widget updated with descriptive cron names (11 crons)"
+      },
       {
         "time": "4:34 PM ET",
         "type": "complete",
@@ -35,7 +41,7 @@
     "currentModel": "claude-sonnet-4-6"
   },
   "steps": [],
-  "updated_at": "2026-03-20T20:34:54Z",
+  "updated_at": "2026-03-20T20:36:08Z",
   "news_feed": [
     {
       "id": "afternoon_pulse_1774023415",
