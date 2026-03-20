@@ -64,7 +64,7 @@ def push(focus, thought_text=None, thought_type="action", mode="working",
         model: Model name to display (None = keep existing, "" = keep existing)
         subagent: dict with subagent info, None = keep existing, "clear" = remove
     """
-    # Load existing state
+    # Load existing state (preserving news_feed and other data fields)
     try:
         with open(STATE_FILE) as f:
             state = json.load(f)
@@ -80,8 +80,12 @@ def push(focus, thought_text=None, thought_type="action", mode="working",
                 "subagent": None
             },
             "steps": [],
-            "updated_at": ""
+            "updated_at": "",
+            "news_feed": []
         }
+    # Always preserve news_feed — never let fallback state wipe it
+    if "news_feed" not in state:
+        state["news_feed"] = []
 
     if "brain" not in state:
         state["brain"] = {"mode": "idle", "focus": "", "model": "grok-4", "thoughts": [], "subagent": None}

@@ -78,15 +78,26 @@ def push_to_github(state_file, tunnel_url=None):
             state["_tunnel_url"] = tunnel
 
         # Merge news_feed from remote so push_brain calls don't wipe it
+        merged_news_feed = False
         try:
             remote_raw, state_sha = github_get(TOKEN, STATE_FILE_PATH, branch=STATE_BRANCH)
             remote_state = json.loads(remote_raw)
             if remote_state.get("news_feed") and not state.get("news_feed"):
                 state["news_feed"] = remote_state["news_feed"]
+                merged_news_feed = True
         except Exception:
             state_sha = None
 
         state_content = json.dumps(state, indent=2, ensure_ascii=True)
+
+        # Write merged state back to local disk so tunnel serves correct news_feed data
+        # (push_github.py is the only place where remote news_feed is merged into local state)
+        if merged_news_feed:
+            try:
+                with open(state_file, "w") as f:
+                    f.write(state_content)
+            except Exception:
+                pass
 
         # Push state.json to master (no Vercel build triggered)
         def github_put_branch(token, path, sha, content_str, message, branch):
@@ -184,7 +195,6 @@ def push_to_github(state_file, tunnel_url=None):
 
     except Exception as e:
         try:
-            import datetime
             with open("/tmp/push_github_error.log", "a") as f:
                 f.write(f"{datetime.datetime.utcnow().isoformat()} {e}\n")
         except Exception:
