@@ -107,8 +107,21 @@
     font-size: 12px; font-weight: 700;
     letter-spacing: 0.2em; text-transform: uppercase;
     color: var(--text-2);
+    display: flex; align-items: center; gap: 10px;
   }
   .top-bar-title .ai { color: var(--accent); }
+  .header-logo {
+    height: 32px;
+    width: 32px;
+    flex-shrink: 0;
+    opacity: 0.88;
+    filter: drop-shadow(0 0 4px rgba(255,255,255,0.15));
+    transition: opacity 0.2s ease, filter 0.2s ease;
+  }
+  .header-logo:hover {
+    opacity: 1;
+    filter: drop-shadow(0 0 8px rgba(255,255,255,0.3));
+  }
   .top-bar-right { display: flex; align-items: center; gap: 20px; }
   .sleep-btn {
     font-family: var(--mono);
@@ -2097,7 +2110,10 @@
 
 <div class="shell">
   <div class="top-bar">
-    <div class="top-bar-title">J<span>.</span><span class="ai">AI</span><span>.</span>N'S&nbsp;&nbsp;Mind</div>
+    <div class="top-bar-title">
+      <img src="jclaw-logo.svg" class="header-logo" alt="J.Claw" title="J.AI.N Command Center" />
+      J<span>.</span><span class="ai">AI</span><span>.</span>N'S&nbsp;&nbsp;Mind
+    </div>
     <div class="top-bar-right">
       <div class="status-indicator" id="statusIndicator">
         <div class="status-dot"></div>
@@ -2279,7 +2295,7 @@
       </div>
 
       <!-- Lobster silhouette watermark behind feed content -->
-      <div id="lobsterFeedBg"><img src="jlobster_clean_alpha.png" alt="" /></div>
+      <div id="lobsterFeedBg"><img src="jclaw-logo.svg" alt="" /></div>
 
       <div class="panel-body">
 
@@ -2380,7 +2396,7 @@
 </style>
 <div id="nightMode" style="display:none;position:fixed;inset:0;background:#0a0000;z-index:99999;cursor:pointer;align-items:center;justify-content:center;">
   <!-- Night mode lobster logo — glowing at top -->
-  <div id="nightLobster"><img src="jlobster_clean_alpha.png" alt="J.AI.N Lobster" /></div>
+  <div id="nightLobster"><img src="jclaw-logo.svg" alt="J.AI.N Lobster" /></div>
   <div class="night-clock-wrap">
     <div id="nightClock" style="font-family:'Satoshi',-apple-system,sans-serif;font-size:25vw;font-weight:900;color:#cc0000;letter-spacing:-0.04em;line-height:1;text-align:center;font-variant-numeric:tabular-nums;"></div>
     <div id="nightAmpm" style="font-family:'Satoshi',-apple-system,sans-serif;font-size:3.5vw;font-weight:200;color:rgba(180,0,0,0.5);letter-spacing:0.4em;text-align:center;margin-top:0.3vw;"></div>
@@ -3776,7 +3792,8 @@
     // ── Section 1: Active Crons ──
     h += '<div class="jobs-section-label">Active Crons</div>';
     if (!_liveCrons || _liveCrons.length === 0) {
-      h += '<div class="tq-empty">Loading crons…</div>';
+      var noTunnel = !tunnelUrl;
+      h += '<div class="tq-empty">' + (noTunnel ? '⚠️ Tunnel offline — crons unavailable' : 'No crons configured') + '</div>';
     } else {
       var healthy = 0, errors = 0;
       h += '<table class="crons-table"><thead><tr>'
@@ -3883,19 +3900,47 @@
   }
 
   // Unified fetch: both endpoints in parallel, render once when both complete
+  // Uses tunnelUrl so it works from GitHub Pages (not just localhost)
   function fetchAllJobs() {
+    var base = tunnelUrl || '';
+    if (!base) {
+      // tunnelUrl not ready yet — retry in 3s
+      setTimeout(fetchAllJobs, 3000);
+      return;
+    }
+    var t = '?t=' + Date.now();
     var cronDone = false, queueDone = false;
-    fetch('/cron-status').then(function(r){ return r.json(); }).then(function(d) {
-      _liveCrons = d.jobs || [];
-      cronDone = true;
-      if (queueDone) renderUnifiedJobs();
-    }).catch(function() { cronDone = true; if (queueDone) renderUnifiedJobs(); });
+    fetch(base + '/cron-status' + t)
+      .then(function(r) {
+        if (!r.ok) throw new Error('cron-status HTTP ' + r.status);
+        return r.json();
+      })
+      .then(function(d) {
+        _liveCrons = d.jobs || [];
+        cronDone = true;
+        if (queueDone) renderUnifiedJobs();
+      })
+      .catch(function(err) {
+        console.warn('[Jobs] /cron-status fetch failed:', err && err.message);
+        cronDone = true;
+        if (queueDone) renderUnifiedJobs();
+      });
 
-    fetch('/task-queue').then(function(r){ return r.json(); }).then(function(d) {
-      _liveQueue = d;
-      queueDone = true;
-      if (cronDone) renderUnifiedJobs();
-    }).catch(function() { queueDone = true; if (cronDone) renderUnifiedJobs(); });
+    fetch(base + '/task-queue' + t)
+      .then(function(r) {
+        if (!r.ok) throw new Error('task-queue HTTP ' + r.status);
+        return r.json();
+      })
+      .then(function(d) {
+        _liveQueue = d;
+        queueDone = true;
+        if (cronDone) renderUnifiedJobs();
+      })
+      .catch(function(err) {
+        console.warn('[Jobs] /task-queue fetch failed:', err && err.message);
+        queueDone = true;
+        if (cronDone) renderUnifiedJobs();
+      });
   }
 
   // Load immediately on page open, then refresh every 15s
@@ -3986,7 +4031,7 @@
 </div>
 
 <!-- Lobster J logo — fixed bottom-right corner watermark -->
-<div id="lobsterCorner"><img src="jlobster_clean_alpha.png" alt="J.AI.N" /></div>
+<div id="lobsterCorner"><img src="jclaw-logo.svg" alt="J.AI.N" /></div>
 
 </body>
 </html><!-- cache bust Sun Mar 15 19:15 EDT 2026 -->
