@@ -7,7 +7,23 @@ const PORT = 3000;
 const HTML_FILE = path.join(__dirname, 'widget.html');
 const STATE_FILE = path.join(__dirname, 'state.json');
 
+// Auto-idle: track last request time, shutdown after 30min inactivity
+let lastReq = Date.now();
+const IDLE_TIMEOUT_MS = 30 * 60 * 1000; // 30 minutes
+const IDLE_CHECK_INTERVAL_MS = 5 * 60 * 1000; // check every 5 minutes
+
+setInterval(() => {
+  const idle = Date.now() - lastReq;
+  if (idle > IDLE_TIMEOUT_MS) {
+    console.log(`Idling dashboard - inactive >${Math.round(idle/60000)}min. Run 'node server.js' to restart.`);
+    process.exit(0);
+  }
+}, IDLE_CHECK_INTERVAL_MS).unref();
+
 const server = http.createServer(async (req, res) => {
+  // Track last request for auto-idle
+  lastReq = Date.now();
+
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
