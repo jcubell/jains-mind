@@ -2206,21 +2206,14 @@
         </div>
       </div>
 
-      <!-- Live Task Queue / Active Crons Section -->
+      <!-- Today's Jobs — Unified Single Pane (Active Crons top + Task Queue bottom) -->
       <div class="jobs-section">
-        <div class="panel-header" style="padding-bottom: 0; border-bottom: none;">
-          <h2 style="color: #20B2AA;">Live Task Queue</h2>
+        <div class="panel-header">
+          <h2 style="color: #20B2AA;">Today's Jobs</h2>
           <span class="panel-meta" id="cronStatus">—</span>
         </div>
-        <!-- Tabs -->
-        <div class="jobs-tabs">
-          <button class="jobs-tab active" id="tabCrons" onclick="switchJobTab('crons')">Active Crons</button>
-          <button class="jobs-tab" id="tabQueue" onclick="switchJobTab('queue')">Task Queue</button>
-        </div>
-        <!-- Cron content -->
-        <div class="panel-body" id="cronsContainer" style="display:block;"></div>
-        <!-- Task Queue content -->
-        <div class="panel-body" id="taskQueueContainer" style="display:none;"></div>
+        <!-- Single scrollable pane: crons section on top, task queue below -->
+        <div class="panel-body" id="unifiedJobsContainer"></div>
       </div>
 
     </div>
@@ -2597,6 +2590,11 @@
     if (data.steps && data.steps.length > 0) renderSteps(data.steps, true);
 
     // Live news feed — Telegram HTML renderer
+    // Merge Telegram signals into Live Intelligence feed
+    if (typeof window._liveIntelMergeTelegram === 'function') {
+      window._liveIntelMergeTelegram(data.news_feed || []);
+    }
+
     if (data.news_feed && data.news_feed.length > 0) {
       var feedContainer = document.getElementById('newsFeedContainer');
       if (feedContainer) {
@@ -2943,105 +2941,360 @@
   pollTunnel();
   pollTimer = setInterval(pollTunnel, POLL_FAST);
 
-  // ── BREAKING NEWS (live RSS via AllOrigins proxy, refreshes every 10 min) ──
+  // ── LIVE INTELLIGENCE FEED — Real RSS + Telegram signals, scored 0-10 ──────
   (function() {
-    var BREAKING_FEEDS = [
-      { url: 'https://techcrunch.com/feed/', src: 'TechCrunch' },
-      { url: 'https://www.cnbc.com/id/100727362/device/rss/rss.html', src: 'CNBC' },
-      { url: 'https://feeds.feedburner.com/venturebeat/SZYF', src: 'VentureBeat' },
+    // ── Sources ─────────────────────────────────────────────────────────────
+    var INTEL_FEEDS = [
+      { url: 'https://techcrunch.com/category/artificial-intelligence/feed/', src: 'TechCrunch AI',   srcKey: 'tc',      maxItems: 5 },
+      { url: 'https://www.theverge.com/ai-artificial-intelligence/rss/index.xml', src: 'The Verge AI', srcKey: 'verge',   maxItems: 4 },
+      { url: 'https://feeds.feedburner.com/venturebeat/SZYF',                   src: 'VentureBeat',   srcKey: 'vb',      maxItems: 4 },
+      { url: 'https://techcrunch.com/category/venture/feed/',                   src: 'TechCrunch VC', srcKey: 'tcvc',    maxItems: 3 },
+      { url: 'https://news.ycombinator.com/rss',                                src: 'Hacker News',   srcKey: 'hn',      maxItems: 3 },
+      { url: 'https://feeds.feedburner.com/TechCrunch/',                        src: 'TechCrunch',    srcKey: 'tc2',     maxItems: 3 },
     ];
-    var PROXY = 'https://api.allorigins.win/get?url=';
-    var BREAKING_POLL_MS = 10 * 60 * 1000;
-    var _breakingCache = [];
-    var _breakingLoaded = false;
 
-    function parseRssItems(xmlText, src) {
+    var PROXY = 'https://api.allorigins.win/get?url=';
+    var POLL_MS = 5 * 60 * 1000;  // 5-minute refresh
+    var HISTORY_CUTOFF_MS = 60 * 60 * 1000; // 1 hour = "latest" region
+    var MAX_DISPLAY = 20;
+
+    // ── Scoring ──────────────────────────────────────────────────────────────
+    // Keywords: [keyword, weight]
+    var AI_KEYWORDS = [
+      ['openai', 3], ['anthropic', 3], ['claude', 2.5], ['gemini', 2.5], ['gpt', 2],
+      ['llm', 2.5], ['large language model', 2.5], ['chatgpt', 2], ['copilot', 1.5],
+      ['artificial intelligence', 2], [' ai ', 1.5], ['machine learning', 1.5],
+      ['deep learning', 1.5], ['neural', 1], ['model', 0.5], ['inference', 1.5],
+      ['nvidia', 2], ['gpu', 1.5], ['agi', 2.5], ['agent', 1.5], ['agentic', 2],
+      ['foundation model', 2], ['transformer', 1.5], ['diffusion', 1.5], ['generative', 1.5],
+      ['hugging face', 2], ['stability ai', 2], ['mistral', 2], ['llama', 2],
+      ['xai', 1.5], ['grok', 1.5], ['deepseek', 2], ['meta ai', 2],
+      ['venture capital', 1], ['funding', 0.8], ['billion', 0.8], ['valuation', 0.8],
+      ['startup', 0.5], ['raises', 0.7], ['acqui', 1], ['ipo', 1], ['series', 0.5],
+      ['regulation', 1], ['congress', 0.5], ['fcc', 0.5], ['ftc', 0.8], ['antitrust', 1],
+      ['stock', 0.5], ['market', 0.3], ['nasdaq', 0.8], ['s&p', 0.5], ['earnings', 0.8],
+      ['crypto', 0.8], ['bitcoin', 0.8], ['ethereum', 0.8],
+    ];
+
+    function scoreItem(title, snippet) {
+      var text = ((title || '') + ' ' + (snippet || '')).toLowerCase();
+      var score = 0;
+      for (var i = 0; i < AI_KEYWORDS.length; i++) {
+        var kw = AI_KEYWORDS[i][0];
+        var wt = AI_KEYWORDS[i][1];
+        // Count occurrences
+        var re = new RegExp(kw.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g');
+        var matches = (text.match(re) || []).length;
+        if (matches) score += Math.min(matches, 3) * wt;
+      }
+      // Clamp to 0–10
+      return Math.min(10, Math.max(0, Math.round(score * 10) / 10));
+    }
+
+    function scoreClass(s) {
+      if (s >= 7) return 'score-high';
+      if (s >= 4) return 'score-med';
+      return 'score-low';
+    }
+
+    // ── RSS Parsing ──────────────────────────────────────────────────────────
+    function parseRss(xmlText, feed) {
       var items = [];
       try {
         var parser = new DOMParser();
         var doc = parser.parseFromString(xmlText, 'text/xml');
-        var nodes = doc.querySelectorAll('item');
-        nodes.forEach(function(node, idx) {
-          if (idx >= 4) return;
-          var title = (node.querySelector('title') || {}).textContent || '';
-          var link = (node.querySelector('link') || {}).textContent || '';
-          if (!link) {
-            var linkEl = node.querySelector('link');
-            link = linkEl ? (linkEl.getAttribute('href') || '') : '';
+        // Support both RSS <item> and Atom <entry>
+        var nodes = doc.querySelectorAll('item, entry');
+        var count = 0;
+        nodes.forEach(function(node) {
+          if (count >= feed.maxItems) return;
+          var title = '';
+          var link  = '';
+          var pubDate = '';
+          var snippet = '';
+
+          // Title
+          var tEl = node.querySelector('title');
+          title = tEl ? (tEl.textContent || '').trim() : '';
+          // Remove CDATA artifacts
+          title = title.replace(/^\s*<!\[CDATA\[/, '').replace(/\]\]>\s*$/, '').trim();
+
+          // Link
+          var lEl = node.querySelector('link');
+          if (lEl) {
+            link = lEl.textContent.trim() || lEl.getAttribute('href') || '';
           }
-          var pubDate = (node.querySelector('pubDate') || {}).textContent || '';
-          if (title && link) items.push({ title: title.trim(), link: link.trim(), src: src, pubDate: pubDate });
+
+          // Date
+          var dEl = node.querySelector('pubDate, updated, published, date');
+          pubDate = dEl ? dEl.textContent.trim() : '';
+
+          // Snippet from description/summary/content
+          var descEl = node.querySelector('description, summary, content');
+          if (descEl) {
+            var raw = descEl.textContent || '';
+            // Strip HTML tags, trim
+            snippet = raw.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim().substring(0, 200);
+          }
+
+          if (!title || !link) return;
+          // Generate a stable ID from title
+          var id = 'rss_' + title.toLowerCase().replace(/[^a-z0-9]/g, '').substring(0, 32);
+          var score = scoreItem(title, snippet);
+
+          items.push({
+            id: id,
+            title: title,
+            link: link,
+            src: feed.src,
+            srcKey: feed.srcKey,
+            pubDate: pubDate,
+            snippet: snippet,
+            score: score,
+            _ts: pubDate ? new Date(pubDate).getTime() : Date.now(),
+            _source: 'rss',
+          });
+          count++;
         });
       } catch(e) {}
       return items;
     }
 
-    function relTimeBreaking(dateStr) {
-      if (!dateStr) return '';
-      try {
-        var d = new Date(dateStr);
-        var mins = Math.round((Date.now() - d.getTime()) / 60000);
-        if (mins < 1) return 'just now';
-        if (mins < 60) return mins + 'm ago';
-        var hrs = Math.round(mins / 60);
-        if (hrs < 24) return hrs + 'h ago';
-        return Math.round(hrs / 24) + 'd ago';
-      } catch(e) { return ''; }
+    // ── Rendering ────────────────────────────────────────────────────────────
+    function relAge(ts) {
+      if (!ts) return '';
+      var mins = Math.round((Date.now() - ts) / 60000);
+      if (mins < 1)  return 'just now';
+      if (mins < 60) return mins + 'm ago';
+      var hrs = Math.floor(mins / 60);
+      if (hrs < 24)  return hrs + 'h ago';
+      return Math.floor(hrs / 24) + 'd ago';
     }
 
-    function renderBreakingNews(items) {
-      var listEl = document.getElementById('breakingNewsList');
-      var tsEl = document.getElementById('breakingNewsTs');
-      if (!listEl) return;
-      if (!items || !items.length) {
-        listEl.innerHTML = '<div class="breaking-news-item" style="color:var(--text-muted)">No headlines available</div>';
+    function srcCssClass(srcKey) {
+      var map = { verge:'src-verge', cnbc:'src-cnbc', wsj:'src-wsj',
+                  reuters:'src-reuters', vb:'src-vb', wired:'src-wired', hn:'src-hn' };
+      return map[srcKey] || '';
+    }
+
+    function escH(s) {
+      return (s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+
+    var _rssCache = [];        // last fetched RSS items
+    var _seenIds  = {};        // dedup across refreshes
+    var _prevTopId = null;
+    var _telegramItems = [];   // items from Telegram state.json
+
+    function mergeAndRender() {
+      // Combine RSS + Telegram items; Telegram items get a score boost
+      var combined = [];
+      // Index existing by id for dedup
+      var seen = {};
+
+      // RSS items first
+      _rssCache.forEach(function(item) {
+        if (!seen[item.id]) {
+          seen[item.id] = true;
+          combined.push(item);
+        }
+      });
+
+      // Telegram items (from news_feed in state.json)
+      _telegramItems.forEach(function(item) {
+        // Use item.id as-is; build a display-compatible record
+        var tgId = 'tg_' + (item.id || '');
+        if (seen[tgId]) return;
+        seen[tgId] = true;
+        // Extract a plain-text title from the Telegram HTML text
+        var rawText = (item.text || '').replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
+        var shortTitle = rawText.substring(0, 120) + (rawText.length > 120 ? '…' : '');
+        combined.push({
+          id: tgId,
+          title: item.label || 'J.AI.N Signal Update',
+          link: null,
+          src: 'J.AI.N',
+          srcKey: 'jain',
+          pubDate: item.ts,
+          snippet: shortTitle,
+          score: 8.5, // Telegram signals are pre-curated — high relevance
+          _ts: item.ts ? new Date(item.ts).getTime() : Date.now(),
+          _source: 'telegram',
+          _telegramHtml: item.text || '',
+        });
+      });
+
+      // Sort: primarily by score desc, secondarily by recency desc
+      combined.sort(function(a, b) {
+        // Strong recency weight: items within last 2h get score boost
+        var now = Date.now();
+        var aAge = now - (a._ts || 0);
+        var bAge = now - (b._ts || 0);
+        var aBoost = aAge < 2 * 3600000 ? 1.5 : (aAge < 6 * 3600000 ? 1.0 : 0.5);
+        var bBoost = bAge < 2 * 3600000 ? 1.5 : (bAge < 6 * 3600000 ? 1.0 : 0.5);
+        var aEff = (a.score || 0) * aBoost;
+        var bEff = (b.score || 0) * bBoost;
+        if (Math.abs(aEff - bEff) > 0.5) return bEff - aEff;
+        // Tie-break: recency
+        return (b._ts || 0) - (a._ts || 0);
+      });
+
+      // Cap at MAX_DISPLAY
+      var display = combined.slice(0, MAX_DISPLAY);
+
+      // Detect new top item
+      var newTopId = display.length ? display[0].id : null;
+      var hasNewTop = newTopId && newTopId !== _prevTopId;
+
+      // Find history boundary (items older than HISTORY_CUTOFF_MS from display[0])
+      var historyStart = -1;
+      if (display.length > 1) {
+        var refTs = display[0]._ts || Date.now();
+        for (var i = 1; i < display.length; i++) {
+          if (refTs - (display[i]._ts || 0) > HISTORY_CUTOFF_MS) {
+            historyStart = i;
+            break;
+          }
+        }
+        // If all items are fresh, dim everything after the first
+        if (historyStart === -1) historyStart = 1;
+      }
+
+      var container = document.getElementById('liveIntelContainer');
+      if (!container) return;
+
+      if (!display.length) {
+        container.innerHTML = '<div class="news-feed-empty">No signals yet — fetching...</div>';
         return;
       }
+
       var html = '';
-      // Sort by most recent
-      items.sort(function(a, b) {
-        try { return new Date(b.pubDate) - new Date(a.pubDate); } catch(e) { return 0; }
-      });
-      var shown = items.slice(0, 6);
-      shown.forEach(function(item) {
-        var age = relTimeBreaking(item.pubDate);
-        html += '<div class="breaking-news-item">'
-          + '<span class="breaking-news-arrow">›</span>'
-          + '<a href="' + item.link + '" target="_blank" rel="noopener">' + item.title.substring(0, 90) + (item.title.length > 90 ? '…' : '') + '</a>'
-          + '<span class="breaking-news-src">' + item.src + (age ? ' · ' + age : '') + '</span>'
+      for (var i = 0; i < display.length; i++) {
+        var it = display[i];
+        var isFirst = i === 0;
+        var isHistory = (historyStart !== -1 && i >= historyStart);
+        var isNew = isFirst && hasNewTop;
+        var isTelegram = it._source === 'telegram';
+
+        // History divider
+        if (i === historyStart) {
+          html += '<div class="rss-history-divider"><span>Earlier</span></div>';
+        }
+
+        var sc = it.score || 0;
+        var scClass = scoreClass(sc);
+        var age = relAge(it._ts);
+        var srcCls = isTelegram ? '' : srcCssClass(it.srcKey || '');
+        var itemCls = 'rss-signal-item'
+          + (isHistory ? ' rss-item-history' : '')
+          + (isNew ? ' rss-item-new' : '')
+          + (isTelegram ? ' source-telegram' : '');
+
+        var titleHtml = it.link
+          ? '<a href="' + escH(it.link) + '" target="_blank" rel="noopener">' + escH(it.title) + '</a>'
+          : escH(it.title);
+
+        var snippetHtml = '';
+        if (isTelegram && it._telegramHtml) {
+          // Show first line of Telegram text as snippet (plain-ish)
+          var firstLine = it._telegramHtml
+            .replace(/<b>([\s\S]*?)<\/b>/gi, '$1')
+            .replace(/<i>([\s\S]*?)<\/i>/gi, '$1')
+            .replace(/<[^>]+>/g, ' ')
+            .replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>')
+            .replace(/\s+/g, ' ').trim().substring(0, 160);
+          if (firstLine) snippetHtml = '<div class="rss-signal-snippet">' + escH(firstLine) + (firstLine.length >= 160 ? '…' : '') + '</div>';
+        } else if (it.snippet) {
+          snippetHtml = '<div class="rss-signal-snippet">' + escH(it.snippet) + (it.snippet.length >= 200 ? '…' : '') + '</div>';
+        }
+
+        html += '<div class="' + itemCls + '">'
+          + '<div class="rss-signal-meta">'
+          + '<span class="rss-signal-src ' + srcCls + '">' + escH(it.src) + '</span>'
+          + '<span class="signal-score ' + scClass + '">★ ' + sc.toFixed(1) + '</span>'
+          + '<span class="rss-signal-age">' + escH(age) + '</span>'
+          + '</div>'
+          + '<div class="rss-signal-title">' + titleHtml + '</div>'
+          + snippetHtml
           + '</div>';
-      });
-      listEl.innerHTML = html;
+      }
+
+      // Only re-render DOM if content changed
+      var cacheKey = display.map(function(d){return d.id + ':' + d._ts;}).join('|');
+      if (container._cacheKey !== cacheKey) {
+        container.innerHTML = html;
+        container._cacheKey = cacheKey;
+        if (hasNewTop) container.scrollTop = 0;
+        _prevTopId = newTopId;
+      }
+
+      // Update timestamp label
+      var tsEl = document.getElementById('liveIntelTs');
       if (tsEl) {
-        var now = new Date();
-        tsEl.textContent = 'updated ' + now.toLocaleTimeString('en-US', {hour:'2-digit', minute:'2-digit'});
+        var now2 = new Date();
+        tsEl.textContent = 'updated ' + now2.toLocaleTimeString('en-US', {hour:'2-digit', minute:'2-digit'});
       }
     }
 
-    function fetchBreakingNews() {
+    // ── Decode AllOrigins response (handles both plain text and base64 data URLs) ──
+    function decodeAllOrigins(contents) {
+      if (!contents) return '';
+      // AllOrigins may return: "data:mime;base64,<b64>" or plain XML string
+      if (contents.indexOf(';base64,') !== -1) {
+        try {
+          var b64 = contents.split(';base64,')[1];
+          return atob(b64);
+        } catch(e) { return ''; }
+      }
+      return contents;
+    }
+
+    // ── Fetch all RSS feeds ──────────────────────────────────────────────────
+    function fetchAllFeeds() {
       var allItems = [];
-      var pending = BREAKING_FEEDS.length;
-      BREAKING_FEEDS.forEach(function(feed) {
-        fetch(PROXY + encodeURIComponent(feed.url))
+      var pending = INTEL_FEEDS.length;
+
+      INTEL_FEEDS.forEach(function(feed) {
+        fetch(PROXY + encodeURIComponent(feed.url) + '&charset=utf-8')
           .then(function(r) { return r.json(); })
           .then(function(d) {
-            var items = parseRssItems(d.contents || '', feed.src);
+            var xml = decodeAllOrigins(d.contents || '');
+            var items = parseRss(xml, feed);
             allItems = allItems.concat(items);
           })
           .catch(function() {})
           .finally(function() {
             pending--;
             if (pending <= 0) {
-              _breakingCache = allItems;
-              _breakingLoaded = true;
-              renderBreakingNews(allItems);
+              // Filter out very low scoring items (below 2.0) unless very recent
+              _rssCache = allItems.filter(function(item) {
+                var fresh = (Date.now() - (item._ts || 0)) < 4 * 3600000;
+                return item.score >= 2.0 || fresh;
+              });
+              mergeAndRender();
             }
           });
       });
     }
 
-    fetchBreakingNews();
-    setInterval(fetchBreakingNews, BREAKING_POLL_MS);
+    // ── Expose hook for Telegram feed merge ─────────────────────────────────
+    // Called by applyState() when new news_feed arrives from state.json
+    window._liveIntelMergeTelegram = function(newsFeed) {
+      _telegramItems = Array.isArray(newsFeed) ? newsFeed : [];
+      mergeAndRender();
+    };
+
+    // ── Manual refresh (click on timestamp) ─────────────────────────────────
+    window._liveIntelRefresh = function() {
+      var tsEl = document.getElementById('liveIntelTs');
+      if (tsEl) tsEl.textContent = 'fetching...';
+      fetchAllFeeds();
+    };
+
+    // ── Boot ─────────────────────────────────────────────────────────────────
+    fetchAllFeeds();
+    setInterval(fetchAllFeeds, POLL_MS);
+
   })();
 
   // ── OPENROUTER MODEL USAGE BREAKDOWN ────────────────────────────────────────
