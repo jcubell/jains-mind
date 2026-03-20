@@ -2,9 +2,9 @@
   "objective": "",
   "status": "idle",
   "brain": {
-    "mode": "working",
-    "focus": "Objective: diagnose secrets for Signal test",
-    "model": "openrouter/x-ai/grok-4-fast",
+    "mode": "idle",
+    "focus": "Done \u2014 daily cost baseline reset; yesterday .02",
+    "model": "claude-sonnet-4-6",
     "thoughts": [
       {
         "time": "11:59 PM ET",
@@ -68,10 +68,10 @@
       }
     ],
     "subagent": null,
-    "currentModel": "openrouter/x-ai/grok-4-fast"
+    "currentModel": "claude-sonnet-4-6"
   },
   "steps": [],
-  "updated_at": "2026-03-20T03:59:08Z",
+  "updated_at": "2026-03-20T04:00:08Z",
   "news_feed": [
     {
       "id": "afternoon_pulse_1773975177",
