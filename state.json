@@ -2,8 +2,8 @@
   "objective": "",
   "status": "idle",
   "brain": {
-    "mode": "working",
-    "focus": "Reading heartbeat...",
+    "mode": "idle",
+    "focus": "Done \u2014 heartbeat OK",
     "model": "claude-sonnet-4-6",
     "thoughts": [
       {
@@ -29,7 +29,7 @@
     "currentModel": "claude-sonnet-4-6"
   },
   "steps": [],
-  "updated_at": "2026-03-20T11:27:07Z",
+  "updated_at": "2026-03-20T11:27:16Z",
   "news_feed": [
     {
       "id": "morning_brief_1774003089",
