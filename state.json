@@ -2,10 +2,16 @@
   "objective": "",
   "status": "idle",
   "brain": {
-    "mode": "working",
-    "focus": "Fixing and running news bot test",
-    "model": "openrouter/x-ai/grok-4-fast",
+    "mode": "idle",
+    "focus": "Done \u2014 idle transition fix verified",
+    "model": "claude-sonnet-4-6",
     "thoughts": [
+      {
+        "time": "11:23 PM ET",
+        "type": "complete",
+        "text": "setMode() now clears .working from brainFocus on idle",
+        "title": "Done \u2014 idle transition fix verified"
+      },
       {
         "time": "11:23 PM ET",
         "type": "action",
@@ -38,10 +44,10 @@
       }
     ],
     "subagent": null,
-    "currentModel": "openrouter/x-ai/grok-4-fast"
+    "currentModel": "claude-sonnet-4-6"
   },
   "steps": [],
-  "updated_at": "2026-03-20T03:23:27Z",
+  "updated_at": "2026-03-20T03:23:30Z",
   "news_feed": [
     {
       "id": "afternoon_pulse_1773975177",
