@@ -2,10 +2,16 @@
   "objective": "",
   "status": "idle",
   "brain": {
-    "mode": "working",
-    "focus": "TEST working state",
+    "mode": "idle",
+    "focus": "Done \u2014 TEST idle transition",
     "model": "claude-sonnet-4-6",
     "thoughts": [
+      {
+        "time": "11:20 PM ET",
+        "type": "complete",
+        "text": "test complete",
+        "title": "Done \u2014 TEST idle transition"
+      },
       {
         "time": "11:20 PM ET",
         "type": "action",
@@ -53,7 +59,7 @@
     "currentModel": "claude-sonnet-4-6"
   },
   "steps": [],
-  "updated_at": "2026-03-20T03:20:18Z",
+  "updated_at": "2026-03-20T03:20:27Z",
   "news_feed": [
     {
       "id": "afternoon_pulse_1773975177",
