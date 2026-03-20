@@ -2,10 +2,16 @@
   "objective": "",
   "status": "idle",
   "brain": {
-    "mode": "idle",
-    "focus": "Done \u2014 btn_approve handled",
-    "model": "openrouter/x-ai/grok-4-fast",
+    "mode": "working",
+    "focus": "TEST working state",
+    "model": "claude-sonnet-4-6",
     "thoughts": [
+      {
+        "time": "11:20 PM ET",
+        "type": "action",
+        "text": "testing brain stuck bug",
+        "title": "TEST working state"
+      },
       {
         "time": "11:19 PM ET",
         "type": "complete",
@@ -44,10 +50,10 @@
       }
     ],
     "subagent": null,
-    "currentModel": "openrouter/x-ai/grok-4-fast"
+    "currentModel": "claude-sonnet-4-6"
   },
   "steps": [],
-  "updated_at": "2026-03-20T03:19:17Z",
+  "updated_at": "2026-03-20T03:20:18Z",
   "news_feed": [
     {
       "id": "afternoon_pulse_1773975177",
