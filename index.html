@@ -3028,9 +3028,7 @@
   }
 
   // Seed tunnel URL directly — skip GitHub bootstrap on first load
-  // NOTE: This is seeded from state.json._tunnel_url at build time.
-  // If tunnel changes, bootstrapFromGitHub() will auto-update tunnelUrl.
-  tunnelUrl = null; // don't hardcode stale URLs — let GitHub bootstrap provide it
+  tunnelUrl = 'https://establish-cho-subscriptions-judy.trycloudflare.com';
   pollTunnel();
   pollTimer = setInterval(pollTunnel, POLL_FAST);
 
