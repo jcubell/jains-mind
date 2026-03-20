@@ -2,10 +2,16 @@
   "objective": "",
   "status": "idle",
   "brain": {
-    "mode": "working",
-    "focus": "Running heartbeat: Periodic cost check",
-    "model": "grok-4-fast",
+    "mode": "idle",
+    "focus": "Heartbeat OK \u2014 cost check healthy (empty daily), no flags",
+    "model": "openrouter/x-ai/grok-4-fast",
     "thoughts": [
+      {
+        "time": "12:15 PM ET",
+        "type": "complete",
+        "text": "Periodic cost: No Sonnet overuse; last check recent.",
+        "title": "Heartbeat OK \u2014 cost check healthy (empty daily), no flags"
+      },
       {
         "time": "12:15 PM ET",
         "type": "action",
@@ -44,10 +50,10 @@
       }
     ],
     "subagent": null,
-    "currentModel": "grok-4-fast"
+    "currentModel": "openrouter/x-ai/grok-4-fast"
   },
   "steps": [],
-  "updated_at": "2026-03-20T16:15:33Z",
+  "updated_at": "2026-03-20T16:15:37Z",
   "news_feed": [
     {
       "id": "morning_brief_1774003089",
