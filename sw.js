@@ -1,6 +1,6 @@
 // J.AI.N Brain PWA — Service Worker
 // Version is auto-bumped by push_github.py on every deploy
-var CACHE_VERSION = 'jain-brain-v__BUILDTIME__';
+var CACHE_VERSION = 'jain-brain-v20260320011753';
 var CACHE_NAME = CACHE_VERSION;
 
 var PRECACHE_URLS = [
@@ -8,6 +8,26 @@ var PRECACHE_URLS = [
   '/jains-mind/openclaw-icon.png',
   '/jains-mind/manifest.json'
 ];
+
+// Paths that should always be fetched fresh from network (never cached)
+var NETWORK_FIRST_PATTERNS = [
+  'index.html',
+  'widget.html',
+  '/',
+  '/jains-mind/',
+  '/jains-mind/index.html',
+  'brain.html',
+  'state.json',
+  '/cron-status',
+  '/task-queue'
+];
+
+function isNetworkFirst(url) {
+  for (var i = 0; i < NETWORK_FIRST_PATTERNS.length; i++) {
+    if (url.includes(NETWORK_FIRST_PATTERNS[i])) return true;
+  }
+  return false;
+}
 
 self.addEventListener('install', function(event) {
   event.waitUntil(
@@ -34,23 +54,30 @@ self.addEventListener('activate', function(event) {
 });
 
 self.addEventListener('fetch', function(event) {
-  // Network-first for HTML (always fresh); cache-first for assets
   var url = event.request.url;
-  var isHtml = url.includes('brain.html');
-  
-  if (isHtml) {
+
+  // Network-first for HTML, API endpoints, and state files (always fresh)
+  if (isNetworkFirst(url)) {
     event.respondWith(
       fetch(event.request).then(function(response) {
-        var clone = response.clone();
-        caches.open(CACHE_NAME).then(function(cache) {
-          cache.put(event.request, clone);
-        });
+        // Only cache successful HTML responses for brain.html offline fallback
+        if (url.includes('brain.html') && response.ok) {
+          var clone = response.clone();
+          caches.open(CACHE_NAME).then(function(cache) {
+            cache.put(event.request, clone);
+          });
+        }
         return response;
       }).catch(function() {
-        return caches.match(event.request);
+        // Offline fallback: serve cached brain.html if available
+        if (url.includes('brain.html')) {
+          return caches.match(event.request);
+        }
+        return new Response('Offline', { status: 503 });
       })
     );
   } else {
+    // Cache-first for static assets (icons, fonts, images)
     event.respondWith(
       caches.match(event.request).then(function(cached) {
         return cached || fetch(event.request);

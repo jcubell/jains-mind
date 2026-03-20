@@ -1728,6 +1728,141 @@
   }
   .breaking-news-arrow { color: rgba(249,115,22,0.6); font-size: 10px; flex-shrink: 0; margin-top: 1px; }
 
+  /* ── Live Intelligence Feed — RSS Signal Cards ── */
+  .live-intel-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 5px 0 8px 0;
+    margin-bottom: 4px;
+    border-bottom: 1px solid rgba(32,178,170,0.15);
+    flex-shrink: 0;
+  }
+  .live-intel-dot {
+    display: inline-block;
+    width: 5px; height: 5px;
+    background: #20B2AA;
+    border-radius: 50%;
+    animation: livePulse 2s ease-in-out infinite;
+    flex-shrink: 0;
+  }
+  .live-intel-label {
+    font-family: var(--mono);
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: #20B2AA;
+  }
+  .live-intel-updated {
+    margin-left: auto;
+    font-family: var(--mono);
+    font-size: 9px;
+    color: rgba(32,178,170,0.45);
+    cursor: pointer;
+  }
+  .live-intel-updated:hover { color: #20B2AA; }
+  /* Score badge: ★ 8.5 */
+  .signal-score {
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+    font-family: var(--mono);
+    font-size: 9px;
+    font-weight: 700;
+    padding: 1px 5px;
+    border-radius: 3px;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  .signal-score.score-high   { background: rgba(34,197,94,0.15);  color: #22c55e; }
+  .signal-score.score-med    { background: rgba(234,179,8,0.15);   color: #eab308; }
+  .signal-score.score-low    { background: rgba(148,163,184,0.12); color: #94a3b8; }
+  /* RSS signal item */
+  .rss-signal-item {
+    padding: 7px 0 6px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    transition: opacity 0.2s;
+  }
+  .rss-signal-item:last-child { border-bottom: none; }
+  .rss-signal-item.rss-item-history { opacity: 0.6; }
+  .rss-signal-item.rss-item-history:hover { opacity: 1; }
+  .rss-signal-item.rss-item-new {
+    animation: feedSlideIn 0.35s ease forwards;
+  }
+  .rss-signal-meta {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 3px;
+    flex-wrap: wrap;
+  }
+  .rss-signal-src {
+    font-family: var(--mono);
+    font-size: 9px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: #20B2AA;
+  }
+  .rss-signal-src.src-verge    { color: #7c3aed; }
+  .rss-signal-src.src-cnbc     { color: #0072ce; }
+  .rss-signal-src.src-wsj      { color: #a78bfa; }
+  .rss-signal-src.src-reuters  { color: #f97316; }
+  .rss-signal-src.src-vb       { color: #10b981; }
+  .rss-signal-src.src-wired    { color: #e2e8f0; }
+  .rss-signal-src.src-hn       { color: #fb923c; }
+  .rss-signal-age {
+    font-family: var(--mono);
+    font-size: 9px;
+    color: var(--text-muted);
+    margin-left: auto;
+  }
+  .rss-signal-title {
+    font-family: var(--mono);
+    font-size: 11.5px;
+    line-height: 1.45;
+    color: #d0d0d0;
+    word-break: break-word;
+  }
+  .rss-signal-title a {
+    color: #d0d0d0;
+    text-decoration: none;
+  }
+  .rss-signal-title a:hover { color: #ffffff; text-decoration: underline; }
+  .rss-signal-snippet {
+    font-family: var(--mono);
+    font-size: 10.5px;
+    line-height: 1.4;
+    color: #7a7a8a;
+    margin-top: 2px;
+    word-break: break-word;
+  }
+  /* History divider between fresh and older signals */
+  .rss-history-divider {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 5px 0 4px 0;
+    margin: 3px 0;
+  }
+  .rss-history-divider::before, .rss-history-divider::after {
+    content: ''; flex: 1; height: 1px;
+    background: rgba(255,255,255,0.07);
+  }
+  .rss-history-divider span {
+    font-family: var(--mono);
+    font-size: 9px;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.2);
+    white-space: nowrap;
+  }
+  /* Telegram-sourced signal inside RSS feed — slightly different accent */
+  .rss-signal-item.source-telegram .rss-signal-src { color: #4A9EFF; }
+  .rss-signal-item.source-telegram { border-left: 2px solid rgba(74,158,255,0.3); padding-left: 8px; }
+
   /* ── Section header ── */
   .brief-section-header {
     display: flex; align-items: center; gap: 6px;
@@ -2174,21 +2309,19 @@
 
         <div class="feed-date" id="feedDate"><!-- updated by JS --></div>
 
-        <!-- ── Breaking News Bar ── -->
-        <div class="breaking-news-bar" id="breakingNewsBar">
-          <div class="breaking-news-header">
-            <span class="breaking-news-dot"></span>
-            <span class="breaking-news-label">Breaking Now</span>
-            <span class="breaking-news-updated" id="breakingNewsTs">refreshing...</span>
-          </div>
-          <div class="breaking-news-list" id="breakingNewsList">
-            <div class="breaking-news-item" style="color:var(--text-muted)">Loading headlines...</div>
-          </div>
+        <!-- ── Live Intelligence Feed ── -->
+        <div class="live-intel-header">
+          <span class="live-intel-dot"></span>
+          <span class="live-intel-label">Live Intelligence</span>
+          <span class="live-intel-updated" id="liveIntelTs" title="Click to refresh now" onclick="window._liveIntelRefresh && window._liveIntelRefresh()">fetching...</span>
         </div>
 
-        <div id="newsFeedContainer" class="news-feed-container">
-          <div class="news-feed-empty">Waiting for next update...</div>
+        <div id="liveIntelContainer" class="news-feed-container">
+          <div class="news-feed-empty">Fetching signals...</div>
         </div>
+
+        <!-- Legacy Telegram feed (hidden — merged into liveIntelContainer) -->
+        <div id="newsFeedContainer" style="display:none"></div>
       </div>
     </div>
 
