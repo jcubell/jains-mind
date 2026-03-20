@@ -2,8 +2,8 @@
   "objective": "",
   "status": "idle",
   "brain": {
-    "mode": "idle",
-    "focus": "Memory fix complete \u2014 Tandem restarted, 2 tabs, API live",
+    "mode": "working",
+    "focus": "Reading heartbeat",
     "model": "claude-sonnet-4-6",
     "thoughts": [
       {
@@ -53,7 +53,7 @@
     "currentModel": "claude-sonnet-4-6"
   },
   "steps": [],
-  "updated_at": "2026-03-20T11:31:33Z",
+  "updated_at": "2026-03-20T11:34:01Z",
   "news_feed": [
     {
       "id": "morning_brief_1774003089",
