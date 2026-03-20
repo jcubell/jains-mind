@@ -3,8 +3,8 @@
   "status": "idle",
   "brain": {
     "mode": "working",
-    "focus": "Idle \u2014 awaiting instruction",
-    "model": "claude-sonnet-4-6",
+    "focus": "Reading message...",
+    "model": "openrouter/x-ai/grok-4-fast",
     "thoughts": [
       {
         "time": "7:31 AM ET",
@@ -50,10 +50,10 @@
       }
     ],
     "subagent": null,
-    "currentModel": "claude-sonnet-4-6"
+    "currentModel": "openrouter/x-ai/grok-4-fast"
   },
   "steps": [],
-  "updated_at": "2026-03-20T12:04:17Z",
+  "updated_at": "2026-03-20T12:26:40Z",
   "news_feed": [
     {
       "id": "morning_brief_1774003089",
