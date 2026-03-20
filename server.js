@@ -500,10 +500,11 @@ const server = http.createServer(async (req, res) => {
               : false
           );
           const ageMs = now - (r.startedAt || r.createdAt || now);
-          const durationMs = r.durationMs || (r.completedAt ? r.completedAt - (r.startedAt || r.createdAt) : null);
+          const resolvedEndedAt = r.completedAt || r.endedAt || r.cleanupCompletedAt || null;
+          const durationMs = r.durationMs || (resolvedEndedAt ? resolvedEndedAt - (r.startedAt || r.createdAt) : null);
           // Infer status
           let status = 'queued';
-          if (r.completedAt || r.cleanupHandled) status = 'complete';
+          if (resolvedEndedAt || r.cleanupHandled) status = 'complete';
           else if ((r.startedAt && ageMs < 2 * 60 * 60 * 1000) || isActive) status = 'in-progress';
           // ETA: if we have eta_seconds from brain subagent, use it
           let eta = null;
@@ -522,7 +523,7 @@ const server = http.createServer(async (req, res) => {
             status,
             createdAt: r.createdAt || r.startedAt || 0,
             startedAt: r.startedAt || null,
-            completedAt: r.completedAt || null,
+            completedAt: resolvedEndedAt,
             ageMs,
             durationMs,
             eta,
