@@ -3,9 +3,15 @@
   "status": "idle",
   "brain": {
     "mode": "working",
-    "focus": "Starting: Dashboard audit + news routing",
-    "model": "claude-sonnet-4-6",
+    "focus": "Running heartbeat: Periodic cost check",
+    "model": "grok-4-fast",
     "thoughts": [
+      {
+        "time": "12:15 PM ET",
+        "type": "action",
+        "text": "Check codexbar cost for Sonnet usage patterns; update heartbeat-state.json",
+        "title": "Running heartbeat: Periodic cost check"
+      },
       {
         "time": "12:15 PM ET",
         "type": "action",
@@ -38,10 +44,10 @@
       }
     ],
     "subagent": null,
-    "currentModel": "claude-sonnet-4-6"
+    "currentModel": "grok-4-fast"
   },
   "steps": [],
-  "updated_at": "2026-03-20T16:15:31Z",
+  "updated_at": "2026-03-20T16:15:33Z",
   "news_feed": [
     {
       "id": "morning_brief_1774003089",
