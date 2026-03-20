@@ -2,10 +2,16 @@
   "objective": "",
   "status": "idle",
   "brain": {
-    "mode": "working",
-    "focus": "Restarting Tandem Browser app",
+    "mode": "idle",
+    "focus": "Memory fix complete \u2014 Tandem restarted, 2 tabs, API live",
     "model": "claude-sonnet-4-6",
     "thoughts": [
+      {
+        "time": "7:31 AM ET",
+        "type": "complete",
+        "text": "Before: 732M free \u2192 After: ~460M (Tandem re-loaded). Chrome kiosk single tab. No swap.",
+        "title": "Memory fix complete \u2014 Tandem restarted, 2 tabs, API live"
+      },
       {
         "time": "7:30 AM ET",
         "type": "action",
@@ -47,7 +53,7 @@
     "currentModel": "claude-sonnet-4-6"
   },
   "steps": [],
-  "updated_at": "2026-03-20T11:30:51Z",
+  "updated_at": "2026-03-20T11:31:33Z",
   "news_feed": [
     {
       "id": "morning_brief_1774003089",
