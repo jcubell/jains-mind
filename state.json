@@ -3,7 +3,7 @@
   "status": "idle",
   "brain": {
     "mode": "working",
-    "focus": "Starting: Fix live feed duplicates",
+    "focus": "Patching push_news.py + index.html for dedup",
     "model": "claude-sonnet-4-6",
     "thoughts": [
       {
@@ -83,7 +83,7 @@
     "currentModel": "claude-sonnet-4-6"
   },
   "steps": [],
-  "updated_at": "2026-03-20T12:32:40Z",
+  "updated_at": "2026-03-20T12:33:33Z",
   "news_feed": [
     {
       "id": "morning_brief_1774003089",
