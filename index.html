@@ -12,9 +12,12 @@
 <link rel="icon" type="image/png" sizes="192x192" href="/jains-mind/icon-192.png">
 <link rel="apple-touch-icon" sizes="180x180" href="/jains-mind/apple-touch-icon.png">
 <link rel="manifest" href="/jains-mind/manifest.json">
-<link href="https://api.fontshare.com/v2/css?f[]=satoshi@300,400,500,700&display=swap" rel="stylesheet">
+<!-- Preconnect first (before font loads) to eliminate extra RTT -->
+<link rel="preconnect" href="https://api.fontshare.com" crossorigin>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<!-- Fonts: swap ensures text renders immediately with fallback while fonts load -->
+<link href="https://api.fontshare.com/v2/css?f[]=satoshi@300,400,500,700&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
 /*
@@ -2968,6 +2971,11 @@
     }
 
     lastKnownState = data;
+
+    // Stamp ticker bar with actual state date
+    if (data.updated_at && typeof window._tickerApplyStatePatch === 'function') {
+      window._tickerApplyStatePatch(data.updated_at);
+    }
   }
 
   function pollTunnel() {
@@ -3491,6 +3499,11 @@
             lastKnownState.brain.subagents = [];
             applyState(lastKnownState);
           }
+          // Visual confirmation: pulse green then revert
+          clearBtn.style.transition = 'color 0.2s,border-color 0.2s';
+          clearBtn.style.color = '#4caf50';
+          clearBtn.style.borderColor = '#4caf50';
+          setTimeout(function() { clearBtn.style.color = ''; clearBtn.style.borderColor = ''; }, 1200);
         });
       });
     }
@@ -3516,16 +3529,37 @@
       if (e.key === 'Escape' && nm.style.display !== 'none') exitSleep();
     });
 
-    // Poll tunnel for sleep state — single source of truth
-    setInterval(function() {
-      if (!tunnelUrl) return;
+    // Poll tunnel for sleep state — adaptive cadence:
+    // • Tab hidden (Page Visibility API) → skip entirely (no wasted tunnel calls)
+    // • Mode = idle → slow poll at 10s (sleep rarely initiated; saves ~54 req/min vs 1s)
+    // • Mode = active/working → fast poll at 2s (user likely watching; sleep cmd more likely)
+    var _sleepPollTimer = null;
+    function scheduleSleepPoll() {
+      if (_sleepPollTimer) clearTimeout(_sleepPollTimer);
+      // Don't poll if tab is hidden
+      if (typeof document.hidden !== 'undefined' && document.hidden) {
+        _sleepPollTimer = setTimeout(scheduleSleepPoll, 10000);
+        return;
+      }
+      var isActive = lastKnownState && lastKnownState.brain && (lastKnownState.brain.mode === 'working' || lastKnownState.brain.mode === 'thinking');
+      var delay = isActive ? 2000 : 10000;
+      if (!tunnelUrl) { _sleepPollTimer = setTimeout(scheduleSleepPoll, delay); return; }
       fetch(tunnelUrl + '/sleep-state?t=' + Date.now())
         .then(function(r) { return r.json(); })
         .then(function(d) {
           if (d.sleep && !wasSleeping) { wasSleeping = true; enterSleep(); }
           else if (!d.sleep && wasSleeping) { wasSleeping = false; exitSleep(); }
-        }).catch(function(){});
-    }, 1000);
+        })
+        .catch(function(){})
+        .finally(function() { _sleepPollTimer = setTimeout(scheduleSleepPoll, delay); });
+    }
+    scheduleSleepPoll();
+    // Resume polling when tab becomes visible again
+    if (typeof document.addEventListener !== 'undefined') {
+      document.addEventListener('visibilitychange', function() {
+        if (!document.hidden) scheduleSleepPoll();
+      });
+    }
   })();
 
     // Refresh relative timestamps every 30s
@@ -4023,6 +4057,34 @@
   }
   fetchFearGreed();
   setInterval(fetchFearGreed, 5 * 60 * 1000); // refresh every 5 min
+
+  // ── TICKER STALE NOTICE ────────────────────────────────────────────────────
+  // Ticker bar prices are static HTML (updated manually via push_news.py).
+  // Stamp a subtle "prices as of" title on the ticker bar so Josh knows they're not live.
+  (function() {
+    var bar = document.getElementById('tickerBar');
+    if (!bar) return;
+    // Read the last modified date from the oldest ticker-item (heuristic: page load date)
+    var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    var d = new Date();
+    // We don't know the exact push date — use the state.json updated_at when available.
+    // For now stamp with today's date since push_news.py runs daily.
+    // This will be overwritten when state arrives.
+    function stampTickerDate(label) {
+      bar.title = 'Market ticker — ' + label + ' (static snapshot; updated via push_news.py)';
+    }
+    stampTickerDate('prices as of today');
+    // Override when state arrives with actual state.updated_at date
+    var _origApply = window._tickerApplyStatePatch || null;
+    window._tickerApplyStatePatch = function(stateUpdatedAt) {
+      if (!stateUpdatedAt) return;
+      try {
+        var sd = new Date(stateUpdatedAt);
+        var label = 'prices as of ' + months[sd.getMonth()] + ' ' + sd.getDate();
+        stampTickerDate(label);
+      } catch(e) {}
+    };
+  })();
 
   // PWA refresh poller — check every 2s
   var lastRefreshAt = 0;
