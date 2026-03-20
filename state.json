@@ -2,34 +2,22 @@
   "objective": "",
   "status": "idle",
   "brain": {
-    "mode": "idle",
-    "focus": "Done \u2014 partial sheet read confirmed; access limited",
+    "mode": "working",
+    "focus": "Fetched and parsing sheet CSV",
     "model": "openrouter/x-ai/grok-4-fast",
     "thoughts": [
       {
-        "time": "11:28 PM ET",
-        "type": "complete",
-        "text": "web_fetch got garbled partial (times/modes), CSV export failed (private sheet); summarize based on extract, ask for public access or export.",
-        "title": "Done \u2014 partial sheet read confirmed; access limited"
-      },
-      {
-        "time": "11:28 PM ET",
+        "time": "11:29 PM ET",
         "type": "action",
-        "text": "Original web_fetch got garbled HTML; using export link to get clean CSV content.",
-        "title": "Re-fetching sheet as CSV for proper parse"
-      },
-      {
-        "time": "11:28 PM ET",
-        "type": "action",
-        "text": "web_fetch got partial/garbled extract; spawning sub-agent to parse Google Sheet properly for accurate schedule.",
-        "title": "Objective: confirm sheet read and re-fetch full content"
+        "text": "curl -L got the clean CSV; now reading full schedule details.",
+        "title": "Fetched and parsing sheet CSV"
       }
     ],
     "subagent": null,
     "currentModel": "openrouter/x-ai/grok-4-fast"
   },
   "steps": [],
-  "updated_at": "2026-03-20T03:28:55Z",
+  "updated_at": "2026-03-20T03:29:31Z",
   "news_feed": [
     {
       "id": "afternoon_pulse_1773975177",
