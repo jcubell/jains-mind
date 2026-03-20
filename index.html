@@ -2511,9 +2511,12 @@
     var indicator = document.getElementById('statusIndicator');
     var statusText = document.getElementById('statusText');
     var hero = document.querySelector('.brain-hero');
+    var focusTextEl = document.getElementById('brainFocus');
     if (dot) dot.className = 'objective-dot ' + mode;
     if (indicator) indicator.className = mode === 'thinking' ? 'status-indicator status-thinking' : 'status-indicator';
     if (statusText) statusText.textContent = mode === 'thinking' ? 'Processing' : 'Online';
+    // Always sync focus-text working class to avoid glow lingering after stale/watchdog resets
+    if (focusTextEl) focusTextEl.className = 'brain-focus-text' + (mode === 'thinking' ? ' working' : '');
     if (hero) {
       if (mode === 'thinking') hero.classList.add('working');
       else {
