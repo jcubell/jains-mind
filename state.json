@@ -2,30 +2,16 @@
   "objective": "",
   "status": "idle",
   "brain": {
-    "mode": "idle",
-    "focus": "Done \u2014 session learnings saved to memory",
-    "model": "openrouter/x-ai/grok-4-fast",
-    "thoughts": [
-      {
-        "time": "9:00 PM ET",
-        "type": "complete",
-        "text": "Daily notes updated; MEMORY.md refined for button preference",
-        "title": "Done \u2014 session learnings saved to memory"
-      }
-    ],
+    "mode": "working",
+    "focus": "Committing and pushing to GitHub",
+    "model": "claude-sonnet-4-6",
+    "thoughts": [],
     "subagent": null,
-    "currentModel": "openrouter/x-ai/grok-4-fast"
+    "currentModel": "claude-sonnet-4-6"
   },
   "steps": [],
-  "updated_at": "2026-03-20T01:00:06Z",
+  "updated_at": "2026-03-20T01:03:21Z",
   "news_feed": [
-    {
-      "id": "morning_brief_1773967988",
-      "slot": "morning_brief",
-      "ts": "2026-03-20T00:53:08Z",
-      "label": "Morning Brief",
-      "text": "\ud83d\udce1 <b>CRON AUDIT COMPLETE \u2014 All Systems Go</b>\n\n\u26a1 <b>ACTIVE CRONS (5 healthy)</b>\n\u2022 <code>morning-brief</code> \u2014 6:30am ET daily \u2705 last ran 14h ago, 0 errors\n\u2022 <code>signal-morning-full</code> \u2014 7:15am ET daily \u2705 last ran 14h ago, 0 errors\n\u2022 <code>signal-interim-2h</code> \u2014 9/11/13/15/17/19:15 M-F \u2705 last ran 2h ago, 0 errors\n\u2022 <code>signal-recap-full</code> \u2014 9:15pm ET daily \u2705 runs in ~25 min\n\u2022 <code>daily-cost-baseline-reset</code> \u2014 midnight ET \u2705 last ran 21h ago, 0 errors\n\n\u26a0\ufe0f <b>FIXES APPLIED</b>\n\u2022 Reuters RSS feeds replaced (DNS unreachable) \u2192 BBC + Google News\n\u2022 push_news \u2192 state.json \u2192 GitHub chain: \u2705 verified\n\n<i>J.AI.N \u00b7 Cron Audit \u00b7 08:50 PM ET</i>"
-    },
     {
       "id": "afternoon_pulse_1773967017",
       "slot": "afternoon_pulse",
@@ -46,13 +32,6 @@
       "ts": "2026-03-20T00:36:38Z",
       "label": "Breaking Now",
       "text": "\ud83d\udea8 <b>TEST SIGNAL 1 \u2014 Scrollable Feed Test</b>\\n\\n\u26a1 <b>FEATURE UPDATE</b>\\n\u2022 Live Intel feed is now a scrollable list\\n\u2022 New signals prepend at top\\n\u2022 Up to 20 historical entries stored\\n\\n<i>J.AI.N \u00b7 Feed Test \u00b7 08:36 PM ET</i>"
-    },
-    {
-      "id": "breaking_now_1773966730",
-      "slot": "breaking_now",
-      "ts": "2026-03-20T00:32:10Z",
-      "label": "Breaking Now",
-      "text": "\ud83d\udea8 <b>TEST PUSH \u2014 Live Intel Feed Audit</b>\\n\\n\u26a1 <b>AUDIT COMPLETE</b>\\n\u2022 news_feed sync: \u2705 Fixed\\n\u2022 tunnel serves live data: \u2705 Confirmed\\n\u2022 push latency: ~2s (POLL_FAST)\\n\\n<i>J.AI.N \u00b7 Live Intel Audit \u00b7 08:32 PM ET</i>"
     },
     {
       "id": "evening_update_1773962133",

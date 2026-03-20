@@ -2527,11 +2527,35 @@
         }
         var catColors = { AI:'AI', CRYPTO:'CRYPTO', MACRO:'MACRO', GEO:'GEO', NASDAQ:'NASDAQ', ENTERPRISE:'ENTERPRISE' };
         var feedHtml = '';
-        // Filter feed to signal-only items — exclude cron/audit/system slots
-        var CRON_SLOTS = ['audit_test', 'cron_status', 'system_event', 'job_result'];
+        // Filter feed to signal-only items — exclude cron/audit/system slots and cron-tainted text
+        var CRON_SLOTS = [
+          'audit_test', 'cron_status', 'system_event', 'job_result',
+          'cron_audit', 'heartbeat', 'agent_status', 'brain_update',
+          'test_signal', 'test_push', 'debug'
+        ];
+        // Text patterns that indicate cron/system content — block regardless of slot
+        var CRON_TEXT_PATTERNS = [
+          /CRON AUDIT/i,
+          /ACTIVE CRONS/i,
+          /cron.*healthy/i,
+          /All Systems Go/i,
+          /FIXES APPLIED.*cron/i,
+          /morning-brief.*last ran/i,
+          /signal-morning.*last ran/i,
+          /SYSTEM EVENT/i,
+          /audit complete/i,
+          /J\.AI\.N.*Cron Audit/i
+        ];
         var signalFeed = data.news_feed.filter(function(item) {
-          return CRON_SLOTS.indexOf(item.slot || '') === -1;
-        });
+          // Block by slot name
+          if (CRON_SLOTS.indexOf(item.slot || '') !== -1) return false;
+          // Block by text content patterns (catches cron content injected into legit slots)
+          var text = item.text || '';
+          for (var pi = 0; pi < CRON_TEXT_PATTERNS.length; pi++) {
+            if (CRON_TEXT_PATTERNS[pi].test(text)) return false;
+          }
+          return true;
+        }).slice(0, 20); // Hard cap: max 20 items in the feed
 
         // Track previous top item id to detect newly prepended signals
         var prevTopId = feedContainer._topItemId || null;
