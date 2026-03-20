@@ -28,10 +28,12 @@
   ├─ push_brain.py / push_github.py     — State push pipeline
   └─ --m-color, --m-glow, --m-border    — Model-color CSS vars
 
-  LEFT PANEL — BOTTOM (Active Crons):
-  ┌─ .jobs-section                      — Active crons panel
-  ├─ activeCrons (JS array)             — 5 healthy crons from audit (2026-03-19)
-  └─ renderCrons(), getCronRunStatus()  — Auto-status logic (ET timezone)
+  LEFT PANEL — BOTTOM (Live Task Queue):
+  ┌─ .jobs-section                      — Task queue / Active crons panel (tabbed)
+  ├─ tab: "Active Crons"               — Live poll /cron-status every 30s (openclaw cron list)
+  ├─ tab: "Task Queue"                 — Live poll /task-queue every 10s (runs.json + brain state)
+  ├─ renderCrons()                     — Renders real cron data from API (nextRunAtMs, lastRunAtMs)
+  └─ renderTaskQueue()                 — FIFO queue: queued → in-progress → complete sub-agents
 
   RIGHT PANEL (Live Intelligence Feed):
   ┌─ .right-panel / .feed-section       — News brief feed
@@ -807,6 +809,126 @@
     font-size: 9.5px;
     white-space: nowrap;
   }
+
+  /* ── JOBS WIDGET TABS ─────────────────────────────────────────────────── */
+  .jobs-tabs {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    border-bottom: 1px solid rgba(32,178,170,0.12);
+    flex-shrink: 0;
+    padding: 0 12px;
+  }
+  .jobs-tab {
+    font-family: var(--mono);
+    font-size: 9px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 7px 10px 5px;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    transition: all 0.2s ease;
+    color: rgba(255,255,255,0.28);
+    background: none; border-top: none; border-left: none; border-right: none;
+    outline: none;
+    position: relative;
+    top: 1px;
+  }
+  .jobs-tab.active {
+    color: #20B2AA;
+    border-bottom-color: #20B2AA;
+  }
+  .jobs-tab:hover:not(.active) { color: rgba(255,255,255,0.5); }
+
+  /* ── TASK QUEUE ITEMS ────────────────────────────────────────────────── */
+  .tq-list { display: flex; flex-direction: column; gap: 5px; padding: 2px 0; }
+  .tq-item {
+    display: flex; align-items: flex-start; gap: 8px;
+    padding: 6px 8px;
+    border-radius: 7px;
+    border: 1px solid rgba(255,255,255,0.05);
+    background: rgba(255,255,255,0.02);
+    transition: border-color 0.3s ease;
+    position: relative;
+    overflow: hidden;
+  }
+  .tq-item.tq-in-progress {
+    border-color: rgba(32,178,170,0.25);
+    background: rgba(32,178,170,0.04);
+    animation: tq-pulse-border 2s ease-in-out infinite;
+  }
+  .tq-item.tq-complete {
+    border-color: rgba(78,205,100,0.12);
+    opacity: 0.6;
+  }
+  .tq-item.tq-queued {
+    border-color: rgba(255,152,0,0.12);
+    opacity: 0.75;
+  }
+  @keyframes tq-pulse-border {
+    0%,100% { border-color: rgba(32,178,170,0.22); box-shadow: none; }
+    50% { border-color: rgba(32,178,170,0.50); box-shadow: 0 0 8px rgba(32,178,170,0.12); }
+  }
+  /* Progress bar for in-progress items */
+  .tq-progress-bar {
+    position: absolute; bottom: 0; left: 0;
+    height: 2px;
+    background: linear-gradient(90deg, rgba(32,178,170,0.6), rgba(32,178,170,0.2));
+    border-radius: 0 0 7px 7px;
+    transition: width 1s ease;
+  }
+  .tq-dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    flex-shrink: 0; margin-top: 4px;
+  }
+  .tq-in-progress .tq-dot { background: #20B2AA; animation: tq-dot-pulse 1.2s ease-in-out infinite; }
+  .tq-complete .tq-dot { background: #4ECD64; }
+  .tq-queued .tq-dot { background: #888; }
+  @keyframes tq-dot-pulse {
+    0%,100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(0.85); }
+  }
+  .tq-body { flex: 1; min-width: 0; }
+  .tq-label {
+    font-family: var(--mono);
+    font-size: 10.5px; font-weight: 600;
+    color: rgba(255,255,255,0.82);
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .tq-in-progress .tq-label { color: #fff; }
+  .tq-meta {
+    display: flex; align-items: center; gap: 6px; margin-top: 2px;
+  }
+  .tq-model {
+    font-family: var(--mono); font-size: 9px;
+    color: var(--m-color, #20B2AA); opacity: 0.75;
+    white-space: nowrap;
+  }
+  .tq-age {
+    font-family: var(--mono); font-size: 9px;
+    color: rgba(255,255,255,0.22);
+    white-space: nowrap;
+  }
+  .tq-eta {
+    font-family: var(--mono); font-size: 9px;
+    color: #20B2AA; opacity: 0.8;
+  }
+  .tq-status-badge {
+    font-family: var(--mono); font-size: 8.5px; font-weight: 700;
+    letter-spacing: 0.08em;
+    padding: 1.5px 5px; border-radius: 4px;
+    flex-shrink: 0; white-space: nowrap; margin-top: 2px;
+  }
+  .tq-in-progress .tq-status-badge { color: #20B2AA; background: rgba(32,178,170,0.12); }
+  .tq-complete .tq-status-badge { color: #4ECD64; background: rgba(78,205,100,0.1); }
+  .tq-queued .tq-status-badge { color: #888; background: rgba(255,255,255,0.05); }
+  .tq-empty {
+    color: rgba(255,255,255,0.15); font-family: var(--mono);
+    font-size: 10px; font-style: italic;
+    text-align: center; padding: 16px 0;
+  }
+
   .job-st.active .job-st-box {
     border-color: #20B2AA; color: #20B2AA;
     background: rgba(32,178,170,0.1);
@@ -1949,14 +2071,21 @@
         </div>
       </div>
 
-      <!-- Active Crons Section -->
-      
+      <!-- Live Task Queue / Active Crons Section -->
       <div class="jobs-section">
-        <div class="panel-header">
-          <h2>Active Crons</h2>
-          <span class="panel-meta" id="cronStatus">5 Healthy</span>
+        <div class="panel-header" style="padding-bottom: 0; border-bottom: none;">
+          <h2 style="color: #20B2AA;">Live Task Queue</h2>
+          <span class="panel-meta" id="cronStatus">—</span>
         </div>
-        <div class="panel-body" id="cronsContainer"></div>
+        <!-- Tabs -->
+        <div class="jobs-tabs">
+          <button class="jobs-tab active" id="tabCrons" onclick="switchJobTab('crons')">Active Crons</button>
+          <button class="jobs-tab" id="tabQueue" onclick="switchJobTab('queue')">Task Queue</button>
+        </div>
+        <!-- Cron content -->
+        <div class="panel-body" id="cronsContainer" style="display:block;"></div>
+        <!-- Task Queue content -->
+        <div class="panel-body" id="taskQueueContainer" style="display:none;"></div>
       </div>
 
     </div>
@@ -2783,9 +2912,11 @@
   })();
 
   // ── OPENROUTER MODEL USAGE BREAKDOWN ────────────────────────────────────────
+  // NOTE: This widget is now fed directly from /or-cost-summary (same endpoint as
+  // Usage Metrics below), which uses model_usage_log.json for accurate per-model
+  // call counts. The old /or-model-usage (codexbar-only) is no longer used here.
+  // renderModelRoster() is called by fetchUsageMetrics() after it receives data.
   (function() {
-    var OR_MODEL_POLL_MS = 60 * 1000; // every 60s (was 3min)
-
     var MODEL_COLORS = {
       'grok-4':              '#ff2222',
       'grok-4-fast':         '#ffffff',
@@ -2804,11 +2935,9 @@
     function getModelColor(model) {
       if (!model) return '#8888bb';
       if (MODEL_COLORS[model]) return MODEL_COLORS[model];
-      // Normalize full openrouter path (e.g. openrouter/openai/gpt-4o → gpt-4o)
       var k = model.toLowerCase();
       var short = k.replace(/^openrouter\/[^/]+\//, '').replace(/^openrouter\//, '');
       if (MODEL_COLORS[short]) return MODEL_COLORS[short];
-      // Fallback pattern matching
       if (k.includes('gpt') || k.includes('openai')) return '#00A3FF';
       if (k.includes('grok-4-fast') || k.includes('grok4fast') || k.includes('grok-fast')) return '#ffffff';
       if (k.includes('grok')) return '#ff2222';
@@ -2819,20 +2948,29 @@
       return '#8888bb';
     }
 
-    function renderModelUsage(models) {
+    // Expose so fetchUsageMetrics can call it after getting /or-cost-summary data
+    window._renderModelRoster = function(models) {
       var container = document.getElementById('orModelRows');
       if (!container) return;
       if (!models || models.length === 0) {
         container.innerHTML = '<div class="or-model-row"><span class="or-model-name" style="opacity:0.3">no data</span></div>';
         return;
       }
+      // Filter whisper, sort by cost desc, top 5 only
+      var filtered = models
+        .filter(function(m) { return m.model && m.model.toLowerCase() !== 'whisper'; })
+        .sort(function(a, b) { return (b.cost || b.count || 0) - (a.cost || a.count || 0); })
+        .slice(0, 5);
+      var totalPct = filtered.reduce(function(s, m) { return s + (m.pct || 0); }, 0);
+      // Recompute pct from cost if available for accurate display
+      var totalCost = filtered.reduce(function(s, m) { return s + (m.cost || 0); }, 0);
       var html = '';
-      var filtered = models.filter(function(m) { return m.model && m.model.toLowerCase() !== 'whisper'; });
-      var shown = filtered.slice(0, 6);
-      for (var i = 0; i < shown.length; i++) {
-        var m = shown[i];
+      for (var i = 0; i < filtered.length; i++) {
+        var m = filtered[i];
         var color = getModelColor(m.model);
-        var pct = m.pct || 0;
+        var pct = totalCost > 0
+          ? Math.round((m.cost / totalCost) * 100)
+          : (m.pct || 0);
         html += '<div class="or-model-row" title="' + m.model + ': ' + pct + '%">'
           + '<span class="or-model-dot" style="background:' + color + ';box-shadow:0 0 4px ' + color + '88;"></span>'
           + '<span class="or-model-name">' + m.model + '</span>'
@@ -2840,44 +2978,7 @@
           + '</div>';
       }
       container.innerHTML = html;
-    }
-
-    function fetchModelUsage() {
-      if (!tunnelUrl) { return; }
-      fetch(tunnelUrl + '/or-model-usage?t=' + Date.now())
-        .then(function(r) { if (!r.ok) throw new Error(r.status); return r.json(); })
-        .then(function(d) {
-          if (d.models && d.models.length > 0) renderModelUsage(d.models);
-        })
-        .catch(function() {
-          // Fallback: derive from last-known state's brain thoughts
-          if (lastKnownState && lastKnownState.brain && lastKnownState.brain.thoughts) {
-            var counts = {};
-            var thoughts = lastKnownState.brain.thoughts;
-            for (var i = 0; i < thoughts.length; i++) {
-              var m = thoughts[i].model;
-              if (!m || m === 'whisper') continue;
-              var name = m.replace(/^openrouter\/[^/]+\//, '').replace(/^openrouter\//, '');
-              var key = name.split('/').pop();
-              key = key.replace('deepseek-chat-v3-0324', 'deepseek-v3');
-              counts[key] = (counts[key] || 0) + 1;
-            }
-            var total = 0;
-            for (var k in counts) total += counts[k];
-            if (total > 0) {
-              var models = [];
-              for (var k in counts) {
-                models.push({ model: k, count: counts[k], pct: Math.round((counts[k] / total) * 100) });
-              }
-              models.sort(function(a, b) { return b.count - a.count; });
-              renderModelUsage(models);
-            }
-          }
-        });
-    }
-
-    fetchModelUsage();
-    setInterval(fetchModelUsage, OR_MODEL_POLL_MS);
+    };
   })();
 
   // ── SLEEP / NIGHT MODE ──────────────────────────────────────────────────────
@@ -3015,7 +3116,7 @@
   // ── USAGE METRICS ──────────────────────────────────────────────────────────
   (function() {
     var lastUsageFetch = 0;
-    var USAGE_POLL_MS = 60000; // 60s
+    var USAGE_POLL_MS = 5 * 60 * 1000; // 5 min — matches brain feed cost poll cadence
 
     var UM_COLORS = {
       'grok-4':              '#ff2222',
@@ -3092,59 +3193,58 @@
       //   monthEl.textContent = fmtCost(data.monthly.actual_or);
       // }
 
-      // Model breakdown — always show full pinned roster; fill with live data where available
+      // Model breakdown — top 5 by cost, sorted desc, tail dropped
       var breakdownEl = document.getElementById('usageModelBreakdown');
       if (breakdownEl) {
-        // Ordered roster — every "expected" model we use, always visible
-        var PINNED_ROSTER = [
-          { model: 'claude-sonnet-4-6',      label: 'Claude Sonnet' },
-          { model: 'grok-4',                  label: 'Grok 4' },
-          { model: 'grok-4-fast',             label: 'Grok 4 Fast' },
-          { model: 'gemini-2.0-flash',        label: 'Gemini Flash' },
-          { model: 'gemini-2.5-pro',          label: 'Gemini Pro' },
-          { model: 'deepseek-chat-v3-0324',   label: 'DeepSeek v3' },
-          { model: 'deepseek-r1',             label: 'DeepSeek R1' },
-          { model: 'gpt-4o',                  label: 'GPT-4o' },
-          { model: 'gpt-4o-mini',             label: 'GPT-4o mini' },
-        ];
-        // Build lookup from live data
-        var liveMap = {};
-        (data.models || []).forEach(function(m) {
-          if (m.model && m.model.toLowerCase() !== 'whisper') liveMap[m.model] = m;
-        });
-        // Merge: roster order, fill live cost/pct if available
-        var merged = PINNED_ROSTER.map(function(p) {
-          var live = liveMap[p.model] || {};
-          return { model: p.model, label: p.label, cost: live.cost || 0, pct: live.pct || 0 };
-        });
-        // Compute cost-based pct so bars + labels both reflect actual spend share
-        var totalCost = merged.reduce(function(s, m) { return s + (m.cost || 0); }, 0);
-        var maxCost = merged.reduce(function(mx, m) { return m.cost > mx ? m.cost : mx; }, 0);
+        // Live models from /or-cost-summary, already sorted by cost desc from server
+        var liveModels = (data.models || [])
+          .filter(function(m) { return m.model && m.model.toLowerCase() !== 'whisper' && (m.cost || 0) > 0; });
+        // Sort by cost desc and take top 5
+        liveModels.sort(function(a, b) { return (b.cost || 0) - (a.cost || 0); });
+        var top5 = liveModels.slice(0, 5);
+
+        var MODEL_LABELS = {
+          'claude-sonnet-4-6':    'Claude Sonnet',
+          'grok-4':               'Grok 4',
+          'grok-4-fast':          'Grok 4 Fast',
+          'gemini-2.0-flash':     'Gemini Flash',
+          'gemini-2.5-pro':       'Gemini Pro',
+          'deepseek-chat-v3-0324':'DeepSeek v3',
+          'deepseek-r1':          'DeepSeek R1',
+          'gpt-4o':               'GPT-4o',
+          'gpt-4o-mini':          'GPT-4o mini',
+        };
+
+        var totalCost = top5.reduce(function(s, m) { return s + (m.cost || 0); }, 0);
+        var maxCost = top5.length > 0 ? (top5[0].cost || 0) : 0; // top5[0] is already max
         var html = '';
-        for (var i = 0; i < merged.length; i++) {
-          var m = merged[i];
-          var hasData = m.cost > 0;
-          var costPct  = (totalCost > 0 && hasData) ? Math.round((m.cost / totalCost) * 100) : 0;
+        for (var i = 0; i < top5.length; i++) {
+          var m = top5[i];
+          var costPct  = totalCost > 0 ? Math.round((m.cost / totalCost) * 100) : 0;
           // Bar width relative to top spender (top model = 100% bar)
-          var barPct = (maxCost > 0 && hasData) ? Math.round((m.cost / maxCost) * 100) : 0;
+          var barPct = maxCost > 0 ? Math.round((m.cost / maxCost) * 100) : 0;
           var barColor = umColor(m.model);
-          var costLabel = hasData ? fmtCost(m.cost) : '—';
-          var pctLabel  = hasData ? costPct + '%' : '0%';
-          html += '<div class="usage-model-row' + (hasData ? '' : ' usage-model-zero') + '">'
-            + '<span class="usage-model-name">' + escHtml(m.label) + '</span>'
-            + '<div class="usage-model-bar-wrap"><div class="usage-model-bar-fill" style="width:' + (barPct > 0 ? barPct : 0) + '%;background:' + barColor + ';box-shadow:0 0 4px ' + barColor + '66;opacity:' + (hasData ? '1' : '0.18') + ';"></div></div>'
-            + '<span class="usage-model-cost" style="opacity:' + (hasData ? '1' : '0.35') + '">' + costLabel + '</span>'
-            + '<span class="usage-model-pct" style="color:' + barColor + ';opacity:' + (hasData ? '1' : '0.35') + '">' + pctLabel + '</span>'
+          var label = MODEL_LABELS[m.model] || m.model;
+          html += '<div class="usage-model-row">'
+            + '<span class="usage-model-name">' + escHtml(label) + '</span>'
+            + '<div class="usage-model-bar-wrap"><div class="usage-model-bar-fill" style="width:' + barPct + '%;background:' + barColor + ';box-shadow:0 0 4px ' + barColor + '66;"></div></div>'
+            + '<span class="usage-model-cost">' + fmtCost(m.cost) + '</span>'
+            + '<span class="usage-model-pct" style="color:' + barColor + '">' + costPct + '%</span>'
             + '</div>';
         }
         if (!html) html = '<div class="usage-empty">Collecting usage data...</div>';
         breakdownEl.innerHTML = html;
       }
+
+      // Also update the model roster widget (top-left brain feed section)
+      if (typeof window._renderModelRoster === 'function' && data.models) {
+        window._renderModelRoster(data.models);
+      }
     }
 
-    function fetchUsageMetrics() {
+    function fetchUsageMetrics(force) {
       var now = Date.now();
-      if (now - lastUsageFetch < USAGE_POLL_MS - 2000) return; // debounce
+      if (!force && now - lastUsageFetch < USAGE_POLL_MS - 2000) return; // debounce
       lastUsageFetch = now;
 
       var refreshEl = document.getElementById('usageRefreshLabel');
@@ -3175,99 +3275,252 @@
     window._fetchUsageMetrics = fetchUsageMetrics;
   })();
 
-  // Active Crons — 5 healthy crons from 2026-03-19 audit
-  var activeCrons = [
-    {
-      name: 'morning-brief',
-      schedule: '30 6 * * *',
-      scheduleLabel: '6:30 AM ET',
-      lastRun: '6:30 AM',
-      scheduleHour: 6, scheduleMinute: 30,
-      status: 'healthy'
-    },
-    {
-      name: 'signal-morning-full',
-      schedule: '15 7 * * *',
-      scheduleLabel: '7:15 AM ET',
-      lastRun: '7:15 AM',
-      scheduleHour: 7, scheduleMinute: 15,
-      status: 'healthy'
-    },
-    {
-      name: 'signal-interim-2h',
-      schedule: '15 9,11,13,15,17,19 * * 1-5',
-      scheduleLabel: 'Every 2h M–F',
-      lastRun: 'Today',
-      scheduleHour: -1,
-      recurring: true,
-      status: 'healthy'
-    },
-    {
-      name: 'signal-recap-full',
-      schedule: '15 21 * * *',
-      scheduleLabel: '9:15 PM ET',
-      lastRun: '9:15 PM',
-      scheduleHour: 21, scheduleMinute: 15,
-      status: 'healthy'
-    },
-    {
-      name: 'daily-cost-baseline-reset',
-      schedule: '0 0 * * *',
-      scheduleLabel: '12:00 AM ET',
-      lastRun: '12:00 AM',
-      scheduleHour: 0, scheduleMinute: 0,
-      status: 'healthy'
-    }
-  ];
+  // ── LIVE TASK QUEUE / ACTIVE CRONS WIDGET ─────────────────────────────────
+  // Cron data: live from /cron-status (openclaw cron list) every 30s
+  // Task queue: live from /task-queue (runs.json + brain state) every 10s
 
   function getETNow() { return new Date(new Date().toLocaleString('en-US', { timeZone: 'America/New_York' })); }
 
-  function getCronLastRun(cron) {
-    if (cron.recurring) return 'Today';
-    var now = getETNow();
-    var cm = now.getHours() * 60 + now.getMinutes();
-    var t = cron.scheduleHour * 60 + (cron.scheduleMinute || 0);
-    if (cm >= t) return cron.scheduleLabel.split(' ').slice(0,2).join(' ');
-    return 'Yesterday';
+  var _activeJobTab = 'crons'; // 'crons' | 'queue'
+  var _liveCrons = [];         // filled by fetchCronStatus
+  var _liveQueue = {};         // filled by fetchTaskQueue
+
+  function switchJobTab(tab) {
+    _activeJobTab = tab;
+    var tC = document.getElementById('tabCrons');
+    var tQ = document.getElementById('tabQueue');
+    var cC = document.getElementById('cronsContainer');
+    var cQ = document.getElementById('taskQueueContainer');
+    if (tab === 'crons') {
+      if(tC) { tC.classList.add('active'); }
+      if(tQ) { tQ.classList.remove('active'); }
+      if(cC) cC.style.display = 'block';
+      if(cQ) cQ.style.display = 'none';
+      renderCrons();
+    } else {
+      if(tQ) { tQ.classList.add('active'); }
+      if(tC) { tC.classList.remove('active'); }
+      if(cQ) cQ.style.display = 'block';
+      if(cC) cC.style.display = 'none';
+      renderTaskQueue();
+    }
   }
 
-  function getCronRunStatus(cron) {
-    if (cron.recurring) return 'active';
-    var now = getETNow();
-    var cm = now.getHours() * 60 + now.getMinutes();
-    var t = cron.scheduleHour * 60 + (cron.scheduleMinute || 0);
-    if (cm >= t) return 'ran';
-    if (t - cm <= 30) return 'soon';
-    return 'pending';
+  // Format a duration in ms to human string
+  function fmtDur(ms) {
+    if (!ms || ms < 0) return '';
+    var s = Math.round(ms / 1000);
+    if (s < 60) return s + 's';
+    var m = Math.round(s / 60);
+    if (m < 60) return m + 'm';
+    return Math.round(m / 60) + 'h';
   }
 
+  // Format relative time ago
+  function fmtAgo(ms) {
+    if (!ms || ms < 0) return '';
+    var s = Math.round(ms / 1000);
+    if (s < 60) return s + 's ago';
+    var m = Math.round(s / 60);
+    if (m < 60) return m + 'm ago';
+    return Math.round(m / 60) + 'h ago';
+  }
+
+  // Format next run from epoch ms
+  function fmtNextRun(ms) {
+    if (!ms) return '—';
+    var diff = ms - Date.now();
+    if (diff <= 0) return 'now';
+    var s = Math.round(diff / 1000);
+    if (s < 60) return 'in ' + s + 's';
+    var m = Math.round(s / 60);
+    if (m < 60) return 'in ' + m + 'm';
+    var h = Math.floor(m / 60), rm = m % 60;
+    return 'in ' + h + 'h' + (rm > 0 ? ' ' + rm + 'm' : '');
+  }
+
+  // Format cron expr to human label
+  function fmtCronExpr(expr, tz) {
+    if (!expr) return '—';
+    // Common patterns
+    if (expr === '0 0 * * *') return '12:00 AM ET';
+    if (expr === '30 6 * * *') return '6:30 AM ET';
+    if (expr === '15 7 * * *') return '7:15 AM M–F';
+    if (expr === '15 21 * * *') return '9:15 PM ET';
+    if (/^15 \d+,\d+/.test(expr)) return 'Every 2h M–F';
+    // Generic: parse first two fields
+    var parts = expr.split(' ');
+    if (parts.length >= 2) {
+      var min = parts[0], hr = parts[1];
+      if (!isNaN(hr) && !isNaN(min)) {
+        var h = parseInt(hr), m = parseInt(min);
+        var ampm = h >= 12 ? 'PM' : 'AM'; h = h % 12 || 12;
+        return h + ':' + (m < 10 ? '0' + m : m) + ' ' + ampm + ' ET';
+      }
+    }
+    return expr;
+  }
+
+  // Render crons from live _liveCrons data
   function renderCrons() {
     var c = document.getElementById('cronsContainer');
-    if (!c) return;
+    if (!c || _activeJobTab !== 'crons') return;
+    if (!_liveCrons || _liveCrons.length === 0) {
+      c.innerHTML = '<div class="tq-empty">Loading crons…</div>';
+      return;
+    }
+    var now = Date.now();
+    var healthy = 0, errors = 0;
     var h = '<table class="crons-table"><thead><tr>'
-      + '<th>Cron</th><th>Schedule</th><th>Last Run</th><th>Status</th>'
+      + '<th>Cron</th><th>Schedule</th><th>Next Run</th><th>Status</th>'
       + '</tr></thead><tbody>';
-    for (var i = 0; i < activeCrons.length; i++) {
-      var cr = activeCrons[i];
-      var runStatus = getCronRunStatus(cr);
-      var lastRunLabel = getCronLastRun(cr);
-      var statusDot = '';
+    for (var i = 0; i < _liveCrons.length; i++) {
+      var j = _liveCrons[i];
+      var state = j.state || {};
+      var expr = (j.schedule && j.schedule.expr) || '';
+      var nextMs = state.nextRunAtMs || 0;
+      var lastMs = state.lastRunAtMs || 0;
+      var lastStatus = state.lastRunStatus || 'ok';
+      var consErrors = state.consecutiveErrors || 0;
+      var schedLabel = fmtCronExpr(expr);
+      var nextLabel = fmtNextRun(nextMs);
       var statusClass = 'cron-status-healthy';
-      var statusLabel = '✓ healthy';
-      if (runStatus === 'active') { statusLabel = '● active'; statusClass = 'cron-status-active'; }
-      else if (runStatus === 'soon') { statusLabel = '◎ soon'; statusClass = 'cron-status-soon'; }
-      else if (runStatus === 'pending') { statusLabel = '○ pending'; statusClass = 'cron-status-pending'; }
+      var statusLabel = '✓ ok';
+      if (consErrors > 0) {
+        statusClass = 'cron-status-pending'; // amber-ish for errors
+        statusLabel = '✗ err×' + consErrors;
+        errors++;
+      } else if (lastStatus !== 'ok') {
+        statusClass = 'cron-status-soon';
+        statusLabel = '⚠ ' + lastStatus;
+      } else if (nextMs > 0 && nextMs - now < 5 * 60 * 1000) {
+        statusClass = 'cron-status-soon';
+        statusLabel = '◎ soon';
+        healthy++;
+      } else {
+        healthy++;
+      }
       h += '<tr>'
-        + '<td class="cron-name">' + cr.name + '</td>'
-        + '<td class="cron-schedule">' + cr.scheduleLabel + '</td>'
-        + '<td class="cron-lastrun">' + lastRunLabel + '</td>'
+        + '<td class="cron-name">' + escHtml(j.name || '—') + '</td>'
+        + '<td class="cron-schedule">' + escHtml(schedLabel) + '</td>'
+        + '<td class="cron-lastrun">' + escHtml(nextLabel) + '</td>'
         + '<td class="' + statusClass + '">' + statusLabel + '</td>'
         + '</tr>';
     }
     h += '</tbody></table>';
     c.innerHTML = h;
+    // Update header meta
+    var meta = document.getElementById('cronStatus');
+    if (meta) {
+      if (errors > 0) meta.textContent = errors + ' Error' + (errors > 1 ? 's' : '');
+      else meta.textContent = healthy + ' Healthy';
+    }
   }
-  renderCrons(); setInterval(renderCrons, 60000);
+
+  // Render task queue from live _liveQueue data
+  function renderTaskQueue() {
+    var c = document.getElementById('taskQueueContainer');
+    if (!c || _activeJobTab !== 'queue') return;
+    var tasks = (_liveQueue && _liveQueue.tasks) ? _liveQueue.tasks : [];
+    var now = Date.now();
+    if (!tasks || tasks.length === 0) {
+      c.innerHTML = '<div class="tq-empty">No recent tasks</div>';
+      // Update meta
+      var meta = document.getElementById('cronStatus');
+      if (meta) meta.textContent = 'idle';
+      return;
+    }
+
+    // Sort: in-progress first, then queued, then complete (FIFO within each group)
+    var inP = tasks.filter(function(t){ return t.status === 'in-progress'; });
+    var q   = tasks.filter(function(t){ return t.status === 'queued'; });
+    var done = tasks.filter(function(t){ return t.status === 'complete'; });
+    var ordered = inP.concat(q).concat(done);
+
+    var h = '<div class="tq-list">';
+    for (var i = 0; i < ordered.length; i++) {
+      var t = ordered[i];
+      var cls = t.status === 'in-progress' ? 'tq-in-progress'
+              : t.status === 'complete'    ? 'tq-complete'
+              : 'tq-queued';
+      var badge = t.status === 'in-progress' ? 'RUNNING'
+                : t.status === 'complete'    ? 'DONE'
+                : 'QUEUED';
+      var ageStr = t.ageMs ? fmtAgo(t.ageMs) : '';
+      var etaStr = t.eta ? 'eta ' + fmtDur(t.eta * 1000) : '';
+      var durStr = t.durationMs ? fmtDur(t.durationMs) : '';
+      var modelShort = t.model ? shortModel(t.model) : '';
+      // Progress bar: for in-progress, animate width based on elapsed/eta
+      var progressBar = '';
+      if (t.status === 'in-progress') {
+        var pct = 0;
+        if (t.eta && t.ageMs) {
+          var total = (t.ageMs / 1000) + t.eta;
+          pct = total > 0 ? Math.min(95, Math.round((t.ageMs / 1000) / total * 100)) : 10;
+        } else {
+          // Indefinite: show slow creep
+          pct = Math.min(85, Math.round((t.ageMs || 0) / 60000 * 5 + 10));
+        }
+        progressBar = '<div class="tq-progress-bar" style="width:' + pct + '%"></div>';
+      }
+      h += '<div class="tq-item ' + cls + '">'
+        + progressBar
+        + '<div class="tq-dot"></div>'
+        + '<div class="tq-body">'
+        + '<div class="tq-label">' + escHtml(t.label || 'Task') + '</div>'
+        + '<div class="tq-meta">'
+        + (modelShort ? '<span class="tq-model">' + escHtml(modelShort) + '</span>' : '')
+        + (ageStr ? '<span class="tq-age">' + escHtml(ageStr) + '</span>' : '')
+        + (etaStr ? '<span class="tq-eta">' + escHtml(etaStr) + '</span>' : '')
+        + (durStr && t.status === 'complete' ? '<span class="tq-age">took ' + escHtml(durStr) + '</span>' : '')
+        + '</div>'
+        + '</div>'
+        + '<span class="tq-status-badge">' + badge + '</span>'
+        + '</div>';
+    }
+    h += '</div>';
+    c.innerHTML = h;
+
+    // Update header meta
+    var meta = document.getElementById('cronStatus');
+    if (meta) {
+      var ip = inP.length;
+      if (ip > 0) meta.textContent = ip + ' Running';
+      else if (q.length > 0) meta.textContent = q.length + ' Queued';
+      else meta.textContent = done.length + ' Complete';
+    }
+  }
+
+  // Fetch live cron status from /cron-status every 30s
+  function fetchCronStatus() {
+    fetch('/cron-status').then(function(r){ return r.json(); }).then(function(d) {
+      _liveCrons = d.jobs || [];
+      renderCrons();
+    }).catch(function(e) {
+      // Silently ignore fetch errors — keep showing last known
+    });
+  }
+  fetchCronStatus();
+  setInterval(fetchCronStatus, 30000);
+
+  // Fetch live task queue from /task-queue every 10s
+  function fetchTaskQueue() {
+    fetch('/task-queue').then(function(r){ return r.json(); }).then(function(d) {
+      _liveQueue = d;
+      renderTaskQueue();
+      // Auto-switch to queue tab if a task is actively running
+      if (d.inProgress > 0 && _activeJobTab === 'crons') {
+        // Flash the queue tab badge if tasks are running
+        var tQ = document.getElementById('tabQueue');
+        if (tQ && !tQ.dataset.notified) {
+          tQ.style.color = '#20B2AA';
+          tQ.dataset.notified = '1';
+        }
+      }
+    }).catch(function(e) {});
+  }
+  fetchTaskQueue();
+  setInterval(fetchTaskQueue, 10000);
 
   function updateFeedTime() {
     var n=getETNow(), h=n.getHours(), m=n.getMinutes(), a=h>=12?'PM':'AM';

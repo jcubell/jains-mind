@@ -434,18 +434,133 @@ const server = http.createServer(async (req, res) => {
     const { exec } = require('child_process');
     const cronEnv = { ...process.env, PATH: '/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin' };
     exec('/opt/homebrew/bin/openclaw cron list --json', { env: cronEnv }, (err, stdout) => {
-      const headers = { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' };
+      const headers = { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*', 'Cache-Control': 'no-store' };
       if (err) { res.writeHead(200, headers); return res.end(JSON.stringify({ error: 'unavailable', jobs: [] })); }
       try {
-        const parsed = JSON.parse(stdout);
+        // Strip plugin/log lines that pollute stdout before the JSON object
+        const jsonStart = stdout.indexOf('{');
+        const cleanStdout = jsonStart >= 0 ? stdout.slice(jsonStart) : stdout;
+        const parsed = JSON.parse(cleanStdout);
         const jobs = Array.isArray(parsed) ? parsed : (parsed.jobs || []);
         res.writeHead(200, headers);
-        res.end(JSON.stringify({ jobs }));
+        res.end(JSON.stringify({ jobs, ts: Date.now() }));
       } catch(e) {
         res.writeHead(200, headers);
         res.end(JSON.stringify({ error: 'parse_error', jobs: [], raw: stdout.slice(0, 500) }));
       }
     });
+    return;
+  }
+
+  // /task-queue — live task queue: active + recent sub-agent runs + brain state
+  if (urlPath === '/task-queue') {
+    const headers = { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*', 'Cache-Control': 'no-store' };
+    try {
+      const RUNS_PATH = '/Users/jc_agent/.openclaw/subagents/runs.json';
+      const STATE_PATH = path.join(__dirname, 'state.json');
+      const now = Date.now();
+      const windowMs = 4 * 60 * 60 * 1000; // show last 4h
+
+      // Load runs
+      let runs = [];
+      try {
+        const rd = JSON.parse(fs.readFileSync(RUNS_PATH, 'utf8'));
+        runs = Object.values(rd.runs || rd || {});
+      } catch(e) {}
+
+      // Load brain state for current subagent(s)
+      let brainSubagents = [];
+      let brainSubagent = null;
+      let brainFocus = '';
+      let brainMode = 'idle';
+      try {
+        const state = JSON.parse(fs.readFileSync(STATE_PATH, 'utf8'));
+        brainSubagents = (state.brain && state.brain.subagents) ? state.brain.subagents : [];
+        brainSubagent = (state.brain && state.brain.subagent) ? state.brain.subagent : null;
+        brainFocus = (state.brain && state.brain.focus) || '';
+        brainMode = (state.brain && state.brain.mode) || 'idle';
+      } catch(e) {}
+
+      // Get active subagent IDs from brain state
+      const activeIds = new Set();
+      if (brainSubagent && brainSubagent.name) activeIds.add(brainSubagent.name);
+      for (const a of brainSubagents) { if (a.name) activeIds.add(a.name); }
+
+      // Build task items from runs (last 4h, FIFO order)
+      const cutoff = now - windowMs;
+      const tasks = runs
+        .filter(r => (r.createdAt || 0) > cutoff)
+        .sort((a, b) => (a.createdAt || 0) - (b.createdAt || 0)) // FIFO
+        .map(r => {
+          const childKey = r.childSessionKey || '';
+          // Match against brain subagents
+          const isActive = brainMode === 'working' && (
+            activeIds.size > 0
+              ? Array.from(activeIds).some(n => childKey.includes(n) || (r.label || '').includes(n))
+              : false
+          );
+          const ageMs = now - (r.startedAt || r.createdAt || now);
+          const durationMs = r.durationMs || (r.completedAt ? r.completedAt - (r.startedAt || r.createdAt) : null);
+          // Infer status
+          let status = 'queued';
+          if (r.completedAt || r.cleanupHandled) status = 'complete';
+          else if ((r.startedAt && ageMs < 2 * 60 * 60 * 1000) || isActive) status = 'in-progress';
+          // ETA: if we have eta_seconds from brain subagent, use it
+          let eta = null;
+          if (status === 'in-progress') {
+            const matchedSub = brainSubagent && (childKey.includes(brainSubagent.name || '') || true) ? brainSubagent : null;
+            if (matchedSub && matchedSub.eta_seconds) {
+              const elapsed = ageMs / 1000;
+              eta = Math.max(0, matchedSub.eta_seconds - elapsed);
+            }
+          }
+          return {
+            id: r.runId || r.id,
+            label: r.label || (r.task ? r.task.slice(0, 60) + '…' : 'Task'),
+            task: r.task ? r.task.slice(0, 120) : '',
+            model: (r.model || '').replace(/^openrouter\/[^/]+\//, '').replace(/^openrouter\//, ''),
+            status,
+            createdAt: r.createdAt || r.startedAt || 0,
+            startedAt: r.startedAt || null,
+            completedAt: r.completedAt || null,
+            ageMs,
+            durationMs,
+            eta,
+            isActive
+          };
+        });
+
+      // If brain is working but no matching run in window, add a synthetic in-progress entry
+      if (brainMode === 'working' && brainFocus && tasks.filter(t => t.status === 'in-progress').length === 0) {
+        const synthAgents = brainSubagents.length > 0 ? brainSubagents : (brainSubagent ? [brainSubagent] : []);
+        for (const sa of synthAgents) {
+          tasks.push({
+            id: 'brain-' + (sa.name || 'active'),
+            label: sa.name || 'Agent',
+            task: sa.task || brainFocus,
+            model: (sa.model || '').replace(/^openrouter\/[^/]+\//, '').replace(/^openrouter\//, ''),
+            status: 'in-progress',
+            createdAt: sa.started_at ? new Date(sa.started_at).getTime() : now,
+            startedAt: sa.started_at ? new Date(sa.started_at).getTime() : now,
+            completedAt: null,
+            ageMs: sa.started_at ? now - new Date(sa.started_at).getTime() : 0,
+            durationMs: null,
+            eta: sa.eta_seconds || null,
+            isActive: true,
+            synthetic: true
+          });
+        }
+      }
+
+      const inProgress = tasks.filter(t => t.status === 'in-progress').length;
+      const queued = tasks.filter(t => t.status === 'queued').length;
+      const complete = tasks.filter(t => t.status === 'complete').length;
+
+      res.writeHead(200, headers);
+      res.end(JSON.stringify({ tasks, inProgress, queued, complete, brainMode, brainFocus, ts: now }));
+    } catch(e) {
+      res.writeHead(500); res.end(JSON.stringify({ error: e.message, tasks: [] }));
+    }
     return;
   }
 
