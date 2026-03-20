@@ -1,11 +1,13 @@
 #!/bin/bash
 # Start Cloudflare tunnel (one instance only).
 # Captures tunnel URL and writes to /tmp/current-tunnel-url.txt
-# push_brain.py reads that file and embeds URL in brain_state.json on GitHub,
+# AND to ~/.openclaw/tunnel-url.txt (persistent, survives /tmp clears)
+# push_brain.py reads these files and embeds URL in brain_state.json on GitHub,
 # so the dashboard can self-heal after restarts.
 
 LOG="/tmp/cloudflared-tunnel.log"
 URL_FILE="/tmp/current-tunnel-url.txt"
+PERSISTENT_URL_FILE="$HOME/.openclaw/tunnel-url.txt"
 PUSH_GITHUB="/Users/jc_agent/.openclaw/workspace/dashboard/push_github.py"
 
 # Kill any stray cloudflared processes to prevent duplicates
@@ -26,6 +28,7 @@ for i in $(seq 1 30); do
   if [ -n "$URL" ]; then
     echo "Tunnel URL: $URL"
     echo "$URL" > "$URL_FILE"
+    echo "$URL" > "$PERSISTENT_URL_FILE"
     # Push updated tunnel URL to GitHub so dashboard can self-heal
     /opt/homebrew/bin/python3 "$PUSH_GITHUB" \
       /Users/jc_agent/.openclaw/workspace/dashboard/state.json \

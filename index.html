@@ -2046,7 +2046,7 @@
   var tunnelUrl = null;
   var tunnelFailCount = 0;
   var TUNNEL_FAIL_LIMIT = 3;
-  var POLL_FAST = 5000;
+  var POLL_FAST = 2000;  // 2s — fast enough for sub-agent event visibility
   var POLL_SLOW = 30000;
   var pollTimer = null;
   var lastKnownState = null;
@@ -2662,7 +2662,7 @@
 
   // ── OPENROUTER MODEL USAGE BREAKDOWN ────────────────────────────────────────
   (function() {
-    var OR_MODEL_POLL_MS = 3 * 60 * 1000; // every 3 minutes
+    var OR_MODEL_POLL_MS = 60 * 1000; // every 60s (was 3min)
 
     var MODEL_COLORS = {
       'grok-4':              '#ff2222',

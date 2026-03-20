@@ -408,6 +408,27 @@ const server = http.createServer(async (req, res) => {
     return;
   }
 
+  // /clear-state — force-reset stuck working state (POST)
+  if (req.method === 'POST' && urlPath === '/clear-state') {
+    try {
+      let state = {};
+      try { state = JSON.parse(fs.readFileSync(STATE_FILE, 'utf8')); } catch(e) {}
+      if (!state.brain) state.brain = {};
+      state.brain.mode     = 'idle';
+      state.brain.focus    = 'Cleared — awaiting instruction';
+      state.brain.subagent  = null;
+      state.brain.subagents = [];
+      state.updated_at = new Date().toISOString();
+      fs.writeFileSync(STATE_FILE, JSON.stringify(state, null, 2));
+      const headers = { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' };
+      res.writeHead(200, headers);
+      res.end(JSON.stringify({ ok: true }));
+    } catch(e) {
+      res.writeHead(500); res.end(JSON.stringify({ error: e.message }));
+    }
+    return;
+  }
+
   // /cron-status — list openclaw scheduled jobs for mobile dashboard
   if (urlPath === '/cron-status') {
     const { exec } = require('child_process');

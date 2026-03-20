@@ -21,7 +21,8 @@ import sys, json, datetime, subprocess, os
 
 STATE_FILE = "/Users/jc_agent/.openclaw/workspace/dashboard/state.json"
 PUSH_SCRIPT = "/Users/jc_agent/.openclaw/workspace/dashboard/push_github.py"
-URL_FILE    = "/tmp/current-tunnel-url.txt"
+URL_FILE            = "/tmp/current-tunnel-url.txt"
+PERSISTENT_URL_FILE = os.path.expanduser("~/.openclaw/tunnel-url.txt")
 
 def now_et():
     from datetime import timezone, timedelta
@@ -29,10 +30,26 @@ def now_et():
     return datetime.datetime.now(et).strftime("%-I:%M %p ET")
 
 def get_tunnel_url():
+    """Read tunnel URL from /tmp first, then persistent fallback.
+    Also restores /tmp file from persistent copy if /tmp was cleared."""
+    url = None
     try:
-        return open(URL_FILE).read().strip()
+        url = open(URL_FILE).read().strip()
     except Exception:
-        return None
+        pass
+    if not url:
+        # /tmp may have been cleared — try persistent copy
+        try:
+            url = open(PERSISTENT_URL_FILE).read().strip()
+            if url:
+                # Restore /tmp copy for other tools that expect it
+                try:
+                    open(URL_FILE, "w").write(url)
+                except Exception:
+                    pass
+        except Exception:
+            pass
+    return url or None
 
 def push(focus, thought_text=None, thought_type="action", mode="working",
          model=None, subagent=None):
@@ -168,7 +185,7 @@ def push(focus, thought_text=None, thought_type="action", mode="working",
     except Exception:
         pass
 
-    print(f"Pushed: {focus}")
+    print(f"Pushed: {focus}", file=sys.stderr)
 
 
 def set_subagent(name, task, eta_seconds=None, status="running"):
@@ -201,7 +218,7 @@ def set_subagent(name, task, eta_seconds=None, status="running"):
     except Exception:
         pass
 
-    print(f"Subagent set: {name} — {task}")
+    print(f"Subagent set: {name} — {task}", file=sys.stderr)
 
 
 def clear_subagent():
@@ -238,9 +255,9 @@ if __name__ == "__main__":
             }
             with open(BASELINE_FILE, 'w') as f:
                 json.dump(baseline, f, indent=2)
-            print(f"Baseline reset — daily was ${baseline['total_daily']:.4f}")
+            print(f"Baseline reset — daily was ${baseline['total_daily']:.4f}", file=sys.stderr)
         except Exception as e:
-            print(f"Baseline reset ERROR: {e}")
+            print(f"Baseline reset ERROR: {e}", file=sys.stderr)
         sys.exit(0)
 
     # Support both legacy positional args and new --flag style
@@ -320,7 +337,7 @@ if __name__ == "__main__":
                              stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, start_new_session=True)
         except Exception:
             pass
-        print(f"Pushed: {focus}")
+        print(f"Pushed: {focus}", file=sys.stderr)
     else:
         # Legacy positional args
         focus        = sys.argv[1] if len(sys.argv) > 1 else "Idle — awaiting instruction"
