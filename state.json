@@ -62,6 +62,13 @@
   "updated_at": "2026-03-20T16:16:24Z",
   "news_feed": [
     {
+      "id": "mid_morning_1774023411",
+      "slot": "mid_morning",
+      "ts": "2026-03-20T16:16:51Z",
+      "label": "Signal Update",
+      "text": "\ud83d\udce1 SIGNAL [ENTERPRISE AI] \u2014 McKinsey Q1 2026 survey: 67% of Fortune 500 CEOs have activated AI-driven headcount reduction plans. AI agent deployment cost fell 89% YoY. Automation replacing white-collar roles at accelerating pace."
+    },
+    {
       "id": "markets_open_1774023408",
       "slot": "markets_open",
       "ts": "2026-03-20T16:16:48Z",
