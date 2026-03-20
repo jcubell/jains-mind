@@ -3,87 +3,21 @@
   "status": "idle",
   "brain": {
     "mode": "working",
-    "focus": "Reading sub-agent completion...",
+    "focus": "Checking news_bot.py for Telegram target...",
     "model": "openrouter/x-ai/grok-4-fast",
     "thoughts": [
       {
-        "time": "8:36 AM ET",
-        "type": "complete",
-        "text": "push_news.py + index.html: content-hash dedup, state.json cleaned (3\u21921 morning brief), committed+pushed",
-        "title": "Done \u2014 live feed dedup fix deployed"
-      },
-      {
-        "time": "8:32 AM ET",
+        "time": "10:29 AM ET",
         "type": "action",
-        "text": "Reading index.html and server.js",
-        "title": "Starting: Fix live feed duplicates"
-      },
-      {
-        "time": "8:32 AM ET",
-        "type": "action",
-        "text": "Analyzing image and code for Morning Brief repetitions",
-        "title": "Objective: Fix dashboard live feed duplicates and issues"
-      },
-      {
-        "time": "8:30 AM ET",
-        "type": "action",
-        "text": "Fetching changelogs and comparing versions",
-        "title": "Manually checking Tandem/BrowserBase updates..."
-      },
-      {
-        "time": "8:27 AM ET",
-        "type": "complete",
-        "text": "Scanned device, identified Tandem mem usage, suggested fixes",
-        "title": "Done \u2014 system scan and optimization check"
-      },
-      {
-        "time": "8:27 AM ET",
-        "type": "action",
-        "text": "Checked OpenClaw, memory usage, Tandem processes",
-        "title": "Analyzed system status and processes..."
-      },
-      {
-        "time": "8:26 AM ET",
-        "type": "complete",
-        "text": "Started fresh session and greeted Josh",
-        "title": "Done \u2014 greeted with new session prompt"
-      },
-      {
-        "time": "7:31 AM ET",
-        "type": "complete",
-        "text": "Before: 732M free \u2192 After: ~460M (Tandem re-loaded). Chrome kiosk single tab. No swap.",
-        "title": "Memory fix complete \u2014 Tandem restarted, 2 tabs, API live"
-      },
-      {
-        "time": "7:30 AM ET",
-        "type": "action",
-        "text": "API server embedded in Electron app",
-        "title": "Restarting Tandem Browser app"
-      },
-      {
-        "time": "7:29 AM ET",
-        "type": "action",
-        "text": "AppleScript graceful quit",
-        "title": "Quitting Tandem Browser + TextEdit + Terminal"
-      },
-      {
-        "time": "7:29 AM ET",
-        "type": "action",
-        "text": "Checking memory before quit",
-        "title": "Emergency memory fix starting"
-      },
-      {
-        "time": "1:32 AM ET",
-        "type": "complete",
-        "text": "Sonnet sub-agent reviewing/fixing Feed/Jobs loading.",
-        "title": "Done \u2014 Dashboard fix spawning"
+        "text": "Analyzing send logic in news_bot.py to fix signal routing",
+        "title": "Checking news_bot.py for Telegram target..."
       }
     ],
     "subagent": null,
     "currentModel": "openrouter/x-ai/grok-4-fast"
   },
   "steps": [],
-  "updated_at": "2026-03-20T12:36:35Z",
+  "updated_at": "2026-03-20T14:29:15Z",
   "news_feed": [
     {
       "id": "morning_brief_1774003089",
