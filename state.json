@@ -62,6 +62,13 @@
   "updated_at": "2026-03-20T16:16:24Z",
   "news_feed": [
     {
+      "id": "breaking_now_1774023406",
+      "slot": "breaking_now",
+      "ts": "2026-03-20T16:16:46Z",
+      "label": "Breaking Now",
+      "text": "\ud83d\udd34 BREAKING [CAPITAL] \u2014 Anthropic closes $3.5B Series F at $61.5B valuation, led by Google DeepMind fund. Claude 4 Opus launch expected within 30 days. Sources: WSJ, Bloomberg confirmed."
+    },
+    {
       "id": "breaking_now_1774023404",
       "slot": "breaking_now",
       "ts": "2026-03-20T16:16:44Z",
