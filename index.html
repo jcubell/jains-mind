@@ -1559,7 +1559,7 @@
   .news-feed-item:last-child { border-bottom: none; }
   /* Older history items (not the latest) are visually dimmed */
   .news-feed-item.feed-item-history {
-    opacity: 0.72;
+    opacity: 0.45;
     transition: opacity 0.2s;
   }
   .news-feed-item.feed-item-history:hover {
@@ -1784,7 +1784,7 @@
     transition: opacity 0.2s;
   }
   .rss-signal-item:last-child { border-bottom: none; }
-  .rss-signal-item.rss-item-history { opacity: 0.6; }
+  .rss-signal-item.rss-item-history { opacity: 0.45; }
   .rss-signal-item.rss-item-history:hover { opacity: 1; }
   .rss-signal-item.rss-item-new {
     animation: feedSlideIn 0.35s ease forwards;
@@ -3027,7 +3027,7 @@
 
     var PROXY = 'https://api.allorigins.win/get?url=';
     var POLL_MS = 5 * 60 * 1000;  // 5-minute refresh
-    var HISTORY_CUTOFF_MS = 60 * 60 * 1000; // 1 hour = "latest" region
+    var HISTORY_CUTOFF_MS = 3 * 60 * 60 * 1000; // 3 hours = "latest" region (dim older items)
     var MAX_DISPLAY = 20;
 
     // ── Scoring ──────────────────────────────────────────────────────────────

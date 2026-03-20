@@ -1,70 +1,11 @@
 {
-  "objective": "",
-  "status": "idle",
-  "brain": {
-    "mode": "working",
-    "focus": "Uploading jclaw-logo.svg to GitHub Pages",
-    "model": "claude-sonnet-4-6",
-    "thoughts": [
-      {
-        "time": "9:47 PM ET",
-        "type": "action",
-        "text": "File missing from jains-mind repo \u2014 uploading now",
-        "title": "Uploading jclaw-logo.svg to GitHub Pages"
-      },
-      {
-        "time": "9:45 PM ET",
-        "type": "action",
-        "text": "Diagnosing static handler + logo paths",
-        "title": "Starting: Fix logo 404s"
-      },
-      {
-        "time": "9:45 PM ET",
-        "type": "complete",
-        "text": "crisp white vector lobster in header + all lobster placements updated, committed e366707",
-        "title": "Done \u2014 J.Claw SVG logo redesigned and pushed"
-      },
-      {
-        "time": "9:44 PM ET",
-        "type": "complete",
-        "text": "White PNG: corner icon, feed bg, night glow; commit pushed",
-        "title": "Done \u2014 Logo integrated with multi-placement"
-      }
-    ],
-    "subagent": null,
-    "currentModel": "claude-sonnet-4-6"
-  },
-  "steps": [],
-  "updated_at": "2026-03-20T01:47:02Z",
   "news_feed": [
     {
-      "id": "afternoon_pulse_1773967017",
+      "id": "afternoon_pulse_1773975177",
       "slot": "afternoon_pulse",
-      "ts": "2026-03-20T00:36:57Z",
+      "ts": "2026-03-20T02:52:57Z",
       "label": "Signal Update",
-      "text": "\ud83d\udcca <b>TEST SIGNAL 3 \u2014 Afternoon Pulse</b>\\n\\n\ud83e\udde0 <b>F&G:</b>  <code>[\u2588\u2591\u2591\u2591\u2591\u2591\u2591\u2591\u2591\u2591]</code>  <b>15</b>  \u2014 Fear \ud83d\ude28\\n\\n\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\\n\\n\u26a1 <b>LATEST SIGNALS</b>\\n\u2022 NVIDIA GTC 2026 announcements exceed analyst expectations <a href='#'>(Link)</a>\\n  <i>Bloomberg</i> <code>\u26a19.0</code>\\n\u2022 Microsoft Azure AI capacity reaches 200% YoY growth <a href='#'>(Link)</a>\\n  <i>ZDNet</i> <code>\u26a17.0</code>\\n\\n<i>J.AI.N \u00b7 Signal Test 3 \u00b7 08:36 PM ET</i>"
-    },
-    {
-      "id": "mid_morning_1773967008",
-      "slot": "mid_morning",
-      "ts": "2026-03-20T00:36:48Z",
-      "label": "Signal Update",
-      "text": "\ud83d\udce1 <b>TEST SIGNAL 2 \u2014 Mid Morning Update</b>\\n\\n\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\\n\\n\u26a1 <b>LATEST SIGNALS</b>\\n\u2022 AI infrastructure stocks surge as compute demand accelerates\\n  <i>TechCrunch</i> <code>\u26a18.5</code>\\n\u2022 OpenAI GPT-5 deployment timeline moved to Q2 2026\\n  <i>VentureBeat</i> <code>\u26a17.5</code>\\n\u2022 Crypto markets stabilize after Fed hold decision\\n  <i>CoinDesk</i> <code>\u26a16.0</code>\\n\\n<i>J.AI.N \u00b7 Signal Test 2 \u00b7 08:36 PM ET</i>"
-    },
-    {
-      "id": "breaking_now_1773966998",
-      "slot": "breaking_now",
-      "ts": "2026-03-20T00:36:38Z",
-      "label": "Breaking Now",
-      "text": "\ud83d\udea8 <b>TEST SIGNAL 1 \u2014 Scrollable Feed Test</b>\\n\\n\u26a1 <b>FEATURE UPDATE</b>\\n\u2022 Live Intel feed is now a scrollable list\\n\u2022 New signals prepend at top\\n\u2022 Up to 20 historical entries stored\\n\\n<i>J.AI.N \u00b7 Feed Test \u00b7 08:36 PM ET</i>"
-    },
-    {
-      "id": "evening_update_1773962133",
-      "slot": "evening_update",
-      "ts": "2026-03-19T23:15:33Z",
-      "label": "Daily Recap",
-      "text": "\ud83d\udce1 <b>J.AI.N SIGNAL UPDATE</b>  <i>(interim)</i>\n<i>March 19, 2026  \u00b7  07:15 PM ET</i>\n\n\ud83e\udde0 <b>F&amp;G:</b>  <code>[\u2588\u2591\u2591\u2591\u2591\u2591\u2591\u2591\u2591\u2591]</code>  <b>11</b>  \u2014 Extreme Fear \ud83d\ude28\n\n\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\u2501\n\n\u26a1 <b>LATEST SIGNALS</b>  <i>(new since last update)</i>\n\u2022 OpenAI to acquire Python tools in major AI push to take on Anthropic as competi\u2026 <a href=\"https://thenews.com.pk/latest/1396262-openai-to-buy-new-python-tools-in-major-ai-push-to-take-on-anthropic-as-competition-intensifies\">(Link)</a>\n&nbsp;&nbsp;<i>Pk</i> <code>\u26058.5</code>\n\u2022 Red Hat\u2019s OpenShift strategy signals a broader shift in enterprise infrastructu\u2026 <a href=\"https://siliconangle.com/2026/03/18/red-hats-infrastructure-shift-enterprise-kubeconeu/\">(Link)</a>\n&nbsp;&nbsp;<i>Siliconangle News</i> <code>\u26056.5</code>\n\u2022 Xiaomi & Minimax models \ud83e\udd16, China\u2019s OpenClaw obsession \ud83e\udd9e, Anthropic 81k study \ud83d\udcca <a href=\"https://tldr.tech/ai/2026-03-19\">(Link)</a>\n&nbsp;&nbsp;<i>Tldr Ai</i> <code>\u26056.5</code>\n\u2022 Red Hat\u2019s OpenShift strategy signals a broader shift in enterprise infrastructu\u2026 <a href=\"https://siliconangle.com/2026/03/18/red-hats-infrastructure-shift-enterprise-kubeconeu/\">(Link)</a>\n&nbsp;&nbsp;<i>Siliconangle News</i> <code>\u26056.5</code>\n\u2022 Microsoft is mixing up its Copilot AI leadership, so Suleyman can 'build enterp\u2026 <a href=\"https://www.techradar.com/pro/microsoft-is-mixing-up-its-copilot-ai-leadership-so-suleyman-can-build-enterprise-tuned-lineages\">(Link)</a>\n&nbsp;&nbsp;<i>Techradar</i> <code>\u26056.5</code>\n\n<i>J.AI.N \u00b7 Ollama \u22656.5 filter \u00b7 07:15 PM ET</i>"
+      "text": "\ud83d\udce1 **Feed Test Signal** \u2014 Live intelligence feed verified: signals float to top (score 8.5), history dims >3h (opacity 0.45), max 20 items, scrollable. Dashboard updated 2026-03-19."
     }
-  ],
-  "_tunnel_url": "https://charged-unique-architects-fusion.trycloudflare.com"
+  ]
 }
