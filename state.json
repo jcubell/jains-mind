@@ -86,18 +86,11 @@
   "updated_at": "2026-03-20T12:33:33Z",
   "news_feed": [
     {
-      "id": "morning_brief_1774010113",
+      "id": "morning_brief_1774010135",
       "slot": "morning_brief",
-      "ts": "2026-03-20T12:35:13Z",
+      "ts": "2026-03-20T12:35:35Z",
       "label": "Morning Brief",
-      "text": "DUPLICATE TEST: same exact content"
-    },
-    {
-      "id": "morning_brief_1774010105",
-      "slot": "morning_brief",
-      "ts": "2026-03-20T12:35:05Z",
-      "label": "Morning Brief",
-      "text": "<b>Friday, March 20 MORNING BRIEF</b>\n\nFear &amp; Greed: Test dupe detection run 1"
+      "text": "<b>Friday, March 20 MORNING BRIEF</b>\n\nFear & Greed: \ud83d\udfe5 11 \u2014 Extreme Fear test"
     },
     {
       "id": "morning_brief_1774003089",
