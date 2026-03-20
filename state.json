@@ -3,75 +3,14 @@
   "status": "idle",
   "brain": {
     "mode": "working",
-    "focus": "Processing voice message...",
-    "model": "whisper",
-    "thoughts": [
-      {
-        "time": "12:18 PM ET",
-        "type": "action",
-        "text": "Dashboard audit done: Feed fixed (8 items), routing template ready (need Jane Wynn chat ID), crons verified",
-        "title": "Processing sub-agent completion"
-      },
-      {
-        "time": "12:18 PM ET",
-        "type": "complete",
-        "text": "Feed populated, tunnel URL auto-patches via push_github.py, routing fix template ready",
-        "title": "Done: Dashboard audit complete \u2014 8 items in feed, routing analysis done"
-      },
-      {
-        "time": "12:15 PM ET",
-        "type": "action",
-        "text": "User: Fix voice message workflow \u2014 seems struggling",
-        "title": "Reading message..."
-      },
-      {
-        "time": "12:15 PM ET",
-        "type": "complete",
-        "text": "Periodic cost: No Sonnet overuse; last check recent.",
-        "title": "Heartbeat OK \u2014 cost check healthy (empty daily), no flags"
-      },
-      {
-        "time": "12:15 PM ET",
-        "type": "action",
-        "text": "Check codexbar cost for Sonnet usage patterns; update heartbeat-state.json",
-        "title": "Running heartbeat: Periodic cost check"
-      },
-      {
-        "time": "12:15 PM ET",
-        "type": "action",
-        "text": "Grep workspace for news bot chat ID or target",
-        "title": "Searching for Jane Wynn News Bot config..."
-      },
-      {
-        "time": "12:15 PM ET",
-        "type": "action",
-        "text": "Voice message: Separate this chat for ad-hoc; news to Jane Wynn News Bot. Audit live intel feed updates.",
-        "title": "Got it \u2014 fixing news routing and dashboard audit"
-      },
-      {
-        "time": "12:14 PM ET",
-        "type": "action",
-        "text": "Responding to voice message about signals and news bot",
-        "title": "Processing transcribed audio..."
-      },
-      {
-        "time": "10:29 AM ET",
-        "type": "action",
-        "text": "Listing sessions to find news bot target",
-        "title": "Checking for news bot sessions..."
-      },
-      {
-        "time": "10:29 AM ET",
-        "type": "action",
-        "text": "Analyzing send logic in news_bot.py to fix signal routing",
-        "title": "Checking news_bot.py for Telegram target..."
-      }
-    ],
+    "focus": "Reading heartbeat...",
+    "model": "openrouter/x-ai/grok-4-fast",
+    "thoughts": [],
     "subagent": null,
-    "currentModel": "whisper"
+    "currentModel": "openrouter/x-ai/grok-4-fast"
   },
   "steps": [],
-  "updated_at": "2026-03-20T19:15:04Z",
+  "updated_at": "2026-03-20T19:16:00Z",
   "news_feed": [
     {
       "id": "afternoon_pulse_1774023415",
