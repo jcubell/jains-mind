@@ -3,9 +3,15 @@
   "status": "idle",
   "brain": {
     "mode": "idle",
-    "focus": "Done \u2014 idle transition fix verified",
-    "model": "claude-sonnet-4-6",
+    "focus": "Done \u2014 fixed news bot and sent test update",
+    "model": "openrouter/x-ai/grok-4-fast",
     "thoughts": [
+      {
+        "time": "11:23 PM ET",
+        "type": "complete",
+        "text": "Replaced fetch_reddit_pulse with existing fetch_reddit_posts in news_bot.py; ran morning_brief.py successfully to send test to Telegram.",
+        "title": "Done \u2014 fixed news bot and sent test update"
+      },
       {
         "time": "11:23 PM ET",
         "type": "complete",
@@ -44,10 +50,10 @@
       }
     ],
     "subagent": null,
-    "currentModel": "claude-sonnet-4-6"
+    "currentModel": "openrouter/x-ai/grok-4-fast"
   },
   "steps": [],
-  "updated_at": "2026-03-20T03:23:30Z",
+  "updated_at": "2026-03-20T03:23:35Z",
   "news_feed": [
     {
       "id": "afternoon_pulse_1773975177",
