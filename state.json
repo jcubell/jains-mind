@@ -3,8 +3,8 @@
   "status": "idle",
   "brain": {
     "mode": "working",
-    "focus": "Searching for Jane Wynn News Bot config...",
-    "model": "openrouter/x-ai/grok-4-fast",
+    "focus": "Starting: Dashboard audit + news routing",
+    "model": "claude-sonnet-4-6",
     "thoughts": [
       {
         "time": "12:15 PM ET",
@@ -38,10 +38,10 @@
       }
     ],
     "subagent": null,
-    "currentModel": "openrouter/x-ai/grok-4-fast"
+    "currentModel": "claude-sonnet-4-6"
   },
   "steps": [],
-  "updated_at": "2026-03-20T16:15:08Z",
+  "updated_at": "2026-03-20T16:15:31Z",
   "news_feed": [
     {
       "id": "morning_brief_1774003089",
