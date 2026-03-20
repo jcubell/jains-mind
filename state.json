@@ -2,10 +2,16 @@
   "objective": "",
   "status": "idle",
   "brain": {
-    "mode": "idle",
-    "focus": "Done \u2014 daily cost baseline reset; yesterday .02",
-    "model": "claude-sonnet-4-6",
+    "mode": "working",
+    "focus": "Objective: diagnose Signal test failure",
+    "model": "openrouter/x-ai/grok-4-fast",
     "thoughts": [
+      {
+        "time": "12:03 AM ET",
+        "type": "action",
+        "text": "Log shows 404 on Telegram (bad token/chat or path); only 2 fetches (FRED/CoinGecko ok, NewsAPI failed - key load issue). Spawn to fix file loads and re-run with real send.",
+        "title": "Objective: diagnose Signal test failure"
+      },
       {
         "time": "11:59 PM ET",
         "type": "action",
@@ -68,10 +74,10 @@
       }
     ],
     "subagent": null,
-    "currentModel": "claude-sonnet-4-6"
+    "currentModel": "openrouter/x-ai/grok-4-fast"
   },
   "steps": [],
-  "updated_at": "2026-03-20T04:00:08Z",
+  "updated_at": "2026-03-20T04:03:57Z",
   "news_feed": [
     {
       "id": "afternoon_pulse_1773975177",
