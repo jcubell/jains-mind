@@ -62,6 +62,13 @@
   "updated_at": "2026-03-20T16:16:24Z",
   "news_feed": [
     {
+      "id": "afternoon_pulse_1774023415",
+      "slot": "afternoon_pulse",
+      "ts": "2026-03-20T16:16:55Z",
+      "label": "Signal Update",
+      "text": "\ud83d\udcca SIGNAL [CRYPTO] \u2014 ETH ETF inflows hit $890M this week \u2014 all-time record. BlackRock ETHA now $8.2B AUM. Solana TVL +24% MoM as DeFi activity surges. BTC dominance: 54.2%."
+    },
+    {
       "id": "breaking_now_1774023413",
       "slot": "breaking_now",
       "ts": "2026-03-20T16:16:53Z",
