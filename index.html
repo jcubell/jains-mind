@@ -2278,6 +2278,9 @@
         </div>
       </div>
 
+      <!-- Lobster silhouette watermark behind feed content -->
+      <div id="lobsterFeedBg"><img src="jlobster_clean_alpha.png" alt="" /></div>
+
       <div class="panel-body">
 
         <div class="feed-date" id="feedDate"><!-- updated by JS --></div>
@@ -2313,12 +2316,71 @@
 
 <style>
 @keyframes nightPulse { 0%,100%{opacity:1;text-shadow:0 0 80px rgba(160,0,0,0.2)} 50%{opacity:0.82;text-shadow:0 0 140px rgba(160,0,0,0.35)} }
+@keyframes lobsterGlow { 0%,100%{filter:brightness(1) drop-shadow(0 0 18px rgba(255,255,255,0.55)) drop-shadow(0 0 40px rgba(200,0,0,0.35))} 50%{filter:brightness(1.15) drop-shadow(0 0 32px rgba(255,255,255,0.8)) drop-shadow(0 0 70px rgba(220,0,0,0.55))} }
+
+/* ── Lobster J Logo — bottom-right corner ── */
+#lobsterCorner {
+  position: fixed;
+  bottom: 14px;
+  right: 14px;
+  width: 48px;
+  height: 48px;
+  z-index: 1000;
+  opacity: 0.75;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  pointer-events: none;
+}
+#lobsterCorner img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  filter: drop-shadow(0 0 6px rgba(255,255,255,0.3));
+}
+#lobsterCorner:hover { opacity: 1; pointer-events: auto; transform: scale(1.1); }
+
+/* ── Live Intelligence feed — lobster silhouette watermark ── */
+#lobsterFeedBg {
+  position: absolute;
+  right: -10px;
+  bottom: 20px;
+  width: 260px;
+  height: 260px;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.13;
+}
+#lobsterFeedBg img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  /* Red silhouette: keep the shape, tint to red */
+  filter: invert(15%) sepia(100%) saturate(700%) hue-rotate(340deg) brightness(0.9) contrast(1.2);
+}
+
+/* ── Night mode — lobster logo prominent ── */
+#nightLobster {
+  position: absolute;
+  top: 32px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 90px;
+  height: 90px;
+  z-index: 2;
+  animation: lobsterGlow 3s ease-in-out infinite;
+}
+#nightLobster img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
 </style>
 <style>
 .night-clock-wrap { display:flex; flex-direction:column; align-items:center; justify-content:center; gap:0; will-change:transform; }
 #nightClock { font-variant-numeric: tabular-nums; }
 </style>
 <div id="nightMode" style="display:none;position:fixed;inset:0;background:#0a0000;z-index:99999;cursor:pointer;align-items:center;justify-content:center;">
+  <!-- Night mode lobster logo — glowing at top -->
+  <div id="nightLobster"><img src="jlobster_clean_alpha.png" alt="J.AI.N Lobster" /></div>
   <div class="night-clock-wrap">
     <div id="nightClock" style="font-family:'Satoshi',-apple-system,sans-serif;font-size:25vw;font-weight:900;color:#cc0000;letter-spacing:-0.04em;line-height:1;text-align:center;font-variant-numeric:tabular-nums;"></div>
     <div id="nightAmpm" style="font-family:'Satoshi',-apple-system,sans-serif;font-size:3.5vw;font-weight:200;color:rgba(180,0,0,0.5);letter-spacing:0.4em;text-align:center;margin-top:0.3vw;"></div>
@@ -3704,7 +3766,7 @@
     return expr;
   }
 
-  // ── UNIFIED RENDER: Active Crons (top) + Task Queue (bottom) ───────────────
+  // ── UNIFIED RENDER: Active Crons (top) + Task Queue (bottom) ────────────────
   function renderUnifiedJobs() {
     var c = document.getElementById('unifiedJobsContainer');
     if (!c) return;
@@ -3922,6 +3984,9 @@
 </script>
 
 </div>
+
+<!-- Lobster J logo — fixed bottom-right corner watermark -->
+<div id="lobsterCorner"><img src="jlobster_clean_alpha.png" alt="J.AI.N" /></div>
 
 </body>
 </html><!-- cache bust Sun Mar 15 19:15 EDT 2026 -->
