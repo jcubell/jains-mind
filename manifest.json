@@ -10,6 +10,12 @@
   "orientation": "portrait",
   "icons": [
     {
+      "src": "/jains-mind/favicon-32.png",
+      "sizes": "32x32",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
       "src": "/jains-mind/icon-192.png",
       "sizes": "192x192",
       "type": "image/png",
@@ -20,6 +26,12 @@
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"
+    },
+    {
+      "src": "/jains-mind/apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png",
+      "purpose": "any"
     }
   ]
 }
