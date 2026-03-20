@@ -3,9 +3,15 @@
   "status": "idle",
   "brain": {
     "mode": "working",
-    "focus": "Objective: confirm sheet read and re-fetch full content",
+    "focus": "Re-fetching sheet as CSV for proper parse",
     "model": "openrouter/x-ai/grok-4-fast",
     "thoughts": [
+      {
+        "time": "11:28 PM ET",
+        "type": "action",
+        "text": "Original web_fetch got garbled HTML; using export link to get clean CSV content.",
+        "title": "Re-fetching sheet as CSV for proper parse"
+      },
       {
         "time": "11:28 PM ET",
         "type": "action",
@@ -17,7 +23,7 @@
     "currentModel": "openrouter/x-ai/grok-4-fast"
   },
   "steps": [],
-  "updated_at": "2026-03-20T03:28:47Z",
+  "updated_at": "2026-03-20T03:28:50Z",
   "news_feed": [
     {
       "id": "afternoon_pulse_1773975177",
