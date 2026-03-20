@@ -9,6 +9,12 @@
       {
         "time": "11:25 PM ET",
         "type": "complete",
+        "text": "codexbar shows no unusual Sonnet spend; updated lastChecks.cost in heartbeat-state.json.",
+        "title": "Done \u2014 heartbeat cost check healthy"
+      },
+      {
+        "time": "11:25 PM ET",
+        "type": "complete",
         "text": "codexbar shows no unusual Sonnet spend (<4h since last check); all good.",
         "title": "Done \u2014 heartbeat cost check healthy"
       }
@@ -17,7 +23,7 @@
     "currentModel": "openrouter/x-ai/grok-4-fast"
   },
   "steps": [],
-  "updated_at": "2026-03-20T03:25:04Z",
+  "updated_at": "2026-03-20T03:25:06Z",
   "news_feed": [
     {
       "id": "afternoon_pulse_1773975177",
