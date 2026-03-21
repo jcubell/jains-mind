@@ -2,8 +2,8 @@
   "objective": "",
   "status": "idle",
   "brain": {
-    "mode": "working",
-    "focus": "Fixing morning brief - Route to @Jain_win_news_bot group",
+    "mode": "idle",
+    "focus": "Routing morning brief to Jain News bot group (-1002381931352)",
     "model": "grok-4-fast",
     "thoughts": [
       {
@@ -71,7 +71,7 @@
     "currentModel": "grok-4-fast"
   },
   "steps": [],
-  "updated_at": "2026-03-21T10:33:57Z",
+  "updated_at": "2026-03-21T10:34:05Z",
   "news_feed": [
     {
       "id": "--send_1774083995",
