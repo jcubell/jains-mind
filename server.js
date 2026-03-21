@@ -447,22 +447,31 @@ const server = http.createServer(async (req, res) => {
 
   // /cron-status — list openclaw scheduled jobs for mobile dashboard
   if (urlPath === '/cron-status') {
-    const { exec } = require('child_process');
+    const headers = { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*', 'Cache-Control': 'no-store, no-cache' };
+    const CRON_STATUS_FILE = path.join(__dirname, '../cron-status.json');
+    const { exec: execCb } = require('child_process');
     const cronEnv = { ...process.env, PATH: '/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin' };
-    exec('/opt/homebrew/bin/openclaw cron list --json', { env: cronEnv }, (err, stdout) => {
-      const headers = { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*', 'Cache-Control': 'no-store' };
-      if (err) { res.writeHead(200, headers); return res.end(JSON.stringify({ error: 'unavailable', jobs: [] })); }
+    execCb('/opt/homebrew/bin/openclaw cron list --json', { env: cronEnv, timeout: 8000 }, (err, stdout) => {
+      if (!err && stdout) {
+        try {
+          // Strip plugin/log lines that pollute stdout before the JSON object
+          const jsonStart = stdout.indexOf('{');
+          const cleanStdout = jsonStart >= 0 ? stdout.slice(jsonStart) : stdout;
+          const parsed = JSON.parse(cleanStdout);
+          const jobs = Array.isArray(parsed) ? parsed : (parsed.jobs || []);
+          res.writeHead(200, headers);
+          return res.end(JSON.stringify({ jobs, ts: Date.now(), source: 'live' }));
+        } catch(e) { /* fall through to file */ }
+      }
+      // Fallback: read cron-status.json
       try {
-        // Strip plugin/log lines that pollute stdout before the JSON object
-        const jsonStart = stdout.indexOf('{');
-        const cleanStdout = jsonStart >= 0 ? stdout.slice(jsonStart) : stdout;
-        const parsed = JSON.parse(cleanStdout);
-        const jobs = Array.isArray(parsed) ? parsed : (parsed.jobs || []);
+        const fileData = JSON.parse(fs.readFileSync(CRON_STATUS_FILE, 'utf8'));
+        const jobs = Array.isArray(fileData) ? fileData : (fileData.jobs || []);
         res.writeHead(200, headers);
-        res.end(JSON.stringify({ jobs, ts: Date.now() }));
-      } catch(e) {
+        res.end(JSON.stringify({ jobs, ts: Date.now(), source: 'file' }));
+      } catch(e2) {
         res.writeHead(200, headers);
-        res.end(JSON.stringify({ error: 'parse_error', jobs: [], raw: stdout.slice(0, 500) }));
+        res.end(JSON.stringify({ jobs: [], ts: Date.now(), source: 'empty', error: 'unavailable' }));
       }
     });
     return;
@@ -470,9 +479,10 @@ const server = http.createServer(async (req, res) => {
 
   // /task-queue — live task queue: active + recent sub-agent runs + brain state
   if (urlPath === '/task-queue') {
-    const headers = { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*', 'Cache-Control': 'no-store' };
+    const headers = { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*', 'Cache-Control': 'no-store, no-cache' };
     try {
       const RUNS_PATH = '/Users/jc_agent/.openclaw/subagents/runs.json';
+      const TASK_QUEUE_FILE = path.join(__dirname, '../task-queue.json');
       const STATE_PATH = path.join(__dirname, 'state.json');
       const now = Date.now();
       const windowMs = 4 * 60 * 60 * 1000; // show last 4h
@@ -569,8 +579,32 @@ const server = http.createServer(async (req, res) => {
         }
       }
 
+      // Merge task-queue.json items as pending/queued tasks
+      try {
+        const fileItems = JSON.parse(fs.readFileSync(TASK_QUEUE_FILE, 'utf8'));
+        const items = Array.isArray(fileItems) ? fileItems : [];
+        for (const item of items) {
+          tasks.push({
+            id: 'tq-' + Buffer.from(item.task || '').toString('hex').slice(0, 8),
+            label: item.task || 'Task',
+            task: item.task || '',
+            model: '',
+            status: (item.status || 'queued').toLowerCase().replace(' ', '-'),
+            priority: item.priority || 'normal',
+            eta: item.eta || null,
+            createdAt: now,
+            startedAt: null,
+            completedAt: null,
+            ageMs: 0,
+            durationMs: null,
+            isActive: false,
+            source: 'file'
+          });
+        }
+      } catch(e) { /* no task-queue.json — ok */ }
+
       const inProgress = tasks.filter(t => t.status === 'in-progress').length;
-      const queued = tasks.filter(t => t.status === 'queued').length;
+      const queued = tasks.filter(t => t.status === 'queued' || t.status === 'user-step' || t.status === 'ready').length;
       const complete = tasks.filter(t => t.status === 'complete').length;
 
       res.writeHead(200, headers);
