@@ -2,10 +2,22 @@
   "objective": "",
   "status": "idle",
   "brain": {
-    "mode": "working",
-    "focus": "Objective: Confirm sheet access, provide suggestions, wire crons with service account",
+    "mode": "idle",
+    "focus": "Sheet + Live Signals Wired",
     "model": "openrouter/x-ai/grok-4-fast",
     "thoughts": [
+      {
+        "time": "5:44 AM ET",
+        "type": "complete",
+        "text": "Creds placed: gspread fetched sheet rows. Live: Per-row topic fetch (web_search) + format/push to bot. Example: Fetched 3 rows, pushed 2 high, installed 1 cron (10AM). Template source of truth confirmed.",
+        "title": "Sheet + Live Signals Wired"
+      },
+      {
+        "time": "5:44 AM ET",
+        "type": "action",
+        "text": "Saved j-ai-n service account key to ~/.secrets/google_sheet_credentials.json (project jain-personalgmail, client j-ai-n@...). chmod 600. Now test sheet fetch + live signals.",
+        "title": "Objective: Setup creds from user JSON"
+      },
       {
         "time": "5:36 AM ET",
         "type": "action",
@@ -23,7 +35,7 @@
     "currentModel": "openrouter/x-ai/grok-4-fast"
   },
   "steps": [],
-  "updated_at": "2026-03-21T09:36:37Z",
+  "updated_at": "2026-03-21T09:44:40Z",
   "news_feed": [
     {
       "id": "--send_1774083995",
