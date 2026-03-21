@@ -3,9 +3,15 @@
   "status": "idle",
   "brain": {
     "mode": "working",
-    "focus": "Healthcheck: Re-harden OpenClaw",
+    "focus": "Hardening Plan for Home Balanced",
     "model": "openrouter/x-ai/grok-4-fast",
     "thoughts": [
+      {
+        "time": "4:50 AM ET",
+        "type": "action",
+        "text": "Profile: Home/Workstation Balanced (flexible local + safe: Telegram allowlist main+news -1002381931352, sandbox all, fs workspace-only, plugins pinned, firewall on, daily cron audit)",
+        "title": "Hardening Plan for Home Balanced"
+      },
       {
         "time": "4:46 AM ET",
         "type": "action",
@@ -71,19 +77,13 @@
         "type": "action",
         "text": "OS: macOS 26.3 local; permission for reads \u2192 security audit --deep \u2192 risk profile \u2192 plan",
         "title": "Starting healthcheck audit"
-      },
-      {
-        "time": "4:27 AM ET",
-        "type": "action",
-        "text": "macOS OOM: Chrome/Tandem tabs + Node; run checks + suggest optimizations",
-        "title": "Recurrent low memory fix"
       }
     ],
     "subagent": null,
     "currentModel": "openrouter/x-ai/grok-4-fast"
   },
   "steps": [],
-  "updated_at": "2026-03-21T08:46:38Z",
+  "updated_at": "2026-03-21T08:50:40Z",
   "news_feed": [
     {
       "id": "afternoon_pulse_1774023415",
