@@ -3,8 +3,8 @@
   "status": "idle",
   "brain": {
     "mode": "working",
-    "focus": "Acknowledging Mac mini update",
-    "model": "claude-sonnet-4-6",
+    "focus": "Starting session startup sequence...",
+    "model": "openrouter/openrouter/auto",
     "thoughts": [
       {
         "time": "2:28 PM ET",
@@ -80,10 +80,10 @@
       }
     ],
     "subagent": null,
-    "currentModel": "claude-sonnet-4-6"
+    "currentModel": "openrouter/openrouter/auto"
   },
   "steps": [],
-  "updated_at": "2026-03-21T18:28:30Z",
+  "updated_at": "2026-03-21T20:52:15Z",
   "news_feed": [
     {
       "id": "--send_1774083995",
