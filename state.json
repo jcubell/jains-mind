@@ -3,87 +3,39 @@
   "status": "idle",
   "brain": {
     "mode": "working",
-    "focus": "Guided Hardening Execution",
+    "focus": "Step 4: Sandbox Added",
     "model": "openrouter/x-ai/grok-4-fast",
     "thoughts": [
       {
         "time": "4:54 AM ET",
         "type": "action",
-        "text": "Step 1: Backup config done. Proceeding to JSON edits (plugins.allow, Telegram allowlist with placeholder -1002381931352, sandbox all, fs.workspaceOnly=true, hooks key, tools deny web for small, clean denyCommands). Then firewall + restart",
-        "title": "Guided Hardening Execution"
+        "text": "agents.defaults.sandbox.mode=all. Now tools.fs.workspaceOnly=true + deny web for small (add tools.fs; deny group:web under defaults for ollama)",
+        "title": "Step 4: Sandbox Added"
       },
       {
-        "time": "4:52 AM ET",
+        "time": "4:54 AM ET",
         "type": "action",
-        "text": "Quick steps to fetch group/channel ID (e.g., -100238...); then add to allowlist for hardening",
-        "title": "Guide: Get Telegram Chat ID for News Bot"
+        "text": "Bak: openclaw.json.bak. Now editing JSON: Starting with plugins.allow = [\"lossless-claw\"]",
+        "title": "Step 1: Config Backup Done"
       },
       {
-        "time": "4:50 AM ET",
+        "time": "4:54 AM ET",
         "type": "action",
-        "text": "Profile: Home/Workstation Balanced (flexible local + safe: Telegram allowlist main+news -1002381931352, sandbox all, fs workspace-only, plugins pinned, firewall on, daily cron audit)",
-        "title": "Hardening Plan for Home Balanced"
+        "text": "DM/group locked to you + news (-1002381931352 placeholder). Now agents sandbox: add defaults.sandbox.mode=all",
+        "title": "Step 3: Telegram Allowlist Set"
       },
       {
-        "time": "4:46 AM ET",
+        "time": "4:54 AM ET",
         "type": "action",
-        "text": "Running deep audit + update status; offering risk profile for plan (Home Balanced default); FileVault just enabled",
-        "title": "Healthcheck: Re-harden OpenClaw"
-      },
-      {
-        "time": "4:46 AM ET",
-        "type": "action",
-        "text": "Editing openclaw.json: plugins.allow, Telegram allowlist (DM+groups to main 6218150306 + news bot pending ID), sandbox all, fs.workspaceOnly=true, hooks.defaultSessionKey, tools.deny web for small, restart",
-        "title": "Batch hardening OpenClaw configs"
-      },
-      {
-        "time": "4:46 AM ET",
-        "type": "action",
-        "text": "Batch fixes: plugins.allow, Telegram allowlist (main+news bot), sandbox all, deny web for small models, hooks session key",
-        "title": "Re-hardening OpenClaw"
-      },
-      {
-        "time": "4:44 AM ET",
-        "type": "complete",
-        "text": "Secure file: memory/filevault-recovery.md (key: 4U9D-UK2B-2JD7-9AQC-DX4G-52X7; Apple ID: jcubellagent@gmail.com)",
-        "title": "FileVault key saved"
-      },
-      {
-        "time": "4:44 AM ET",
-        "type": "action",
-        "text": "Key: 4U9D-UK2B-2JD7-9AQC-DX4G-52X7 (secures post-encryption; tied to jcubellagent@gmail.com)",
-        "title": "Saving FileVault recovery key"
-      },
-      {
-        "time": "4:39 AM ET",
-        "type": "action",
-        "text": "Checks: FileVault encrypting, Firewall on, OpenClaw audit, RAM free >80%",
-        "title": "Post-reboot verify"
-      },
-      {
-        "time": "4:32 AM ET",
-        "type": "action",
-        "text": "sudo shutdown -r now blocked by gates (post-hardening); guide /approve",
-        "title": "Reboot request: Elevated approval needed"
-      },
-      {
-        "time": "4:32 AM ET",
-        "type": "action",
-        "text": "sudo shutdown -r now; post: FileVault starts, RAM clears, checks on login",
-        "title": "Rebooting Mac as requested"
-      },
-      {
-        "time": "4:30 AM ET",
-        "type": "action",
-        "text": "Gaps: Firewall off, FileVault off, Telegram open, sandbox off; Commands: enable fw/sbox/plugins; Rollbacks noted",
-        "title": "Healthcheck: Building Balanced plan"
+        "text": "plugins.allow added. Now Telegram DM/group allowlist: dmPolicy=allowlist, allowFrom=[\"6218150306\"], groupPolicy=allowlist, groups=[{id:6218150306}, {id:-1002381931352}] (news placeholder\u2014confirm?)",
+        "title": "Step 2: Plugins Pinned"
       }
     ],
     "subagent": null,
     "currentModel": "openrouter/x-ai/grok-4-fast"
   },
   "steps": [],
-  "updated_at": "2026-03-21T08:54:12Z",
+  "updated_at": "2026-03-21T08:54:28Z",
   "news_feed": [
     {
       "id": "afternoon_pulse_1774023415",
