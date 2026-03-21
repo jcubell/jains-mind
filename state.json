@@ -3,9 +3,15 @@
   "status": "idle",
   "brain": {
     "mode": "working",
-    "focus": "Adding JSON file fallback routes to server.js",
-    "model": "claude-sonnet-4-6",
+    "focus": "Fixing morning brief - Route to @Jain_win_news_bot group",
+    "model": "grok-4-fast",
     "thoughts": [
+      {
+        "time": "6:35 AM ET",
+        "type": "complete",
+        "text": "Fixed openclaw.json trailing-dupe syntax, populated cron-status.json (morning_brief), kept task-queue.json (2 tasks), updated server.js /cron-status + /task-queue with no-cache + file fallback",
+        "title": "Jobs fixed"
+      },
       {
         "time": "6:32 AM ET",
         "type": "complete",
@@ -59,25 +65,13 @@
         "type": "action",
         "text": "Saved j-ai-n service account key to ~/.secrets/google_sheet_credentials.json (project jain-personalgmail, client j-ai-n@...). chmod 600. Now test sheet fetch + live signals.",
         "title": "Objective: Setup creds from user JSON"
-      },
-      {
-        "time": "5:36 AM ET",
-        "type": "action",
-        "text": "Image shows jain-editor service account as Editor. Missing JSON creds for gspread. Suggestions: Columns for Active, Score. Fix token path. Test fetch post-creds.",
-        "title": "Objective: Confirm sheet access, provide suggestions, wire crons with service account"
-      },
-      {
-        "time": "5:36 AM ET",
-        "type": "action",
-        "text": "Service account access confirmed (jain-editor Editor). Script: gspread + oauth2client for full read/write. Missing: JSON creds file (~/.secrets/google_sheet_credentials.json)\u2014user download/place. Test: Dry due to no creds, but structure ready. Crons: 10AM daily.",
-        "title": "Sheet Access Wired"
       }
     ],
     "subagent": null,
-    "currentModel": "claude-sonnet-4-6"
+    "currentModel": "grok-4-fast"
   },
   "steps": [],
-  "updated_at": "2026-03-21T10:33:02Z",
+  "updated_at": "2026-03-21T10:33:57Z",
   "news_feed": [
     {
       "id": "--send_1774083995",
