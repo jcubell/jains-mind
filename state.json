@@ -3,8 +3,8 @@
   "status": "idle",
   "brain": {
     "mode": "working",
-    "focus": "Diagnosing Today's Jobs - Files/JS check",
-    "model": "grok-4-fast",
+    "focus": "Running morning brief...",
+    "model": "claude-sonnet-4-6",
     "thoughts": [
       {
         "time": "5:47 AM ET",
@@ -62,10 +62,10 @@
       }
     ],
     "subagent": null,
-    "currentModel": "grok-4-fast"
+    "currentModel": "claude-sonnet-4-6"
   },
   "steps": [],
-  "updated_at": "2026-03-21T10:29:10Z",
+  "updated_at": "2026-03-21T10:30:05Z",
   "news_feed": [
     {
       "id": "--send_1774083995",
