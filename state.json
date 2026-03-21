@@ -2,28 +2,22 @@
   "objective": "",
   "status": "idle",
   "brain": {
-    "mode": "idle",
-    "focus": "Bot Name Fix Complete",
+    "mode": "working",
+    "focus": "Sheet Access Wired",
     "model": "openrouter/x-ai/grok-4-fast",
     "thoughts": [
       {
-        "time": "5:28 AM ET",
-        "type": "complete",
-        "text": "Clarified: Bot username likely without 'wynn' (e.g., @JainWinNewsBot). Guide: /mybots to list, or /newbot to create. Update script with real @handle + ID.",
-        "title": "Bot Name Fix Complete"
-      },
-      {
-        "time": "5:28 AM ET",
+        "time": "5:36 AM ET",
         "type": "action",
-        "text": "Simplify steps: 1. Find bot username in @BotFather. 2. Add bot to @Jain_win_news_bot group as admin. 3. Send test msg in group. 4. Re-curl getUpdates for ID. 5. Provide ID for script patch.",
-        "title": "User Stuck Guidance"
+        "text": "Service account access confirmed (jain-editor Editor). Script: gspread + oauth2client for full read/write. Missing: JSON creds file (~/.secrets/google_sheet_credentials.json)\u2014user download/place. Test: Dry due to no creds, but structure ready. Crons: 10AM daily.",
+        "title": "Sheet Access Wired"
       }
     ],
     "subagent": null,
     "currentModel": "openrouter/x-ai/grok-4-fast"
   },
   "steps": [],
-  "updated_at": "2026-03-21T09:28:42Z",
+  "updated_at": "2026-03-21T09:36:32Z",
   "news_feed": [
     {
       "id": "--send_1774083995",
