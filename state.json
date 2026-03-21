@@ -2,10 +2,16 @@
   "objective": "",
   "status": "idle",
   "brain": {
-    "mode": "idle",
-    "focus": "FileVault key saved",
+    "mode": "working",
+    "focus": "Re-hardening OpenClaw",
     "model": "openrouter/x-ai/grok-4-fast",
     "thoughts": [
+      {
+        "time": "4:46 AM ET",
+        "type": "action",
+        "text": "Batch fixes: plugins.allow, Telegram allowlist (main+news bot), sandbox all, deny web for small models, hooks session key",
+        "title": "Re-hardening OpenClaw"
+      },
       {
         "time": "4:44 AM ET",
         "type": "complete",
@@ -71,19 +77,13 @@
         "type": "action",
         "text": "Exec memory_pressure + top mem; suggest quits",
         "title": "Fixing low memory..."
-      },
-      {
-        "time": "7:09 PM ET",
-        "type": "action",
-        "text": "Fix RAM exhaustion: Kill heavy processes (Chrome/Tandem), purge, monitor",
-        "title": "User: 'please fix' \u2014 low memory on Mac"
       }
     ],
     "subagent": null,
     "currentModel": "openrouter/x-ai/grok-4-fast"
   },
   "steps": [],
-  "updated_at": "2026-03-21T08:44:20Z",
+  "updated_at": "2026-03-21T08:46:17Z",
   "news_feed": [
     {
       "id": "afternoon_pulse_1774023415",
