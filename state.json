@@ -2,9 +2,9 @@
   "objective": "",
   "status": "idle",
   "brain": {
-    "mode": "idle",
-    "focus": "Script Fix + Test",
-    "model": "openrouter/x-ai/grok-4-fast",
+    "mode": "working",
+    "focus": "Checking audit status",
+    "model": "grok-4-fast",
     "thoughts": [
       {
         "time": "5:47 AM ET",
@@ -62,10 +62,10 @@
       }
     ],
     "subagent": null,
-    "currentModel": "openrouter/x-ai/grok-4-fast"
+    "currentModel": "grok-4-fast"
   },
   "steps": [],
-  "updated_at": "2026-03-21T09:47:53Z",
+  "updated_at": "2026-03-21T10:23:44Z",
   "news_feed": [
     {
       "id": "--send_1774083995",
