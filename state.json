@@ -3,9 +3,15 @@
   "status": "idle",
   "brain": {
     "mode": "idle",
-    "focus": "API Enabled - Live Test Success",
+    "focus": "Script Fix + Test",
     "model": "openrouter/x-ai/grok-4-fast",
     "thoughts": [
+      {
+        "time": "5:47 AM ET",
+        "type": "complete",
+        "text": "Mapped columns to lowercase (id, topic, desc, cron_schedule, priority). Test: Fetched 9 signals, sample printed, dry run OK (no high priority in sheet yet\u2014add 'High' to row). No push/cron, but ready.",
+        "title": "Script Fix + Test"
+      },
       {
         "time": "5:47 AM ET",
         "type": "complete",
@@ -59,7 +65,7 @@
     "currentModel": "openrouter/x-ai/grok-4-fast"
   },
   "steps": [],
-  "updated_at": "2026-03-21T09:47:44Z",
+  "updated_at": "2026-03-21T09:47:53Z",
   "news_feed": [
     {
       "id": "--send_1774083995",
