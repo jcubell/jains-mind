@@ -3,7 +3,7 @@
   "status": "idle",
   "brain": {
     "mode": "working",
-    "focus": "Reading message...",
+    "focus": "Planning scaffold",
     "model": "claude-sonnet-4-6",
     "thoughts": [
       {
@@ -41,7 +41,7 @@
   },
   "exportableState": {},
   "steps": [],
-  "updated_at": "2026-03-22T20:28:56Z",
+  "updated_at": "2026-03-22T20:29:26Z",
   "news_feed": [
     {
       "id": "--send_1774083995",
