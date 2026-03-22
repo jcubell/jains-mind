@@ -3,8 +3,8 @@
   "status": "idle",
   "brain": {
     "mode": "working",
-    "focus": "Starting: Dashboard UI/UX improvements",
-    "model": "claude-sonnet-4-6",
+    "focus": "Session startup \u2014 fresh /new",
+    "model": "openrouter/openrouter/auto",
     "thoughts": [
       {
         "time": "8:51 PM ET",
@@ -20,10 +20,10 @@
       }
     ],
     "subagent": null,
-    "currentModel": "claude-sonnet-4-6"
+    "currentModel": "openrouter/openrouter/auto"
   },
   "steps": [],
-  "updated_at": "2026-03-22T00:51:52Z",
+  "updated_at": "2026-03-22T15:54:39Z",
   "news_feed": [
     {
       "id": "--send_1774083995",
