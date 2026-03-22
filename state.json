@@ -3,27 +3,20 @@
   "status": "idle",
   "brain": {
     "mode": "working",
-    "focus": "Spawning Sonnet sub-agent for dashboard review",
-    "model": "openrouter/openrouter/auto",
-    "thoughts": [
-      {
-        "time": "8:51 PM ET",
-        "type": "action",
-        "text": "Lazy-loading, telemetry hooks, tunnel resilience",
-        "title": "Starting: Dashboard UI/UX improvements"
-      },
-      {
-        "time": "8:50 PM ET",
-        "type": "working",
-        "text": "action",
-        "title": "Reading message..."
-      }
-    ],
+    "focus": "New session \u2014 reading startup files",
+    "model": "openrouter/auto",
+    "thoughts": [],
     "subagent": null,
-    "currentModel": "openrouter/openrouter/auto"
+    "currentModel": "openrouter/auto"
   },
+  "thinkingLog": [],
+  "health": {
+    "overall": "green",
+    "perCron": {}
+  },
+  "exportableState": {},
   "steps": [],
-  "updated_at": "2026-03-22T15:57:52Z",
+  "updated_at": "2026-03-22T18:40:48Z",
   "news_feed": [
     {
       "id": "--send_1774083995",
