@@ -3,8 +3,8 @@
   "status": "idle",
   "brain": {
     "mode": "working",
-    "focus": "Objective: enable background tasks + surface approvals",
-    "model": "openrouter/openrouter/auto",
+    "focus": "Reading message...",
+    "model": "claude-sonnet-4-6",
     "thoughts": [
       {
         "time": "3:00 PM ET",
@@ -32,7 +32,7 @@
       }
     ],
     "subagent": null,
-    "currentModel": "openrouter/openrouter/auto"
+    "currentModel": "claude-sonnet-4-6"
   },
   "thinkingLog": [],
   "health": {
@@ -41,7 +41,7 @@
   },
   "exportableState": {},
   "steps": [],
-  "updated_at": "2026-03-22T19:00:25Z",
+  "updated_at": "2026-03-22T20:28:56Z",
   "news_feed": [
     {
       "id": "--send_1774083995",
